@@ -202,130 +202,76 @@ def truncation_select(population, scores, rng, count=1, fraction=0.4):
 | Elitism | Best individuals survive unchanged | Protects progress but reduces turnover |
 | Truncation | Membership in the top fraction | Strong pressure can remove diversity |
 
-## One-point crossover
+## Crossover
 
-> Copy a prefix from one parent and the suffix from the other.
+> Combine genes from two parents to create a child.
 
-```text
-Parent A: 1 1 1 | 0 0 0
-Parent B: 0 0 0 | 1 1 1
-Child:    1 1 1 | 1 1 1
-```
+- The crossover method must match the chromosome representation.
+- Combining good parents does not guarantee a better child.
 
-- Suitable for fixed-length sequences when mixing positions preserves validity, such as bit strings.
-- The cut lies between genes. Both parents must have the same length, at least 2.
-- Time and output storage are $O(L)$ for chromosome length $L$.
+### One-point crossover
 
-```python
-def one_point(a, b, rng):
-    cut = rng.randrange(1, len(a))
-    return a[:cut] + b[cut:]
+> Choose one random cut. Take the prefix from one parent and the suffix from the other.
 
-parent_a = [1, 1, 1, 0, 0, 0]
-parent_b = [0, 0, 0, 1, 1, 1]
-print('One-point child:', one_point(parent_a, parent_b, random.Random(7)))
-```
+- Suitable for bit strings and other sequences where mixing genes keeps the solution valid.
+- Both parents must have the same length.
 
-```text
-One-point child: [1, 1, 1, 1, 1, 1]
-```
+### Uniform crossover
 
-## Uniform crossover
+> Independently choose each gene from either parent, usually with equal probability.
 
-> At each position, independently choose a gene from either parent.
+- Mixes genes more freely than one-point crossover.
+- Can disrupt groups of genes that work well together.
 
-- Both parents contribute without needing one shared cut point.
-- Mixing can disrupt groups of genes that work well together.
-- Like one-point crossover, it does not automatically preserve a permutation. Time and output storage are $O(L)$.
 
-```python
-def uniform_crossover(a, b, rng):
-    return [x if rng.random() < 0.5 else y for x, y in zip(a, b)]
+### Order crossover
 
-print('Uniform child:', uniform_crossover(parent_a, parent_b, random.Random(7)))
-```
+> Keep a segment from one parent, then fill the remaining positions in the order they appear in the other parent, skipping duplicates.
 
-```text
-Uniform child: [1, 1, 0, 0, 1, 0]
-```
+- Preserves each gene exactly once.
+- Both parents must contain the same unique genes.
 
-## Permutations need different operators
+### Other crossover choices
 
-```text
-Parent A: A B | C D E
-Parent B: D E | A B C
-Naive child: A B A B C
-```
-
-- Ordinary one-point crossover duplicated A and B and lost D and E.
-- A valid tour must still contain each city once. Use permutation-preserving crossover or explicitly repair the child.
-- Filtering repeated genes is an extra rule; it is not ordinary one-point crossover.
-
-## Order crossover
-
-> Keep a segment from one parent, then fill the remaining positions in the other parent's order.
-
-- Copy the chosen segment at its original positions.
-- Read the second parent cyclically from the segment's end, skipping genes already copied.
-- Fill the empty positions in the same cyclic order.
-- Parents must be permutations of the same unique, hashable genes. With a set for membership checks, time and extra space are $O(L)$.
-
-```python
-def order_crossover(a, b, rng):
-    start, stop = sorted(rng.sample(range(len(a) + 1), 2))
-    child = [None] * len(a)
-    child[start:stop] = a[start:stop]
-    used = set(a[start:stop])
-    remaining = [gene for gene in b[stop:] + b[:stop] if gene not in used]
-    empty = list(range(stop, len(a))) + list(range(start))
-    for position, gene in zip(empty, remaining):
-        child[position] = gene
-    return child
-
-print('Order child:', order_crossover(list('ABCDE'), list('DEABC'), random.Random(7)))
-```
-
-```text
-Order child: ['E', 'B', 'A', 'C', 'D']
-```
-
-## Other crossover choices
-
-| Representation | Related operators | What changes? |
+| Method | How it combines parents | Suitable representation |
 |:--|:--|:--|
-| Bit strings / ordinary sequences | Two-point, multi-point | Alternate copied segments |
-| Real-valued vectors | Arithmetic crossover | Blend values, e.g. $child_i=\alpha a_i+(1-\alpha)b_i$ |
-| Permutations | Partially mapped (PMX), cycle crossover | Preserve unique genes through mapping or cycles |
+| Two-point / multi-point | Alternate segments between parents at two or more cuts | Bit strings and ordinary sequences |
+| Arithmetic | Blend corresponding values using a weighted average | Real-valued vectors |
+| Partially mapped (PMX) | Exchange a segment and use a mapping to resolve duplicates | Permutations |
+| Cycle | Copy groups of positions linked by cycles between parents | Permutations |
 
-Choose operators for the encoding. Blending city labels or flipping a permutation gene as if it were a bit has no useful meaning.
+## Mutation
 
-## Bit-flip mutation
+> Randomly change genes in a chromosome to introduce variation.
+
+- Helps maintain diversity and explore new solutions.
+- The mutation method must match the chromosome representation.
+- The mutation rate controls how often changes occur.
+  - Too little mutation can leave the population stagnant.
+  - Too much mutation can destroy useful combinations of genes.
+
+### Bit-flip mutation
 
 > Independently flip each bit with a small probability.
 
-- Mutation can introduce alleles absent from the selected parents.
-- With per-gene rate $p$ and length $L$, the expected number of flips is $Lp$, not exactly one flip.
-- Too little mutation can leave the population stagnant; too much can destroy useful structure.
-- This version takes $O(L)$ time and returns a new list, leaving its input unchanged.
+- Suitable for binary chromosomes: a selected bit changes from 0 to 1 or from 1 to 0.
+- The rate applies independently to each bit.
+  - With rate $p$ and chromosome length $L$, the expected number of flips is $Lp$.
+  - One mutation step may flip no bits, one bit, or several bits.
 
 ```python
 def bit_mutation(chromosome, rng, rate=0.05):
     return [1 - bit if rng.random() < rate else bit for bit in chromosome]
-
-print('Mutated bits:', bit_mutation(parent_a, random.Random(7), rate=0.3))
 ```
 
-```text
-Mutated bits: [1, 0, 1, 1, 0, 0]
-```
-
-## Swap mutation
+### Swap mutation
 
 > Exchange two positions without adding or losing genes.
 
-- Appropriate for tours and other permutations.
-- Here `rate` is the probability of one swap **per individual**, unlike the per-gene bit-flip rate.
-- The swap is constant time; copying the chromosome makes this implementation $O(L)$ in time and output storage.
+- Suitable for tours and other permutations: each gene still appears exactly once.
+- Choose two different positions randomly and exchange their genes.
+- The rate is the probability of making one swap per individual.
+  - A mutation step makes either no swap or one swap.
 
 ```python
 def swap_mutation(chromosome, rng, rate=0.2):
@@ -334,81 +280,17 @@ def swap_mutation(chromosome, rng, rate=0.2):
         i, j = rng.sample(range(len(child)), 2)
         child[i], child[j] = child[j], child[i]
     return child
-
-print('Swapped tour:', swap_mutation(list('ABCDE'), random.Random(7), rate=1.0))
 ```
 
-```text
-Swapped tour: ['A', 'D', 'C', 'B', 'E']
-```
 
-## A complete genetic algorithm
+## Considerations
 
-> Evaluate the population, preserve elites, and fill the remaining places with offspring.
-
-- `make_individual(rng)` creates a chromosome; `fitness(chromosome)` returns a score to maximize.
-- `crossover(a, b, rng)` and `mutate(child, rng)` must preserve the chosen encoding and leave parents unchanged.
-- Tournament selection uses cached scores. The population size stays fixed.
-- Return the **best individual encountered** and a history of each generation's best score, including generation 0.
-- An optional `target` stops at a known score. A generation limit alone gives no completeness or global-optimum guarantee.
-
-```python
-def genetic_algorithm(make_individual, fitness, crossover, mutate,
-                      pop_size=40, generations=80, elite_count=1,
-                      seed=7, target=None):
-    if pop_size < 2 or generations < 0 or not 0 <= elite_count < pop_size:
-        raise ValueError('Use population >= 2, generations >= 0, and 0 <= elites < population')
-    rng = random.Random(seed)
-    population = [make_individual(rng) for _ in range(pop_size)]
-    best, best_score, history = None, float('-inf'), []
-
-    for generation in range(generations + 1):
-        scores = [fitness(individual) for individual in population]
-        winner = max(range(pop_size), key=lambda i: scores[i])
-        if scores[winner] > best_score:
-            best, best_score = population[winner].copy(), scores[winner]
-        history.append(scores[winner])
-        if generation == generations or (target is not None and best_score >= target):
-            break
-
-        next_population = keep_elites(population, scores, elite_count)
-        while len(next_population) < pop_size:
-            a, b = tournament_select(population, scores, rng, count=2,
-                                     size=min(3, pop_size))
-            child = crossover(a, b, rng)
-            next_population.append(mutate(child, rng))
-        population = next_population
-
-    return best, history
-
-best_bits, bit_history = genetic_algorithm(
-    lambda rng: [rng.randrange(2) for _ in range(8)],
-    ones_fitness, one_point, bit_mutation, target=8)
-print('Best bits:', best_bits, '| fitness:', ones_fitness(best_bits))
-print('Generation best scores:', bit_history)
-```
-
-```text
-Best bits: [1, 1, 1, 1, 1, 1, 1, 1] | fitness: 8
-Generation best scores: [6, 7, 8]
-```
-
-## Cost and guarantees
-
-Let $P$ be population size, $L$ chromosome length, $G$ the generation budget, and $F$ the cost of evaluating one individual.
-
-- **Time complexity**: $O(PL+(G+1)(PF+P\log P+PL))$ for the loop above: initialization, evaluation, elite sorting, and linear-time variation with fixed-size tournaments.
-- **Space complexity**: $O(PL+G)$ for the current/next populations and recorded history, excluding problem data and fitness-function workspace.
-- **Complete / Optimal**: no guarantee in a finite stochastic run. Fitness evaluation can dominate the total cost.
-- Increasing the generation budget gives more attempts; it does not certify that the best result is globally optimal.
-
-## Diversity and stopping
-
-- **Premature convergence**: many individuals become alike before a sufficiently good result is found.
-- Track best fitness and the number of distinct chromosomes; a flat best score alone does not explain why progress stopped.
-- Adjust mutation, tournament size, population size, or restart policy when exploring alternatives.
-- Elitism preserves the best score under fixed fitness, but the average score can still fall.
-- Compare several seeds with the same evaluation budget. One successful run is not a reliability estimate.
+- **Time complexity**: typically $O(G \cdot P \cdot (F + L))$ for $G$ generations, population size $P$, fitness evaluation cost $F$, and chromosome length $L$. Selection or sorting may add extra cost.
+- **Space complexity**: typically $O(P \cdot L)$ to store the populations, plus any recorded history.
+- **Guarantees**: a finite run does not guarantee finding a valid solution or the global optimum.
+- **Diversity**: overly similar individuals can cause premature convergence. Adjust mutation, selection pressure, or population size.
+- **Stopping**: use a generation limit, target fitness, or lack of improvement.
+- **Reliability**: compare several random seeds with the same evaluation budget.
 
 ## Travelling salesman problem
 
@@ -419,30 +301,6 @@ Let $P$ be population size, $L$ chromosome length, $G$ the generation budget, an
 - **Fitness**: $1/(1+distance)$; shorter tours receive larger positive scores.
 - Order crossover and swap mutation preserve valid tours. The starting city can change without changing the underlying cycle.
 
-```python
-cities = {'A': (0, 0), 'B': (2, 0), 'C': (3, 2), 'D': (1, 4), 'E': (-1, 2)}
-
-def tour_length(tour, coordinates):
-    closed_tour = tour[1:] + tour[:1]
-    return sum(dist(coordinates[a], coordinates[b])
-               for a, b in zip(tour, closed_tour))
-
-def tour_fitness(tour):
-    return 1 / (1 + tour_length(tour, cities))
-
-best_tour, tour_history = genetic_algorithm(
-    lambda rng: rng.sample(list(cities), len(cities)),
-    tour_fitness, order_crossover, swap_mutation,
-    pop_size=30, generations=60)
-print('Tour:', ' → '.join(best_tour + best_tour[:1]))
-print('Distance:', round(tour_length(best_tour, cities), 3))
-```
-
-```text
-Tour: B → A → E → D → C → B
-Distance: 12.129
-```
-
 ## N-queens with a population
 
 > Evolve queen placements instead of repairing just one board as in min-conflicts.
@@ -452,26 +310,6 @@ Distance: 12.129
 - **Fitness**: $n(n-1)/2$ minus the number of attacking pairs. The maximum means no attacks.
 - Use order crossover and swap mutation to retain row uniqueness.
 - This transparent fitness function checks pairs in $O(n^2)$. Row/diagonal counters from the CSP lecture can reduce evaluation work.
-
-```python
-def queen_fitness(board):
-    n = len(board)
-    attacks = sum(board[i] == board[j] or abs(board[i] - board[j]) == j - i
-                  for i in range(n) for j in range(i + 1, n))
-    return n * (n - 1) // 2 - attacks
-
-n = 8
-target = n * (n - 1) // 2
-best_queens, queen_history = genetic_algorithm(
-    lambda rng: rng.sample(range(n), n),
-    queen_fitness, order_crossover, swap_mutation,
-    pop_size=80, generations=150, target=target)
-print('Queen rows by column:', best_queens)
-print('Attacking pairs:', target - queen_fitness(best_queens))
-print('Generations completed:', len(queen_history) - 1)
-for row in range(n):
-    print(' '.join('Q' if queen_row == row else '.' for queen_row in best_queens))
-```
 
 ```text
 Queen rows by column: [6, 3, 1, 7, 5, 0, 2, 4]
@@ -496,45 +334,3 @@ Q . . . . . . .
 - Below, an overweight chromosome receives fitness 0; a feasible chromosome receives its total value.
 - A penalty can leave many invalid individuals tied at zero. Alternatives include repairing overweight chromosomes or prioritizing feasibility explicitly.
 - Crossover and bit mutation preserve the encoding, but not necessarily the capacity constraint.
-
-```python
-items = [('Water', 3, 9), ('Food', 4, 12), ('Jacket', 5, 13),
-         ('Camera', 2, 6), ('Book', 2, 4)]  # name, weight, value
-capacity = 9
-
-def knapsack_totals(chromosome, items):
-    weight = sum(bit * item[1] for bit, item in zip(chromosome, items))
-    value = sum(bit * item[2] for bit, item in zip(chromosome, items))
-    return weight, value
-
-def knapsack_fitness(chromosome):
-    weight, value = knapsack_totals(chromosome, items)
-    return value if weight <= capacity else 0
-
-for choice in [[1, 0, 0, 1, 1], [1, 1, 1, 0, 0]]:
-    print(choice, '| weight/value:', knapsack_totals(choice, items),
-          '| fitness:', knapsack_fitness(choice))
-```
-
-```text
-[1, 0, 0, 1, 1] | weight/value: (7, 19) | fitness: 19
-[1, 1, 1, 0, 0] | weight/value: (12, 34) | fitness: 0
-```
-
-## Homework problem
-
-> Use a genetic algorithm to pack the knapsack, then check how reliable its answer is.
-
-- **Initial population**: random bit lists with one position per item above.
-- **Variation**: one-point or uniform crossover, followed by bit-flip mutation.
-- **Objective**: maximize item value while keeping weight at most 9.
-- **Output**: selected item names, total weight, total value, and generation history. If the best returned chromosome is overweight, report that no feasible result was found in that run.
-- **Stopping rule**: a fixed generation/evaluation budget; do not assume the first feasible packing is optimal.
-
-## Homework tasks
-
-- Connect the knapsack fitness and suitable operators to the genetic algorithm above.
-- Compare at least five seeds with the same population and generation budget; report valid results and failures.
-- Change tournament size, mutation rate, or elite count one at a time. Explain the effect on diversity and best fitness.
-- Enumerate all $2^5$ choices to find the true optimum of this small instance. Measure how often your GA reaches it.
-- Optional: replace the zero penalty with a repair step and compare feasible-offspring rates. Explain how the repair rule affects which solutions are explored.
