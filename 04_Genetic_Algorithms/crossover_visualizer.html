@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Step through PMX, order, cycle, and multi-point crossover with interactive chromosomes and decision traces.">
+<title>Genetic Algorithms · Crossover Studio</title>
+<style>
+:root{color-scheme:light;--bg:#f5f4ee;--ink:#20343b;--muted:#596d72;--line:#dce4df;--a:#00695c;--al:#e0f2ed;--b:#345db1;--bl:#e8edff;--gold:#a56800}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 system-ui,sans-serif}.app{max-width:1400px;margin:auto;padding:26px 30px}header,footer{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);padding-bottom:18px}header strong{font-size:20px}header b{background:var(--a);color:white;padding:6px 10px;border-radius:9px;margin-right:10px}a{color:var(--a)}h1{font-size:clamp(30px,4vw,46px);letter-spacing:-1.5px;line-height:1.15;margin:28px 0 12px}.lead,.muted{color:var(--muted)}.lead{max-width:820px;margin-bottom:24px}nav{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}button,select,input{font:inherit}button,select{cursor:pointer}button{border:1px solid #c4d3ca;border-radius:9px;padding:9px 14px;background:white;color:var(--ink);font-weight:650}button:hover:not(:disabled){background:#edf4ed}button:disabled{opacity:.4;cursor:default}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--b);outline-offset:3px}nav button[aria-pressed=true],button.primary{background:var(--a);border-color:var(--a);color:white}.eyebrow{font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:1.3px;color:var(--a)}h2{font-size:28px;letter-spacing:-.7px;margin:4px 0 8px}h3{margin:0 0 10px;font-size:17px}.rule{margin:0 0 20px;max-width:880px}.controls{display:flex;align-items:end;flex-wrap:wrap;gap:16px;margin:20px 0}.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.7px}select,input[type=number]{background:white;border:1px solid #c4d3ca;padding:9px;border-radius:8px;min-height:43px}input[type=number]{width:95px}.stage{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px}.card{background:white;border:1px solid var(--line);border-radius:15px;min-width:0;overflow:hidden}.cardhead{padding:14px 20px;border-bottom:1px solid var(--line);font-size:13px;font-weight:700}.board{padding:22px 20px;overflow-x:auto}.chromosome{display:grid;grid-template-columns:82px repeat(9,minmax(38px,1fr));gap:6px;align-items:center;min-width:520px;margin:12px 0}.rowlabel{font-size:12px;font-weight:700}.gene{height:46px;display:grid;place-items:center;border:1px solid #cbd8d0;border-radius:8px;font:650 18px ui-monospace,monospace;background:#fafbf8;position:relative}.gene.a{background:var(--al);color:var(--a);border-color:#9dc7bb}.gene.b{background:var(--bl);color:var(--b);border-color:#adbee7}.gene.selected{box-shadow:inset 0 0 0 2px var(--gold)}.gene.active{outline:3px solid var(--gold);outline-offset:2px}.gene.cut{border-left:4px solid var(--gold)}.gene.empty{color:#83958d;border-style:dashed}.indices .gene{height:20px;border:0;background:transparent;color:var(--muted);font-size:11px}.legend{display:flex;gap:16px;flex-wrap:wrap;padding:12px 20px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}.key{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:5px}.key.a{background:var(--al);border:1px solid var(--a)}.key.b{background:var(--bl);border:1px solid var(--b)}.key.focus{border:2px solid var(--gold)}.decision{padding:22px}.decision h3{font-size:23px;line-height:1.3;margin:12px 0}.decision p{font-size:14px;color:var(--muted)}.detail{padding:12px 15px;background:#f1f5ef;border-radius:8px;overflow-wrap:anywhere;font:13px/1.8 ui-monospace,monospace;white-space:pre-wrap}.status{font-size:13px;color:var(--a);font-weight:650;margin-top:15px}.playback{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:14px;margin:16px 0}.playback input{flex:1;min-width:100px;accent-color:var(--a)}.counter{font:12px ui-monospace,monospace;color:var(--muted)}.lower{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{padding:22px}.panel li{padding:3px 0}.panel ol{padding-left:20px}.panel p{margin:10px 0}.small{font-size:12px;color:var(--muted)}.compare{margin-top:16px;overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:12px 18px;border-bottom:1px solid var(--line)}th{background:#eef3ec}footer{margin-top:25px;border-top:1px solid var(--line);border-bottom:0;padding-top:18px;font-size:12px;color:var(--muted)}[hidden]{display:none!important}@media(max-width:1000px){.stage{grid-template-columns:1fr}.decision{min-height:180px}}@media(max-width:650px){.app{padding:18px 12px}.lower{grid-template-columns:1fr}header,footer{flex-direction:column;gap:8px}nav button{flex:1 0 40%}.playback input{flex-basis:100%;order:5}.board{padding:16px 12px}.panel{padding:18px}.counter{margin-left:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><strong><b>04</b> Genetic Algorithms</strong><a href="04_Genetic_Algorithms.md">Lecture field guide ↗</a></header>
+<h1>How parents become offspring.</h1>
+<p class="lead">Four crossover methods, one decision at a time. Follow which parent supplies each gene and how permutation operators avoid duplicates.</p>
+<nav aria-label="Crossover methods" id="methods"></nav>
+<main>
+<div class="eyebrow" id="category"></div><h2 id="title"></h2><p class="rule" id="rule"></p>
+<div class="controls">
+<div class="field"><label for="preset">Parent pair</label><select id="preset"><option value="chain">Mapping chains</option><option value="cycles">Several cycles</option><option value="identity">Identical parents</option></select></div>
+<div class="field" id="startField"><label for="start">Segment starts at position</label><input id="start" type="number" min="1" max="8" value="3"></div>
+<div class="field" id="endField"><label for="end">Segment ends at position</label><input id="end" type="number" min="2" max="9" value="6"></div>
+<div class="field" id="cutsField" hidden><label for="cuts">Cut positions (after genes)</label><select id="cuts"><option value="3,6">3, 6 · two-point</option><option value="2,4,7">2, 4, 7 · three-point</option><option value="1,3,5,7">1, 3, 5, 7 · four-point</option></select></div>
+<button id="swap">Swap parents</button>
+</div>
+<div class="stage">
+<section class="card" aria-label="Chromosome visualization"><div class="cardhead">Parent chromosomes &amp; child under construction</div><div class="board" id="board"></div><div class="legend"><span><i class="key a"></i>From parent A</span><span><i class="key b"></i>From parent B</span><span><i class="key focus"></i>Selected segment / active position</span></div></section>
+<aside class="card decision" aria-live="polite"><div class="eyebrow" id="phase"></div><h3 id="eventTitle"></h3><p id="eventText"></p><div class="detail" id="detail"></div><div class="status" id="status"></div></aside>
+</div>
+<div class="card playback" role="group" aria-label="Trace playback"><button id="reset">Reset</button><button id="back">← Back</button><button class="primary" id="play">Play</button><button id="next">Next →</button><input type="range" id="timeline" min="0" value="0" aria-label="Trace step"><span class="counter" id="counter"></span><label class="small" for="speed">Pace</label><select id="speed"><option value="1500">Normal</option><option value="2800">Slow</option><option value="650">Fast</option></select></div>
+<div class="lower"><section class="card panel"><h3>The procedure</h3><ol id="procedure"></ol></section><section class="card panel"><h3>What to notice</h3><p id="notice"></p><p id="limitation"></p><p class="small" id="convention"></p></section></div>
+<section class="card compare" aria-label="Method comparison"><table><thead><tr><th>Method</th><th>What is inherited?</th><th>Valid permutation?</th></tr></thead><tbody><tr><td>PMX</td><td>A segment at fixed positions; mapped values resolve conflicts.</td><td>Yes</td></tr><tr><td>Order (OX1)</td><td>A segment plus the other parent's relative order.</td><td>Yes</td></tr><tr><td>Cycle (CX)</td><td>Whole position cycles, alternating their source parent.</td><td>Yes</td></tr><tr><td>Multi-point</td><td>Alternating contiguous segments at the same positions.</td><td>No guarantee</td></tr></tbody></table></section>
+</main>
+<footer><span>Works offline · Positions are numbered 1–9 · Arrow keys step; Space plays.</span><span>Reading: <a href="https://cs-mst.gitlab.io/index/Classes/EvolutionaryComputation/Content/RepresentMutateRecombine.html">Evolutionary computation lecture</a> · <a href="https://onlinelibrary.wiley.com/doi/10.1155/2017/7430125">Permutation crossover paper</a></span></footer>
+<noscript><p>Enable JavaScript to explore the crossover traces.</p></noscript>
+</div>
+<script>
+'use strict';
+const METHODS={
+ pmx:{name:'PMX',title:'Partially mapped crossover (PMX)',category:'Permutation · resolve conflicts',rule:'Keep a segment from A. Copy B outside it, following a mapping whenever a value would duplicate the kept segment.',steps:['Choose two boundaries and copy A’s segment into the same child positions.','Pair each copied A value with B’s value at the same position.','For each outside position, try B’s value. If it is already in A’s segment, follow the A → B mapping repeatedly.','Write the first value outside the copied set into that position.'],notice:'A conflict can require several mapping hops. Try the “Mapping chains” preset: outside value 5 follows 5 → 6 → 2 with the default segment.',limitation:'Both parents must be permutations of the same unique genes. The mapping repairs conflicts; it does not search for unused values at random.',convention:'This view keeps A’s segment. Swap the parents to construct the reciprocal child using the same cuts.'},
+ ox:{name:'Order crossover',title:'Order crossover (OX1)',category:'Permutation · preserve relative order',rule:'Keep A’s segment. Read B cyclically from just after the segment, skip copied values, and fill the remaining child positions in that order.',steps:['Copy A’s segment into the child at its original positions.','Start reading B immediately after the segment’s right boundary, wrapping to position 1.','Skip every value already in the copied segment.','Write each remaining value into the next empty child position, also starting after the segment and wrapping around.'],notice:'The reading pointer and the writing pointer move separately: skipping a B value does not consume an empty child position.',limitation:'The remaining genes follow B’s relative cyclic order. They do not necessarily keep their positions from B.',convention:'OX1 convention: both the scan and the fill begin immediately after the copied segment. Parents contain the same unique genes.'},
+ cx:{name:'Cycle crossover',title:'Cycle crossover (CX)',category:'Permutation · preserve position choices',rule:'Discover cycles of positions linked by the two parents. Copy the first cycle from A, the next from B, and alternate until every position is filled.',steps:['Start at the first position not yet assigned to a cycle.','Read B’s value at that position, then find that value’s position in A. Repeat until returning to the start.','Copy all positions in this cycle from one parent: A for odd cycles, B for even cycles.','Start a new cycle at the next unvisited position. Continue until all positions are assigned.'],notice:'Every child position receives the value that A or B has at that same position. Assigning an entire cycle to one parent avoids duplicates.',limitation:'A single cycle can cover the whole chromosome, producing an unchanged parent. Crossover does not always produce a new solution.',convention:'No cut points are used. Cycles start at the lowest unvisited position; parent sources alternate by cycle.'},
+ multi:{name:'Multi-point crossover',title:'Multi-point crossover',category:'Sequence · alternate segments',rule:'Choose several cuts between genes. Copy the first segment from A, the second from B, and keep switching parents at every cut.',steps:['Choose distinct cut positions between genes and sort them.','Copy the first segment from A at the same positions.','Switch the source parent at each cut and copy the next segment.','Continue through the last gene. Swapping parents gives the reciprocal child.'],notice:'Two cuts give three segments; three cuts give four. Genes within a segment stay together.',limitation:'This works directly for bit strings and suitable fixed-length sequences. For permutations, duplicates and missing genes may appear: the numbered parents here make that failure visible.',convention:'Cuts are after the listed positions. No repair is applied; the final frame checks whether the result is a valid permutation.'}
+};
+const PRESETS={chain:[[1,2,3,4,5,6,7,8,9],[3,5,7,4,6,2,8,1,9]],cycles:[[1,2,3,4,5,6,7,8,9],[2,1,4,5,3,7,6,9,8]],identity:[[1,2,3,4,5,6,7,8,9],[1,2,3,4,5,6,7,8,9]]};
+function buildTrace(method,a,b,left,right,cuts){
+ const n=a.length,child=Array(n).fill(null),sources=Array(n).fill(null),frames=[];
+ const add=(title,text,detail='',active=[],extra={})=>frames.push({title,text,detail,active:[...active],child:[...child],sources:[...sources],...extra});
+ add('Two parents, an empty child','The same parent pair is used for every method. Follow which values are copied, skipped, or mapped.');
+ if(method==='pmx'||method==='ox'){
+  for(let i=left;i<right;i++){child[i]=a[i];sources[i]='a';}
+  const kept=new Set(a.slice(left,right));
+  add('Keep A’s segment',`Copy positions ${left+1}–${right} into the child without moving them.`,`Copied values: ${[...kept].join(', ')}`,Array.from({length:right-left},(_,i)=>left+i));
+  if(method==='pmx'){
+   const mapping=new Map(a.slice(left,right).map((value,i)=>[value,b[left+i]]));
+   add('Build the conflict mapping','Each A value in the segment maps to B’s value at the same position.',[...mapping].map(([x,y])=>`${x} → ${y}`).join('   '));
+   for(let i=0;i<n;i++)if(i<left||i>=right){
+    let value=b[i],path=[value];
+    add(`Try B’s value at position ${i+1}`,`Candidate ${value}${kept.has(value)?' conflicts with the kept segment.':' is not in the kept segment.'}`,`Candidate: ${value}`,[i]);
+    while(kept.has(value)){value=mapping.get(value);path.push(value);add('Follow the mapping',`${path.at(-2)} is already kept; map it to ${value}. ${kept.has(value)?'Another hop is needed.':'This value can be placed.'}`,path.join(' → '),[i]);}
+    child[i]=value;sources[i]='b';add(`Fill position ${i+1}`,`Write ${value}${path.length>1?' after resolving the conflict':' directly from B'}.`,path.join(' → '),[i]);
+   }
+  }else{
+   let dest=right%n;
+   for(let k=0;k<n;k++){
+    const i=(right+k)%n,value=b[i];
+    if(kept.has(value)){add(`Skip ${value} from B`,`B position ${i+1} contains a value already in the kept segment. The fill pointer stays put.`,`Read B: ${i+1} · next empty child: ${dest+1}`,[i],{scan:i});continue;}
+    const written=dest;child[written]=value;sources[written]='b';dest=(dest+1)%n;
+    while(child[dest]!==null&&child.includes(null))dest=(dest+1)%n;
+    add(`Place ${value} at position ${written+1}`,`Read B at position ${i+1}; advance to the next empty position, wrapping when needed.`,`B position ${i+1} → child position ${written+1}`,[written],{scan:i});
+   }
+  }
+ }else if(method==='cx'){
+  const visited=new Set();let cycleNo=0;
+  for(let start=0;start<n;start++)if(!visited.has(start)){
+   cycleNo++;let pos=start;const cycle=[];
+   do{visited.add(pos);cycle.push(pos);const next=a.indexOf(b[pos]);add(`Discover cycle ${cycleNo}`,`B has ${b[pos]} at position ${pos+1}. Find ${b[pos]} in A at position ${next+1}${next===start?'; this closes the cycle.':'; continue there.'}`,`Positions: ${cycle.map(x=>x+1).join(' → ')} → ${next+1}`,cycle);pos=next;}while(pos!==start);
+   const source=cycleNo%2?'a':'b',parent=source==='a'?a:b;
+   for(const i of cycle){child[i]=parent[i];sources[i]=source;}
+   add(`Copy cycle ${cycleNo} from ${source.toUpperCase()}`,`Assign every position of this cycle from parent ${source.toUpperCase()}. Next cycle uses the other parent.`,`Cycle positions: ${cycle.map(x=>x+1).join(', ')}`,cycle);
+  }
+ }else{
+  const boundaries=[0,...cuts,n];
+  add('Mark the cut positions',`${cuts.length} cuts create ${cuts.length+1} segments. Switch parent at every boundary.`,`Cuts after: ${cuts.join(', ')}`);
+  for(let j=0;j<boundaries.length-1;j++){
+   const source=j%2?'b':'a',parent=source==='a'?a:b,positions=[];
+   for(let i=boundaries[j];i<boundaries[j+1];i++){child[i]=parent[i];sources[i]=source;positions.push(i);}
+   add(`Segment ${j+1} from ${source.toUpperCase()}`,`Copy positions ${boundaries[j]+1}–${boundaries[j+1]} from parent ${source.toUpperCase()}.`,`Source pattern: ${boundaries.slice(1,j+2).map((_,k)=>k%2?'B':'A').join(' → ')}`,positions);
+  }
+ }
+ const missing=a.filter(x=>!child.includes(x)),duplicates=[...new Set(child.filter((x,i)=>child.indexOf(x)!==i))];
+ add('Child complete',missing.length?'The result is a sequence, but not a valid permutation. Multi-point crossover needs repair if unique genes are required.':'Every gene occurs exactly once. This child is a valid permutation of the parent genes.',`Child: ${child.join(' ')}${missing.length?'\nRepeated: '+duplicates.join(', ')+'\nMissing: '+missing.join(', '):'\nNo duplicates or missing genes.'}`,[],{done:true,valid:!missing.length});
+ return frames;
+}
+// Model functions above are independent of playback and rendering.
+if(typeof document!=='undefined'){
+const $=id=>document.getElementById(id);let method='pmx',index=0,timer=null,swapped=false,frames=[],a,b;
+function pause(){if(timer!==null)clearInterval(timer);timer=null;$('play').textContent='Play';}
+function row(label,values,source,frame){
+ const el=document.createElement('div');el.className='chromosome'+(label==='Position'?' indices':'');
+ const name=document.createElement('span');name.className='rowlabel';name.textContent=label;el.append(name);
+ values.forEach((value,i)=>{const gene=document.createElement('span');gene.textContent=value??'·';gene.className='gene';
+ if(label!=='Position'){
+  const origin=Array.isArray(source)?source[i]:source;if(origin)gene.classList.add(origin);
+  if(value===null)gene.classList.add('empty');
+  if((method==='pmx'||method==='ox')&&i>=Number($('start').value)-1&&i<Number($('end').value))gene.classList.add('selected');
+  if(method==='multi'&&$('cuts').value.split(',').map(Number).includes(i))gene.classList.add('cut');
+  if((label==='Child'&&frame.active.includes(i))||(label==='Parent B'&&frame.scan===i))gene.classList.add('active');
+  gene.setAttribute('aria-label',`${label}, position ${i+1}: ${value??'empty'}${origin?', from parent '+origin.toUpperCase():''}`);
+ }el.append(gene);});return el;
+}
+function render(){
+ const f=frames[index];$('board').replaceChildren(row('Position',a.map((_,i)=>i+1),null,f),row('Parent A',a,'a',f),row('Parent B',b,'b',f),row('Child',f.child,f.sources,f));
+ $('eventTitle').textContent=f.title;$('eventText').textContent=f.text;$('detail').textContent=f.detail;$('detail').hidden=!f.detail;
+ $('phase').textContent=f.done?'Result':`Decision ${index+1}`;$('status').textContent=f.done?(f.valid?'✓ Valid permutation':'Repeated and missing genes detected'):'';
+ $('timeline').max=frames.length-1;$('timeline').value=index;$('timeline').setAttribute('aria-valuetext',`${index+1} of ${frames.length}: ${f.title}`);
+ $('counter').textContent=`${index+1} / ${frames.length}`;$('back').disabled=index===0;$('next').disabled=index===frames.length-1;
+ if(index===frames.length-1)pause();
+}
+function rebuild(){
+ pause();const left=Math.max(1,Math.min(8,Math.trunc(Number($('start').value))||3));const right=Math.max(left+1,Math.min(9,Math.trunc(Number($('end').value))||6));$('start').value=left;$('end').value=right;$('end').min=left+1;
+ [a,b]=PRESETS[$('preset').value].map(x=>[...x]);if(swapped)[a,b]=[b,a];
+ frames=buildTrace(method,a,b,left-1,right,$('cuts').value.split(',').map(Number));index=0;render();
+}
+function choose(id){
+ method=id;const data=METHODS[id];for(const button of $('methods').children)button.setAttribute('aria-pressed',String(button.dataset.method===id));
+ for(const key of ['title','category','rule','notice','limitation','convention'])$(key).textContent=data[key];
+ $('procedure').replaceChildren(...data.steps.map(text=>{const li=document.createElement('li');li.textContent=text;return li;}));
+ $('startField').hidden=$('endField').hidden=id==='cx'||id==='multi';$('cutsField').hidden=id!=='multi';rebuild();
+}
+function move(delta){pause();index=Math.max(0,Math.min(frames.length-1,index+delta));render();}
+function play(){if(timer!==null){pause();return;}if(index===frames.length-1){index=0;render();}$('play').textContent='Pause';timer=setInterval(()=>{index++;render();},Number($('speed').value));}
+for(const [id,data]of Object.entries(METHODS)){const button=document.createElement('button');button.textContent=data.name;button.dataset.method=id;button.onclick=()=>choose(id);$('methods').append(button);}
+for(const id of ['preset','start','end','cuts'])$(id).addEventListener('change',rebuild);
+$('swap').onclick=()=>{swapped=!swapped;rebuild();};$('reset').onclick=()=>move(-frames.length);$('back').onclick=()=>move(-1);$('next').onclick=()=>move(1);$('play').onclick=play;
+$('timeline').oninput=()=>{pause();index=Number($('timeline').value);render();};$('speed').onchange=()=>{if(timer!==null){pause();play();}};
+document.addEventListener('keydown',event=>{if(event.target.closest('button,input,select,a,textarea')||event.ctrlKey||event.metaKey||event.altKey)return;if(event.key==='ArrowRight'){event.preventDefault();move(1);}if(event.key==='ArrowLeft'){event.preventDefault();move(-1);}if(event.key===' '){event.preventDefault();play();}});
+choose('pmx');
+}
+</script>
+</body>
+</html>
