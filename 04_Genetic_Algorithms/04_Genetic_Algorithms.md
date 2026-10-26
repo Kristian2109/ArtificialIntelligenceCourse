@@ -216,6 +216,10 @@ def truncation_select(population, scores, rng, count=1, fraction=0.4):
 - Suitable for bit strings and other sequences where mixing genes keeps the solution valid.
 - Both parents must have the same length.
 
+### Multi-point crossover
+
+- Suitable for equal-length bit strings and other sequences where mixing genes keeps the solution valid. Permutations require a repair step if duplicates occur.
+
 ### Uniform crossover
 
 > Independently choose each gene from either parent, usually with equal probability.
@@ -231,14 +235,30 @@ def truncation_select(population, scores, rng, count=1, fraction=0.4):
 - Preserves each gene exactly once.
 - Both parents must contain the same unique genes.
 
+### Partially mapped crossover (PMX)
+
+- Suitable for permutation problems, such as tours and task ordering, where each gene must appear exactly once. Both parents must contain the same unique genes.
+
 ### Other crossover choices
 
 | Method | How it combines parents | Suitable representation |
 |:--|:--|:--|
-| Two-point / multi-point | Alternate segments between parents at two or more cuts | Bit strings and ordinary sequences |
 | Arithmetic | Blend corresponding values using a weighted average | Real-valued vectors |
-| Partially mapped (PMX) | Exchange a segment and use a mapping to resolve duplicates | Permutations |
 | Cycle | Copy groups of positions linked by cycles between parents | Permutations |
+
+### Compare crossover methods
+
+The use cases below are guidance inferred from what each operator preserves, rather than a ranking of performance.
+
+| Method | Suitable representation | Appropriate when | What it preserves | Main tradeoff |
+|:--|:--|:--|:--|:--|
+| [One-point][crossover-bias] | Bit strings; fixed-length value sequences | Useful genes are grouped into contiguous blocks | A prefix and a suffix at their original positions | Can split useful blocks; inheritance depends on gene placement |
+| [Multi-point (including two-point)][crossover-bias] | Bit strings; fixed-length value sequences | Several parental blocks should contribute to a child | Contiguous segments at their original positions | More cuts allow more mixing but can break more useful groups |
+| [Uniform][crossover-bias] | Bit strings; fixed-length value sequences | Genes should mix independently of their distance along the chromosome | Each value comes from a parent at the same position | Can disrupt combinations of genes that work well together |
+| [Order (OX1)][permutation-crossover] | Permutations of the same unique genes | Relative order matters, as in task ordering or tour representations | One parent's segment and the other parent's cyclic order of remaining genes | Remaining genes can change positions; parental tour edges are not guaranteed |
+| [Partially mapped (PMX)][permutation-crossover] | Permutations of the same unique genes | Retaining a parental segment at fixed positions is useful | A segment at its original positions, plus other parental placements where conflicts allow | Mapping can change outside placements; relative order is not guaranteed |
+| [Cycle (CX)][permutation-crossover] | Permutations of the same unique genes | Gene-to-position assignments matter | Every gene occupies the position it had in one of the parents | Can reproduce a parent unchanged; does not specifically preserve order or tour edges |
+| [Arithmetic][arithmetic-crossover] | Real-valued vectors | Intermediate parameter values are meaningful | With weights in $[0,1]$, each blended value lies between the corresponding parental values | Repeated averaging can reduce diversity; unsuitable for categorical labels or permutations |
 
 ## Mutation
 
@@ -259,11 +279,6 @@ def truncation_select(population, scores, rng, count=1, fraction=0.4):
   - With rate $p$ and chromosome length $L$, the expected number of flips is $Lp$.
   - One mutation step may flip no bits, one bit, or several bits.
 
-```python
-def bit_mutation(chromosome, rng, rate=0.05):
-    return [1 - bit if rng.random() < rate else bit for bit in chromosome]
-```
-
 ### Swap mutation
 
 > Exchange two positions without adding or losing genes.
@@ -273,24 +288,28 @@ def bit_mutation(chromosome, rng, rate=0.05):
 - The rate is the probability of making one swap per individual.
   - A mutation step makes either no swap or one swap.
 
-```python
-def swap_mutation(chromosome, rng, rate=0.2):
-    child = chromosome.copy()
-    if len(child) >= 2 and rng.random() < rate:
-        i, j = rng.sample(range(len(child)), 2)
-        child[i], child[j] = child[j], child[i]
-    return child
-```
 
+### Insertion mutation
+
+- Randomly select a gene, remove it, and insert it at a different position.
+- Suitable for permutations because each gene still appears exactly once.
+
+### Inversion mutation
+
+> Reverse the order of genes within a selected segment.
+
+- Choose two different positions randomly and reverse the segment between them, including both endpoints.
+- Suitable for tours and other permutations: each gene still appears exactly once.
+- Example: reversing positions 2–4 changes `[A, B, C, D, E]` to `[A, D, C, B, E]`.
 
 ## Considerations
 
 - **Time complexity**: typically $O(G \cdot P \cdot (F + L))$ for $G$ generations, population size $P$, fitness evaluation cost $F$, and chromosome length $L$. Selection or sorting may add extra cost.
 - **Space complexity**: typically $O(P \cdot L)$ to store the populations, plus any recorded history.
-- **Guarantees**: a finite run does not guarantee finding a valid solution or the global optimum.
-- **Diversity**: overly similar individuals can cause premature convergence. Adjust mutation, selection pressure, or population size.
+- **Guarantees**: no guarantees for a valid solution or the global optimum.
 - **Stopping**: use a generation limit, target fitness, or lack of improvement.
-- **Reliability**: compare several random seeds with the same evaluation budget.
+- **Problem specific**: always select methods according to the problem in front and **combine different methods**
+  - **Elitism** is very often combined with another selection technique because it preserves the best inviduals so degradation is prevented while using the other technique to increase the variability
 
 ## Travelling salesman problem
 
