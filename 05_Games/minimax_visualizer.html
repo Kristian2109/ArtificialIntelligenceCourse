@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Explore Minimax and Alpha-Beta game trees, including a complete Tic-Tac-Toe search tree and a playable Minimax game.">
+<title>Games · Minimax Explorer</title>
+<style>
+:root{color-scheme:light;--bg:#f4f5f0;--paper:#fff;--ink:#203531;--muted:#586c66;--line:#dae3dc;--max:#087969;--max-bg:#e8f5ef;--min:#7051aa;--min-bg:#f1ecfa;--amber:#ab6607;--amber-bg:#fff5da;--red:#ac4854;--red-bg:#fff0f1;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 system-ui,-apple-system,sans-serif}button,select,input{font:inherit}button,select{cursor:pointer}button{background:white;border:1px solid #bdcfc3;border-radius:8px;padding:9px 13px;color:var(--ink);font-weight:650}button:hover:not(:disabled){background:#eef4ef}button:disabled{opacity:.4;cursor:default}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:3px solid #347eb8;outline-offset:3px}button.primary{background:var(--max);color:white;border-color:var(--max)}button[aria-pressed=true]{background:var(--max-bg);border-color:var(--max);color:var(--max)}a{color:var(--max)}.app{max-width:1700px;margin:auto;padding:24px 30px}header{display:flex;align-items:center;justify-content:space-between;gap:15px;padding-bottom:18px;border-bottom:1px solid var(--line)}.brand{font-size:17px;font-weight:750}.brand b{display:inline-block;background:var(--max);color:white;border-radius:8px;padding:5px 9px;margin-right:10px}.eyebrow{text-transform:uppercase;letter-spacing:1.5px;font-size:11px;font-weight:750;color:var(--max)}.intro{display:flex;justify-content:space-between;gap:30px;align-items:center;margin:26px 0 22px}h1{font-size:clamp(30px,3.8vw,46px);letter-spacing:-1.7px;line-height:1.12;margin:7px 0 12px}.intro p{color:var(--muted);max-width:760px;margin:0}.rule{font-family:var(--mono);font-size:17px;white-space:nowrap;padding:14px 20px;border-left:3px solid var(--max);background:var(--max-bg);border-radius:0 8px 8px 0}.card{background:var(--paper);border:1px solid var(--line);border-radius:13px;min-width:0;overflow:hidden}.setup{display:flex;align-items:flex-end;gap:22px;padding:16px 19px;flex-wrap:wrap}.field{display:flex;flex-direction:column;gap:5px}.field label,.field-label{font-size:11px;color:var(--muted);font-weight:750;letter-spacing:.6px;text-transform:uppercase}select{background:white;border:1px solid #bdcfc3;border-radius:8px;padding:9px;min-height:42px;color:var(--ink)}.segmented{display:flex;gap:5px}.setup .hint{margin-left:auto;max-width:340px;font-size:12px;color:var(--muted)}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:15px 0}.metric{padding:13px 18px}.metric .label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}.metric strong{font:750 24px/1.45 var(--mono)}.metric small{font-size:12px;color:var(--muted);margin-left:6px}.controls{position:sticky;top:8px;z-index:5;box-shadow:0 4px 16px #20353108;display:flex;align-items:center;gap:8px;padding:12px 15px;flex-wrap:wrap;margin-bottom:14px}.controls .seek{flex:1;min-width:150px;accent-color:var(--max)}.counter{font:12px var(--mono);color:var(--muted);min-width:96px;text-align:center}.controls select{padding:6px;min-height:37px}.controls label{font-size:12px;color:var(--muted)}.search-stage{display:grid;grid-template-columns:1fr}.panel-head{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line)}.panel-head h2{font-size:19px;letter-spacing:-.4px;margin:0}.panel-head p{font-size:12px;color:var(--muted);margin:2px 0 0}.badge{border:1px solid var(--line);border-radius:20px;padding:4px 10px;white-space:nowrap;font-size:11px;font-weight:700;background:#f6f8f4}.badge.cut{color:var(--red);background:var(--red-bg);border-color:#e7bdc2}.badge.done{color:var(--max);background:var(--max-bg);border-color:#b7d9c9}.board{overflow:auto;padding:8px 6px 0;background:linear-gradient(#fff,#fbfcf8);scrollbar-width:thin}.tree{display:block;width:100%;min-width:620px;height:auto}.tree text{font-family:var(--mono);pointer-events:none}.tree .node{cursor:pointer;outline:none}.tree .node:focus-visible .shape{stroke:#347eb8;stroke-width:4}.tree .edge{stroke:#cbd5ce;stroke-width:1.8;fill:none}.tree .edge.path{stroke:var(--amber);stroke-width:3}.tree .edge.pruned{stroke:#cba6ab;stroke-dasharray:5 5}.tree .edge.choice{stroke:var(--max);stroke-width:4}.tree .shape{stroke-width:1.6;fill:#fff;stroke:#c7d3cb}.tree .max .shape{fill:var(--max-bg);stroke:#6ba99a}.tree .min .shape{fill:var(--min-bg);stroke:#a496c5}.tree .resolved .shape{stroke-width:2.5}.tree .active .shape{stroke:var(--amber);stroke-width:3.5;fill:var(--amber-bg)}.tree .selected .shape{stroke:#347eb8;stroke-width:3.5}.tree .pruned .shape{fill:#f9ecee;stroke:#c8939c;stroke-dasharray:4 3}.tree .pruned{opacity:.62}.tree .n-id{font-size:11px;fill:var(--muted)}.tree .n-value{font-size:18px;font-weight:750;fill:var(--ink)}.tree .bounds{font-size:10px;fill:var(--muted)}.tree .depth{font:11px system-ui;fill:var(--muted)}.tree .cross{stroke:var(--red);stroke-width:2}.legend{display:flex;gap:13px;flex-wrap:wrap;padding:9px 18px 12px;color:var(--muted);font-size:11px;border-bottom:1px solid var(--line)}.dot{width:10px;height:10px;border:1px solid;display:inline-block;margin-right:4px;border-radius:3px}.dot.max{background:var(--max-bg);border-color:var(--max)}.dot.min{background:var(--min-bg);border-color:var(--min)}.dot.active{background:var(--amber-bg);border-color:var(--amber)}.dot.pruned{background:var(--red-bg);border-color:var(--red);border-style:dashed}.event{padding:15px 18px 12px;min-height:125px}.event .phase{font-size:10px;font-weight:750;letter-spacing:1px;text-transform:uppercase;color:var(--amber)}.event h3{font-size:16px;margin:3px 0 5px}.event p{margin:0;color:var(--muted);font-size:13px;min-height:42px}.vars{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;padding:0 18px 13px}.var{background:#f4f7f2;border:1px solid var(--line);border-radius:7px;padding:7px 9px;min-width:0}.var.changed{background:var(--amber-bg);border-color:#ddba77}.var span{display:block;font-size:10px;color:var(--muted);letter-spacing:.4px}.var strong{font:650 16px var(--mono);overflow-wrap:anywhere}.formula{padding:10px 13px;margin:0 18px 14px;background:#f4f7f2;border-left:3px solid #c2d2c6;border-radius:0 6px 6px 0;font:12px/1.65 var(--mono);min-height:44px;overflow-wrap:anywhere}.formula.cut{background:var(--red-bg);border-color:var(--red);color:#913c47}.stack{padding:0 18px 16px}.stack-head{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:var(--muted);margin-bottom:6px}.stack table{width:100%;border-collapse:collapse;font:11px/1.6 var(--mono);text-align:right}.stack th{font-size:10px;color:var(--muted);font-weight:500;border-bottom:1px solid var(--line)}.stack td{padding:3px 6px;border-bottom:1px solid #edf0eb}.stack th:first-child,.stack td:first-child{text-align:left}.stack tr.top{background:var(--amber-bg)}.stack tbody{height:118px;vertical-align:top}.below{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;margin-top:15px}.note{padding:18px}.note h3{font-size:14px;margin:0 0 7px}.note p{font-size:12px;color:var(--muted);margin:7px 0}.note .inspect-value{font:13px/1.8 var(--mono);color:var(--ink)}.note ul{padding-left:17px;margin:6px 0;font-size:12px;color:var(--muted)}.log{margin-top:15px}.log summary{cursor:pointer;padding:12px 18px;font-size:12px;font-weight:700}.log-list{padding:0 18px 14px;display:grid;grid-template-columns:1fr 1fr;gap:18px}.log-list ol{margin:0;padding-left:25px;max-height:200px;overflow:auto;font-size:12px;color:var(--muted)}.log-list button{padding:2px 5px;margin:2px 0;font-size:11px;text-align:left;border-color:transparent;font-weight:500}.log-list button.current{background:var(--amber-bg);border-color:#ddba77}.log-list button.cut{color:var(--red)}footer{display:flex;justify-content:space-between;gap:15px;font-size:11px;color:var(--muted);border-top:1px solid var(--line);margin-top:24px;padding:15px 0}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}[hidden]{display:none!important}@media(min-width:1300px){.event{min-height:132px}}@media(max-width:1050px){.intro .rule{display:none}.below{grid-template-columns:1fr 1fr}.below .note:last-child{grid-column:1/-1}.setup .hint{margin-left:0;max-width:none}.tree{max-height:560px}.summary{gap:8px}.metric{padding:10px 12px}}@media(max-width:620px){.app{padding:16px 12px}.intro{margin:20px 0}.setup{gap:14px}.field{width:100%}.segmented button{flex:1}.summary{grid-template-columns:1fr 1fr}.controls .seek{order:10;flex-basis:100%}.controls{gap:6px}.controls button{padding:8px 10px}.below{grid-template-columns:1fr}.below .note:last-child{grid-column:auto}.vars{gap:4px;padding-left:12px;padding-right:12px}.var{padding:6px}.var strong{font-size:14px}.log-list{grid-template-columns:1fr}footer{flex-direction:column}header a{font-size:12px}.panel-head{padding:12px}.event{padding:13px}.tree{min-width:650px}}
+
+.view-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}.view-tabs button{padding:10px 20px}.search-body{display:grid;grid-template-columns:minmax(620px,1fr) 340px;min-width:980px}.search-figure{min-width:0;align-self:start}.search-details{border-left:1px solid var(--line);padding-top:8px}.tree{max-width:1050px;margin:auto}.search-details .vars{padding:0 12px 12px}.search-details .formula{margin:0 12px 14px}.log-list{grid-template-columns:1fr}
+.view-tabs button[aria-pressed=true]{background:var(--max);color:white}
+
+
+.visualization-viewport{overflow-x:auto;scrollbar-width:thin}.game-viewport{margin-top:16px;border-radius:13px}.sidebar-heading{margin:0;padding:14px 16px 10px;font-size:13px;color:var(--muted);letter-spacing:.5px}.search-details .vars,.game-vars{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.search-details .var:last-child:nth-child(odd){grid-column:1/-1}.search-details .var,.game-vars .var{padding:10px 12px}.search-details .var strong,.game-vars .var strong{font-size:19px}.search-details .var span,.game-vars .var span{font-size:11px}.node-inspector{border-top:1px solid var(--line);margin-top:8px}.below{grid-template-columns:1fr 1fr}.tree .depth{font:12px system-ui}.tree .level-role{font:800 21px system-ui;letter-spacing:.4px}.tree .leaf-label{font-size:15px}.tree .max-label{fill:var(--max)}.tree .min-label{fill:var(--min)}.role-label{font-size:15px;font-weight:800}.max-label{color:var(--max)}.min-label{color:var(--min)}.rule{font-size:20px}@media(max-width:620px){.below{grid-template-columns:1fr}.below .note:last-child{grid-column:auto}}
+
+.muted{color:var(--muted);font-size:12px}.ttt-search-body{grid-template-columns:minmax(880px,1fr) 340px;min-width:1240px}.ttt-tree{max-width:none!important;max-height:none!important}.ttt-tree .shape{fill:#f8fbf7}.ttt-tree .min .shape{fill:#f8f5fd}.ttt-tree .board-square{fill:white;stroke:#d7e2d9;stroke-width:.7}.ttt-tree .last-move{fill:#fff0c8;stroke:#c79944}.ttt-tree .winning-square{fill:#def1e4;stroke:#7cac88}.ttt-tree .board-role{font:750 10px system-ui}.ttt-tree .terminal-label{fill:var(--muted)}.ttt-tree .board-mark{font:800 20px var(--mono)}.ttt-tree .x-mark{fill:var(--max)}.ttt-tree .o-mark{fill:var(--min)}.ttt-tree .board-value{font:750 16px var(--mono);fill:var(--ink)}.ttt-tree .move-label{font:11px var(--mono);fill:var(--muted)}.root-option{display:flex;justify-content:space-between;gap:12px;margin:0 14px 8px;padding:8px 12px;background:#f3f6f0;border:1px solid var(--line);border-radius:7px;font:13px var(--mono)}.root-option.best{background:var(--max-bg);border-color:var(--max);color:var(--max)}.root-choice{padding:0 16px 14px;color:var(--max);font-size:12px}.search-details .var strong{font-size:17px}
+.game-layout{display:grid;grid-template-columns:minmax(340px,1fr) 360px;min-width:720px;gap:16px}.game-play,.game-analysis{min-width:0}.game-board{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;max-width:380px;margin:26px auto;padding:0 16px}.game-cell{aspect-ratio:1;position:relative;border-radius:13px;border:1px solid #b8cec1;background:#f8faf6;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;padding:8px}.game-cell:disabled{opacity:1}.game-cell .mark{font:750 clamp(33px,4vw,61px)/1 var(--mono)}.x-mark,.game-cell.x .mark{color:var(--max)}.o-mark,.game-cell.o .mark{color:var(--min)}.game-cell .cell-number{position:absolute;top:5px;left:9px;font:10px var(--mono);color:#71847a}.game-cell .cell-score{position:absolute;bottom:6px;font:650 11px var(--mono);color:var(--muted)}.game-cell.preview{border:2px solid var(--amber);background:var(--amber-bg)}.game-cell.preview .mark{opacity:.35}.game-cell.winner{background:var(--max-bg);border:2px solid var(--max)}.game-cell.recommended:after{content:'best';position:absolute;right:5px;top:5px;color:var(--max);font-size:9px;text-transform:uppercase;letter-spacing:.4px}.game-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:0 16px}.game-caption{font-size:12px;line-height:1.6;color:var(--muted);padding:0 20px;text-align:center;min-height:20px}.game-score-key{border-top:1px solid var(--line);padding:15px 16px;display:flex;justify-content:center;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--muted)}.game-score-key b{font:700 13px var(--mono)}.game-decision{padding:18px 20px 8px;min-height:132px}.game-decision h3{font-size:20px;letter-spacing:-.5px;margin:6px 0}.game-decision p{font-size:13px;color:var(--muted);margin:5px 0}.game-vars{grid-template-columns:repeat(4,1fr)}.candidate-head{padding:0 20px 9px;display:flex;justify-content:space-between;gap:10px;font-size:12px}.candidate-head span{font-size:11px;color:var(--muted)}.candidate-list{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:0 18px}.candidate{font:12px/1.5 var(--mono);text-align:left;display:flex;justify-content:space-between;gap:4px;padding:9px}.candidate.active{background:var(--amber-bg);border-color:var(--amber)}.candidate.best{border-color:var(--max)}.candidate strong{font-weight:750}.game-prediction{background:var(--max-bg);color:var(--max);font-size:12px;padding:12px 15px;margin:15px 18px;border-radius:8px}.game-trail{margin-top:16px}.game-history{display:flex;gap:12px;overflow:auto;padding:16px 20px;min-height:133px}.history-position{flex:0 0 88px;text-align:center;font-size:10px;color:var(--muted)}.mini-board{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:5px;border:1px solid var(--line);border-radius:7px;background:#f9fbf7;margin-top:5px}.mini-board span{display:grid;place-items:center;aspect-ratio:1;background:white;font:650 15px var(--mono);border:1px solid #e7ece6}.mini-board span.last{background:var(--amber-bg)}.game-note{margin-top:16px}.game-note p{max-width:1100px}.view-tabs button[aria-pressed=true]{background:var(--max);color:white}@media(max-width:1000px){.game-board{margin:22px auto}.game-actions button{font-size:12px;padding:8px}}@media(max-width:750px){.game-board{max-width:360px}.game-cell .mark{font-size:52px}.view-tabs{gap:6px}.view-tabs button{padding:9px 12px;font-size:12px}.candidate-list{grid-template-columns:repeat(3,minmax(0,1fr))}.candidate{font-size:11px;padding:8px}.game-score-key{gap:9px}.game-analysis .panel-head p{font-size:11px}.game-vars{gap:5px}}
+
+.game-viewport{margin-top:16px;border-radius:13px}.game-vars{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.game-vars .var{padding:10px 12px}.game-vars .var strong{font-size:19px}#gameTurnBadge{font-size:16px;padding:6px 12px}.game-analysis .panel-head h2{font-size:17px}.game-analysis .candidate-head{flex-wrap:wrap}.game-analysis .game-caption{font-size:11px}.game-analysis .game-decision{min-height:0}.game-analysis .game-decision h3{font-size:18px}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="brand"><b>05</b> Games / Search lab</div><a href="Games.md">Lecture notes ↗</a></header>
+<main>
+<div class="intro"><div><div class="eyebrow">From game trees to game moves.</div><h1 id="pageTitle">Minimax, branch by branch.</h1><p id="pageLead">Watch values travel up a game tree. Then see how <strong>Alpha-Beta skips work</strong> while preserving the same optimal root value.</p></div><div class="rule" id="pageRule">prune when <strong>α ≥ β</strong></div></div>
+<nav class="view-tabs" aria-label="Visualization"><button data-view="plain" aria-pressed="true">Minimax tree</button><button data-view="ab" aria-pressed="false">Alpha-Beta tree</button><button data-view="ttt" aria-pressed="false">Tic-Tac-Toe tree</button><button data-view="game" aria-pressed="false">Play Tic-Tac-Toe</button></nav>
+<div id="treeView">
+<section id="treeSettings" class="card setup" aria-label="Example settings">
+<div class="field"><label for="example">Game tree</label><select id="example"><option value="four">4 levels · first cutoffs</option><option value="five">5 levels · deeper pruning</option></select></div>
+<div class="field"><label for="order">Move order</label><select id="order"><option value="natural">Teaching order · left to right</option><option value="ideal">Best first · oracle ordering</option><option value="reverse">Reversed · right to left</option></select></div>
+<div class="hint" id="exampleHint"></div>
+</section>
+<section id="tttSetup" class="card setup" hidden aria-label="Tic-Tac-Toe starting position"><div><strong>X to move · three empty squares</strong><br><span class="muted">A complete sample tree: X maximizes, O minimizes. Stop each branch as soon as a player wins or the board is full.</span></div><div class="hint"><strong>X win: +1 · Draw: 0 · O win: −1</strong><br>Move labels use (row, column). Amber cells mark the last move.</div></section>
+<div class="summary" aria-label="Current search statistics">
+<div class="card metric"><span class="label">Guaranteed root value</span><strong id="rootValue"></strong><small>full search</small></div>
+<div class="card metric"><span class="label">Nodes entered</span><strong id="enteredValue"></strong><small id="enteredDetail"></small></div>
+<div class="card metric"><span class="label">Leaves evaluated</span><strong id="leavesValue"></strong><small>so far</small></div>
+<div class="card metric"><span class="label">Nodes pruned</span><strong id="prunedValue"></strong><small>so far</small></div>
+</div>
+<div class="card controls" role="group" aria-label="Playback controls">
+<button id="reset" title="Return to the beginning">Reset</button><button id="back" aria-label="Previous step">← Back</button><button id="play" class="primary">▶ Play</button><button id="next">Next →</button><button id="cutoff" title="Jump to the next Alpha-Beta cutoff">Next cutoff ↗</button><button id="finish">Finish</button>
+<input class="seek" id="timeline" type="range" min="0" value="0" aria-label="Execution step"><span class="counter" id="counter"></span><label for="speed">Pace</label><select id="speed"><option value="1400">Slow</option><option value="800" selected>Normal</option><option value="300">Fast</option></select>
+</div>
+<div class="search-stage" id="searchStage"></div>
+<div class="below">
+<section class="card note" id="treeReading"><h3>Reading the tree</h3><p><strong>Root = level 1, depth 0.</strong> MAX and MIN alternate. Leaf utilities are given from MAX's perspective; seeing a printed utility does not mean the algorithm evaluated it.</p><p><strong>?</strong> = not entered · <strong>…</strong> = exploring · <strong>× / dashed</strong> = pruned. <strong>≥ / ≤</strong> marks a returned bound, rather than an exact value.</p><p>The green path at completion is one optimal line of play. Ties keep the first move searched.</p></section>
+<section class="note node-inspector" id="nodeInspector"><h3 id="inspectTitle">Inspect any node</h3><p id="inspectText">Click a node in the tree to see its state, current value, and bounds.</p><div class="inspect-value" id="inspectValue"></div><p id="inspectHint">The call stack shows suspended parent calls and the active call at the bottom.</p></section>
+<section class="card note" id="treeNotice"><h3>What to notice</h3><ul><li><strong>best</strong> summarizes children searched so far; it starts at −∞ for MAX and +∞ for MIN.</li><li><strong>α</strong> only increases; <strong>β</strong> only decreases within a call. Children inherit the parent's current window.</li><li>A child returns a score; the parent updates best and then its bound.</li><li>Best-first uses precomputed values only to demonstrate ordering. Real searches use heuristics.</li></ul><p id="syncNote">Step through the active algorithm one event at a time.</p></section>
+</div>
+<details class="card log"><summary>Execution history · click an event to jump</summary><div class="log-list" id="history"></div></details>
+</div>
+<section id="gameView" hidden aria-label="Tic-Tac-Toe with Minimax">
+<div class="card setup">
+<div class="field"><label for="gameMode">Players</label><select id="gameMode"><option value="X">You are X · Minimax is O</option><option value="O">You are O · Minimax is X</option><option value="watch">Watch Minimax vs Minimax</option></select></div>
+<div class="field"><label for="gamePreset">Starting position</label><select id="gamePreset"><option value="empty">Empty board</option><option value="win">Find the winning move · X to play</option><option value="block">Stop the opponent · O to play</option><option value="fork">Avoid a fork · O to play</option></select></div>
+<button id="newGame">New game</button><button id="undoGame">Undo move</button>
+<div class="hint">X maximizes · O minimizes · All scores are from X's perspective.</div>
+</div>
+<div class="visualization-viewport game-viewport" tabindex="0" role="region" aria-label="Tic-Tac-Toe game and variable sidebar; scroll horizontally on narrow screens"><div class="game-layout">
+<section class="card game-play">
+<div class="panel-head"><div><h2 id="gameStatus">X to move</h2><p id="gameHint"></p></div><span class="badge" id="gameTurnBadge">MAX</span></div>
+<div class="game-board" id="gameBoard" role="group" aria-label="Tic-Tac-Toe board"></div>
+<div class="game-actions"><button id="analyzeMove">Analyze next candidate</button><button id="bestMove" class="primary">Play best move</button><button id="autoGame">▶ Auto-play</button></div>
+<p class="game-caption" id="gameCaption" aria-live="polite"></p>
+<div class="game-score-key"><span><b class="x-mark">+1</b> X can force a win</span><span><b>0</b> Draw with optimal play</span><span><b class="o-mark">−1</b> O can force a win</span></div>
+</section>
+<aside class="card game-analysis" aria-label="Live game variables">
+<div class="panel-head"><div><h2>The next move, explained</h2><p>Evaluate every legal move. Choose max for X, min for O.</p></div></div>
+<h3 class="sidebar-heading">Live variables</h3><div class="vars game-vars" id="gameVars"></div>
+<div class="game-decision" aria-live="polite" aria-atomic="true"><div class="eyebrow" id="gamePhase"></div><h3 id="gameDecision"></h3><p id="gameExplanation"></p></div>
+<div class="formula" id="gameFormula"></div>
+<div class="candidate-head"><strong>Legal moves</strong><span>row, column · returned utility</span></div>
+<div class="candidate-list" id="gameCandidates"></div>
+<p class="game-caption">Select a candidate to inspect it. The faint mark on the board previews that move; it has not been played yet.</p>
+<div class="game-prediction" id="gamePrediction"></div>
+</aside>
+</div></div>
+<section class="card game-trail"><div class="panel-head"><div><h2>Moves played</h2><p>Follow the actual game from the chosen starting position.</p></div><span id="gameMoveCount" class="badge"></span></div><div class="game-history" id="gameHistory"></div></section>
+<div class="card note game-note"><h3>How Minimax plays</h3><p>For each candidate, search to a win, loss, or draw, alternating X's maximum and O's minimum. Scores appear as candidates are analyzed. Equal scores keep the first move in row-major order. <strong>No Alpha-Beta pruning is used in this game.</strong></p></div>
+</section>
+</main>
+<footer><span>Self-contained · Works offline · No libraries or external assets</span><span id="keyboardHelp">← / → step · Space play / pause · Home reset · End finish</span></footer>
+<noscript><p>Enable JavaScript to explore the game trees.</p></noscript>
+</div>
+<script>
+'use strict';
+// Every displayed state is a snapshot from the actual recursive search.
+const PRESETS = {
+  four: { levels: 4, leaves: [3, 5, 6, 9, 1, 2, 0, -1], hint: '4 levels = 3 moves deep · 15 nodes · 8 leaves. Start here to see why siblings can be skipped.' },
+  five: { levels: 5, leaves: [4, 5, 2, 3, 8, 9, 6, 7, 0, 1, -2, -1, 7, 8, 9, 10], hint: '5 levels = 4 moves deep · 31 nodes · 16 leaves. Watch cutoffs at both MAX and MIN nodes.' }
+};
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+const fmt = value => value === Infinity ? '+∞' : value === -Infinity ? '−∞' : value === null || value === undefined ? '—' : String(value);
+const copy = value => structuredClone(value);
+let tree, traces, step = 0, view = 'plain', timer = null, inspected = null;
+
+function buildTree(preset, order) {
+  const nodes = [], map = {}, perLevel = [];
+  let leaf = 0;
+  function build(depth, parent = null) {
+    const index = nodes.length;
+    const id = 'N' + index;
+    const node = { id, depth, parent, role: depth === preset.levels - 1 ? 'LEAF' : depth % 2 === 0 ? 'MAX' : 'MIN', children: [], utility: null };
+    nodes.push(node); map[id] = node;
+    (perLevel[depth] ||= []).push(node);
+    if (node.role === 'LEAF') node.utility = preset.leaves[leaf++];
+    else node.children = [build(depth + 1, id), build(depth + 1, id)];
+    node.exact = node.role === 'LEAF' ? node.utility : (node.role === 'MAX' ? Math.max : Math.min)(...node.children.map(c => c.exact));
+    return node;
+  }
+  const root = build(0);
+  function reorder(node) {
+    if (order === 'reverse') node.children.reverse();
+    if (order === 'ideal') node.children.sort((a,b) => node.role === 'MAX' ? b.exact - a.exact : a.exact - b.exact);
+    node.children.forEach(reorder);
+  }
+  reorder(root);
+  // Position siblings in traversal order so the search always reads left to right.
+  let position = 0;
+  const leafCount = preset.leaves.length;
+  function layout(node) {
+    node.x = node.role === 'LEAF' ? 100 + position++ * 820 / (leafCount - 1) : 0;
+    node.children.forEach(layout);
+    if (node.children.length) node.x = node.children.reduce((sum,c) => sum + c.x,0) / node.children.length;
+    node.y = 56 + node.depth * 122;
+  }
+  layout(root);
+  return {root,nodes,map,perLevel,levels:preset.levels,height:105 + (preset.levels - 1) * 122};
+}
+
+function makeTrace(tree, pruning) {
+  const events = [], stack = [], states = {};
+  let visited = 0, evaluated = 0, cuts = 0;
+  for (const n of tree.nodes) states[n.id] = { status:'unseen', value:null, best:null, alpha:null, beta:null, bound:'exact', chosen:null, processed:0 };
+  function emit(kind, node, title, text, formula, changed = [], extra = {}) {
+    events.push(copy({ kind, node:node?.id ?? null, title, text, formula, changed, states, stack, visited, evaluated, cuts, ...extra }));
+  }
+  emit('ready', null, 'Ready to search', pruning ? 'Start with α = −∞ and β = +∞. Bounds are local to each recursive call.' : 'Visit every branch, then back up the best child value at each node.', pruning ? 'search(root, α = −∞, β = +∞)' : 'search(root)', []);
+  function markPruned(node) {
+    states[node.id].status = 'pruned';
+    node.children.forEach(markPruned);
+  }
+  function search(node, alpha, beta) {
+    const alphaIn = alpha, betaIn = beta;
+    const state = states[node.id];
+    const frame = { id:node.id, role:node.role, best:node.role === 'MAX' ? -Infinity : node.role === 'MIN' ? Infinity : null, alpha:pruning ? alpha : null, beta:pruning ? beta : null, child:null, returned:null };
+    stack.push(frame); visited++;
+    Object.assign(state, { status:'open', alpha:frame.alpha, beta:frame.beta, best:frame.best });
+    emit('enter', node, `Enter ${node.id} · ${node.role}`, node.role === 'LEAF' ? 'This is a terminal state. Read its utility next.' : `${node.role} searches its children from left to right. Initialize best to ${fmt(frame.best)}.`, node.role === 'LEAF' ? 'terminal state → evaluate' : `best ← ${fmt(frame.best)}${pruning ? `; window [${fmt(alpha)}, ${fmt(beta)}]` : ''}`, ['node','best','alpha','beta']);
+    if (node.role === 'LEAF') {
+      evaluated++;
+      state.value = state.best = frame.best = node.utility; state.status = 'done';
+      emit('evaluate',node,`Evaluate ${node.id}: ${fmt(node.utility)}`,'The leaf utility is always from MAX’s perspective. Return it to the parent.',`return ${fmt(node.utility)}`,['best','returned']);
+      stack.pop();
+      return node.utility;
+    }
+    let cutoff = false;
+    for (let i = 0; i < node.children.length; i++) {
+      const child = node.children[i];
+      frame.child = child.id; frame.returned = null;
+      emit('descend',node,`${node.id} → ${child.id}`,`Suspend ${node.id} while its child is searched.${pruning ? ' Pass down the current α and β.' : ''}`,pruning ? `search(${child.id}, ${fmt(alpha)}, ${fmt(beta)})` : `search(${child.id})`,['child']);
+      const score = search(child, alpha, beta);
+      frame.returned = score;
+      const old = frame.best;
+      if ((node.role === 'MAX' && score > old) || (node.role === 'MIN' && score < old)) state.chosen = child.id;
+      frame.best = node.role === 'MAX' ? Math.max(old, score) : Math.min(old, score);
+      state.best = frame.best; state.processed++;
+      emit('update',node,`${child.id} returns ${fmt(score)} to ${node.id}`,`${node.role} ${frame.best === old ? 'keeps' : 'improves'} its best value. ${state.processed} of ${node.children.length} children processed.`, `best ← ${node.role.toLowerCase()}(${fmt(old)}, ${fmt(score)}) = ${fmt(frame.best)}`,['best','returned']);
+      if (pruning) {
+        const oldBound = node.role === 'MAX' ? alpha : beta;
+        if (node.role === 'MAX') alpha = Math.max(alpha, frame.best);
+        else beta = Math.min(beta, frame.best);
+        Object.assign(frame, {alpha,beta}); Object.assign(state, {alpha,beta});
+        const symbol = node.role === 'MAX' ? 'α' : 'β';
+        const newBound = node.role === 'MAX' ? alpha : beta;
+        emit('bound',node,`${node.id}: update ${symbol}`,`${symbol} ${oldBound === newBound ? 'stays at' : 'changes to'} ${fmt(newBound)}. ${alpha >= beta ? 'The search window is closed.' : 'The window is still open.'}`,`${symbol} ← ${node.role.toLowerCase()}(${fmt(oldBound)}, ${fmt(frame.best)}) = ${fmt(newBound)}; α ${alpha >= beta ? '≥' : '<'} β`,[node.role === 'MAX' ? 'alpha' : 'beta']);
+        if (alpha >= beta && i < node.children.length - 1) {
+          const skipped = node.children.slice(i + 1);
+          skipped.forEach(markPruned); cuts++; cutoff = true;
+          emit('cutoff',node,`Prune ${skipped.map(n=>n.id).join(', ')} and descendants`,node.role === 'MIN' ? `MIN can hold this branch to at most ${fmt(frame.best)}. A MAX ancestor already has an alternative worth at least ${fmt(alpha)}.` : `MAX can secure at least ${fmt(frame.best)} here. A MIN ancestor already has an alternative worth at most ${fmt(beta)}.`,`${fmt(alpha)} ≥ ${fmt(beta)} → stop searching ${node.id}'s remaining children`,['alpha','beta'],{skipped:skipped.map(n=>n.id)});
+          break;
+        }
+      }
+    }
+    state.status = 'done'; state.value = frame.best;
+    state.bound = !pruning ? 'exact' : frame.best <= alphaIn ? 'upper' : frame.best >= betaIn ? 'lower' : 'exact';
+    const qualifier = state.bound === 'upper' ? 'an upper bound' : state.bound === 'lower' ? 'a lower bound' : 'an exact value';
+    emit('return',node,`Return ${fmt(frame.best)} from ${node.id}`,`${pruning ? `This is ${qualifier}${cutoff ? '; some children were skipped' : ''}.` : 'All children have been evaluated.'} ${node.parent ? 'Resume the parent call.' : 'The root decision is complete.'}`,`return ${fmt(frame.best)}${state.bound === 'upper' ? ' (true value ≤ this score)' : state.bound === 'lower' ? ' (true value ≥ this score)' : ''}`,['returned']);
+    stack.pop();
+    return frame.best;
+  }
+  const value = search(tree.root,-Infinity,Infinity);
+  emit('finish',tree.root,`Root value = ${fmt(value)}`,`${visited} nodes entered, ${evaluated} leaves evaluated${pruning ? `, ${cuts} cutoff events` : ''}. The green path shows one optimal line of play.`,`MAX chooses ${states[tree.root.id].chosen}; guaranteed utility = ${fmt(value)}`,['best']);
+  return events;
+}
+
+function element(tag, className, text) {
+  const e = document.createElement(tag);
+  if (className) e.className = className;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function svg(tag, attrs = {}, text) {
+  const e = document.createElementNS(NS,tag);
+  for (const [k,v] of Object.entries(attrs)) e.setAttribute(k,v);
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function frameAt(key) { return traces[key][Math.min(step,traces[key].length-1)]; }
+function activeKeys() { return [view]; }
+function maxStep() { return Math.max(...activeKeys().map(k=>traces[k].length)) - 1; }
+function boundValue(state) {
+  if (state.value === null) return state.status === 'open' ? '…' : '?';
+  return (state.bound === 'lower' ? '≥' : state.bound === 'upper' ? '≤' : '') + fmt(state.value);
+}
+function setupPanels() {
+  $('searchStage').replaceChildren();
+  for (const [key,title,subtitle] of [['plain','Minimax','Explore every branch. Back up every value.'],['ab','Minimax + Alpha-Beta','Carry a window. Skip branches that cannot help.'],['ttt','Tic-Tac-Toe · X maximizes','Each node is a board; each edge is one legal move.']]) {
+    const panel = element('section','card algorithm'); panel.id = key+'Panel'; panel.setAttribute('aria-label',title);
+    panel.innerHTML = `<div class="panel-head"><div><h2>${title}</h2><p>${subtitle}</p></div><span class="badge" id="${key}Badge"></span></div><div class="visualization-viewport" tabindex="0" role="region" aria-label="Search tree and variable sidebar; scroll horizontally on narrow screens"><div class="search-body"><div class="search-figure"><div class="board" id="${key}Board"><svg class="tree" id="${key}Tree" role="group" aria-label="${title} search tree"></svg></div><div class="legend"><span class="role-label max-label"><i class="dot max"></i>MAX</span><span class="role-label min-label"><i class="dot min"></i>MIN</span><span><i class="dot active"></i>Active</span><span><i class="dot pruned"></i>Pruned</span><span id="${key}Counts"></span></div></div><aside class="search-details" aria-label="Live search variables"><h3 class="sidebar-heading">Live variables</h3><div class="vars" id="${key}Vars"></div><div class="event" aria-live="polite" aria-atomic="true"><div class="phase" id="${key}Phase"></div><h3 id="${key}Title"></h3><p id="${key}Text"></p></div><div class="formula" id="${key}Formula"></div><div class="stack"><div class="stack-head"><span>CALL STACK · root → current</span><span id="${key}StackCount"></span></div><table aria-label="${title} call stack"><thead><tr><th>Call</th><th>Child</th><th>best</th>${key==='ttt'?'':'<th>α</th><th>β</th>'}</tr></thead><tbody id="${key}Stack"></tbody></table></div><div id="${key}InspectorSlot"></div>${key==='ttt'?'<div id="tttRootOptions"></div>':''}</aside></div></div>`;
+    $('searchStage').append(panel);
+  }
+}
+function drawTree(key, event) {
+  const chart = $(key+'Tree'); chart.replaceChildren();
+  chart.setAttribute('viewBox',`0 0 980 ${tree.height}`);
+  const path = new Set(event.stack.map(f=>f.id));
+  const chosen = new Set();
+  if (event.kind === 'finish') {
+    let n = tree.root;
+    while (event.states[n.id].chosen) { const id = event.states[n.id].chosen; chosen.add(id); n = tree.map[id]; }
+  }
+  tree.perLevel.forEach((nodes,depth) => {
+    const label = svg('text',{x:10,y:nodes[0].y-8,class:'depth'},`L${depth+1}`);
+    label.append(svg('tspan',{x:10,dy:25,class:'level-role '+nodes[0].role.toLowerCase()+'-label'},nodes[0].role)); chart.append(label);
+  });
+  for (const node of tree.nodes) for (const child of node.children) {
+    const pruned = event.states[child.id].status === 'pruned';
+    chart.append(svg('path',{d:`M${node.x} ${node.y+23} C${node.x} ${node.y+65},${child.x} ${child.y-65},${child.x} ${child.y-23}`,class:'edge'+(pruned?' pruned':'')+(path.has(child.id)?' path':'')+(chosen.has(child.id)?' choice':'')}));
+  }
+  for (const node of tree.nodes) {
+    const s = event.states[node.id], isLeaf = node.role === 'LEAF';
+    const cls = ['node',node.role.toLowerCase(),s.status === 'done'?'resolved':'',s.status === 'pruned'?'pruned':'',event.node === node.id?'active':'',inspected?.key === key && inspected.id === node.id?'selected':''].join(' ');
+    const label = `${node.id}, level ${node.depth+1}, ${node.role}, ${s.status}, ${isLeaf?'utility '+node.utility:'value '+boundValue(s)}${s.alpha !== null?', alpha '+fmt(s.alpha)+', beta '+fmt(s.beta):''}`;
+    const group = svg('g',{class:cls,tabindex:0,role:'button','aria-label':label});
+    group.append(svg('title',{},label));
+    group.append(svg('rect',{x:node.x-24,y:node.y-23,width:48,height:46,rx:isLeaf?5:12,class:'shape'}));
+    group.append(svg('text',{x:node.x,y:node.y-7,'text-anchor':'middle',class:'n-id'},node.id));
+    group.append(svg('text',{x:node.x,y:node.y+13,'text-anchor':'middle',class:'n-value'},s.status === 'pruned'?'×':isLeaf?fmt(node.utility):boundValue(s)));
+    if (s.status === 'pruned') group.append(svg('path',{d:`M${node.x-17} ${node.y+30} l34 0`,class:'cross'}));
+    if (!isLeaf && key === 'ab' && s.alpha !== null) group.append(svg('text',{x:node.x,y:node.y+42,'text-anchor':'middle',class:'bounds'},`α${fmt(s.alpha)} β${fmt(s.beta)}`));
+    const inspect = () => { inspected = {key,id:node.id}; render(); };
+    group.addEventListener('click',inspect);
+    group.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();inspect(); $(key+'Tree').querySelector(`[data-id="${node.id}"]`)?.focus();}});
+    group.dataset.id = node.id;
+    chart.append(group);
+  }
+}
+function renderPanel(key) {
+  const event = frameAt(key), current = event.stack.at(-1), state = event.node ? event.states[event.node] : null;
+  if(key==='ttt')drawTicTacToeTree(event);else drawTree(key,event);
+  $(key+'Phase').textContent = event.kind === 'cutoff' ? 'Cutoff · closed window' : event.kind === 'finish' ? 'Search complete' : event.kind;
+  $(key+'Title').textContent = event.title;
+  $(key+'Text').textContent = event.text;
+  const pruned = Object.values(event.states).filter(s=>s.status==='pruned').length;
+  $(key+'Counts').textContent = `${event.visited}/${tree.nodes.length} entered · ${event.evaluated} leaves${key === 'ab' ? ` · ${pruned} pruned` : ''}`;
+  const badge = $(key+'Badge');
+  badge.textContent = event.kind === 'finish' ? 'Complete' : event.kind === 'cutoff' ? 'α ≥ β · prune' : `Event ${Math.min(step,traces[key].length-1)} / ${traces[key].length-1}`;
+  badge.className = 'badge'+(event.kind === 'finish'?' done':event.kind === 'cutoff'?' cut':'');
+  const vars = $(key+'Vars'); vars.replaceChildren();
+  const variables = [['node','call',current?.id ?? (event.kind==='finish'?tree.root.id:null)],['best','best',current?.best ?? state?.best],['returned','child ↩',current?.returned],['alpha','α',current?.alpha],['beta','β',current?.beta]];
+  if(key==='ttt')variables.splice(3,2,['player','player',current?tttNodeRole(tree.map[current.id]):'X / MAX'],['depth','depth',current?tree.map[current.id].depth:0]);
+  for (const [name,label,value] of variables) {
+    const item = element('div','var'+(event.changed.includes(name)?' changed':''));
+    item.append(element('span','',label),element('strong','',fmt(value))); vars.append(item);
+  }
+  $(key+'Formula').textContent = event.formula;
+  $(key+'Formula').className = 'formula'+(event.kind==='cutoff'?' cut':'');
+  const tbody = $(key+'Stack'); tbody.replaceChildren();
+  event.stack.forEach((frame,i)=>{
+    const row = element('tr',i===event.stack.length-1?'top':'');
+    for (const value of [key==='ttt'?`${frame.id} ${tree.map[frame.id].result?'END':tree.map[frame.id].turn+' '+frame.role}`:`${frame.id} ${frame.role}`,frame.child,frame.best,...(key==='ttt'?[]:[frame.alpha,frame.beta])]) row.append(element('td','',fmt(value)));
+    tbody.append(row);
+  });
+  if (!event.stack.length) { const row=element('tr'); const cell=element('td','',event.kind==='finish'?'All calls returned.':'No active call.');cell.colSpan=key==='ttt'?3:5;row.append(cell);tbody.append(row); }
+  $(key+'StackCount').textContent = `${event.stack.length} frame${event.stack.length===1?'':'s'}`;
+}
+function renderInspector() {
+  if (!inspected) { $('inspectTitle').textContent='Inspect any node';$('inspectText').textContent=view==='ttt'?'Click a board to inspect its search state and backed-up utility.':'Click a node in the tree to see its state, current value, and bounds.';$('inspectValue').textContent='';return; }
+  const {key,id}=inspected, n=tree.map[id], s=frameAt(key).states[id];
+  $('inspectTitle').textContent=`${id} · ${key==='ttt'?tttNodeRole(n):n.role} · ${key==='ab'?'Alpha-Beta':key==='ttt'?'Tic-Tac-Toe':'Minimax'}`;
+  $('inspectText').textContent=`Level ${n.depth+1} / depth ${n.depth}. ${s.status==='pruned'?'Skipped without entering this subtree.':s.status==='unseen'?'Not entered yet.':s.status==='open'?'Entered; the recursive call has not returned.':'Evaluation complete.'}`;
+  $('inspectValue').textContent=n.role==='LEAF'?`Given utility: ${fmt(n.utility)} · ${s.status==='done'?'evaluated':'not evaluated'}`:`Returned: ${boundValue(s)} · best: ${fmt(s.best)}${key==='ab'?` · α: ${fmt(s.alpha)} · β: ${fmt(s.beta)}`:''}`;
+}
+function renderHistory() {
+  const area=$('history'); area.replaceChildren();
+  for (const key of activeKeys()) {
+    const section=element('div');section.append(element('strong','',key==='ab'?'Alpha-Beta':key==='ttt'?'Tic-Tac-Toe':'Minimax'));const list=element('ol');
+    traces[key].forEach((event,i)=>{if(i>Math.min(step,traces[key].length-1))return;const li=element('li');const button=element('button',(i===Math.min(step,traces[key].length-1)?'current ':'')+(event.kind==='cutoff'?'cut':''),event.title);button.addEventListener('click',()=>seek(i));li.append(button);list.append(li)});
+    section.append(list);area.append(section);
+  }
+}
+function render() {
+  const playable=view==='game';
+  $('treeView').hidden=playable;$('gameView').hidden=!playable;
+  document.querySelectorAll('[data-view]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.view===view)));
+  if(playable){
+    $('pageTitle').textContent='Every move has a reason.';
+    $('pageLead').textContent='Play Tic-Tac-Toe or watch Minimax play. Reveal candidate scores and follow how the next move is chosen.';
+    $('pageRule').textContent='X: +1 · Draw: 0 · O: −1';
+    $('keyboardHelp').textContent='Tab / Shift+Tab navigate · Enter activates a control';
+    renderGame();return;
+  }
+  const ttt = view === 'ttt';
+  $('treeSettings').hidden = ttt;
+  $('tttSetup').hidden = !ttt;
+  $('treeReading').hidden = ttt;
+  $('treeNotice').hidden = ttt;
+  document.querySelectorAll('[data-view]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.view===view)));
+  $('keyboardHelp').textContent = '← / → step · Space play / pause · Home reset · End finish';
+  $('pageTitle').textContent = ttt ? 'Which move should X choose?' : 'Minimax, branch by branch.';
+  $('pageLead').textContent = ttt ? 'Start from a partially played game. Explore every legal continuation, evaluate terminal boards, and back up utilities to find X’s best move.' : 'Watch values travel up the game tree. Follow the active call, returned scores, and the best move found so far.';
+  $('pageRule').textContent = ttt ? 'X = MAX · O = MIN' : view === 'ab' ? 'prune when α ≥ β' : 'MAX ↑ · MIN ↓';
+  const event = frameAt(view);
+  $('rootValue').textContent = fmt(tree.root.exact);
+  $('enteredValue').textContent = event.visited;
+  $('enteredDetail').textContent = '/ ' + tree.nodes.length + ' nodes';
+  $('leavesValue').textContent = event.evaluated;
+  $('prunedValue').textContent = Object.values(event.states).filter(s=>s.status==='pruned').length;
+  $(view+'InspectorSlot').append($('nodeInspector'));
+  for (const key of ['plain','ab','ttt']) { $(key+'Panel').hidden=!activeKeys().includes(key); if(!$(key+'Panel').hidden)renderPanel(key); }
+  $('timeline').max=maxStep();$('timeline').value=step;
+  $('counter').textContent=`${step} / ${maxStep()}`;
+  $('back').disabled=step===0;$('reset').disabled=step===0;
+  $('next').disabled=step===maxStep();$('finish').disabled=step===maxStep();
+  $('cutoff').hidden=view!=='ab';
+  $('cutoff').disabled=view!=='ab'||!traces.ab.some((event,i)=>i>step&&event.kind==='cutoff');
+  $('syncNote').textContent='Step through the active algorithm one event at a time.';
+  renderInspector();renderHistory();
+}
+function pause() { if(timer!==null)clearInterval(timer);timer=null;$('play').textContent='▶ Play';$('play').setAttribute('aria-label','Play trace'); }
+function seek(value,keepPlaying=false) { if(!keepPlaying)pause();step=Math.max(0,Math.min(maxStep(),value));render();if(step===maxStep())pause(); }
+function play() {
+  if(timer!==null){pause();return;}
+  if(step===maxStep())step=0;
+  $('play').textContent='Ⅱ Pause';$('play').setAttribute('aria-label','Pause trace');render();
+  timer=setInterval(()=>seek(step+1,true),Number($('speed').value));
+}
+function load() {
+  pause();step=0;inspected=null;
+  if(view==='game'){render();return;}
+  if(view==='ttt') {
+    tree=buildTicTacToeTree();traces={ttt:makeTrace(tree,false)};
+    $('tttPanel').querySelector('.search-body').classList.add('ttt-search-body');
+  } else {
+    const preset=PRESETS[$('example').value];tree=buildTree(preset,$('order').value);
+    traces={plain:makeTrace(tree,false),ab:makeTrace(tree,true)};
+    $('exampleHint').textContent=preset.hint;
+  }
+  render();
+}
+// A complete game tree from a reachable position: three Xs, three Os,
+// three empty squares, and X to move. No depth cutoff or pruning.
+const TTT_START = ['', '', '', 'X', 'X', 'O', 'O', 'X', 'O'];
+const WIN_LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function ticTacToeResult(board) {
+  for (const line of WIN_LINES) {
+    if (board[line[0]] && line.every(i=>board[i]===board[line[0]])) return {winner:board[line[0]],score:board[line[0]]==='X'?1:-1,line};
+  }
+  return board.every(Boolean) ? {winner:'draw',score:0,line:[]} : null;
+}
+function buildTicTacToeTree() {
+  const nodes=[], map={}, perLevel=[];
+  function build(board, turn, depth=0, parent=null, move=null, playedBy=null) {
+    const result=ticTacToeResult(board);
+    const node={id:'T'+nodes.length,board:board.slice(),turn,depth,parent,move,playedBy,result,role:result?'LEAF':turn==='X'?'MAX':'MIN',utility:result?.score??null,children:[]};
+    nodes.push(node);map[node.id]=node;(perLevel[depth]||=[]).push(node);
+    if(!result) for(let i=0;i<9;i++) if(!board[i]) {
+      const child=board.slice();child[i]=turn;
+      node.children.push(build(child,turn==='X'?'O':'X',depth+1,node.id,i,turn));
+    }
+    node.exact=result?result.score:(turn==='X'?Math.max:Math.min)(...node.children.map(n=>n.exact));
+    return node;
+  }
+  const root=build(TTT_START,'X');
+  let leaf=0;
+  function layout(node) {
+    if(!node.children.length)node.x=130+leaf++*136;
+    else {node.children.forEach(layout);node.x=(node.children[0].x+node.children.at(-1).x)/2;}
+    node.y=90+node.depth*192;
+  }
+  layout(root);
+  return {root,nodes,map,perLevel,levels:perLevel.length,width:Math.max(860,leaf*136+110),height:perLevel.length*192+8};
+}
+function tttMove(index) {return `(${Math.floor(index/3)+1}, ${index%3+1})`;}
+function signed(value) {return value===1?'+1':value===-1?'−1':fmt(value);}
+function tttNodeRole(node) {return node.result?(node.result.winner==='draw'?'DRAW':node.result.winner+' WINS'):node.turn+' · '+node.role;}
+function drawTicTacToeTree(event) {
+  const chart=$('tttTree');chart.replaceChildren();chart.classList.add('ttt-tree');
+  chart.setAttribute('viewBox',`0 0 ${tree.width} ${tree.height}`);
+  chart.style.minWidth=tree.width+'px';
+  const path=new Set(event.stack.map(f=>f.id)),chosen=new Set();
+  if(event.kind==='finish') {
+    let n=tree.root;
+    while(event.states[n.id].chosen){const id=event.states[n.id].chosen;chosen.add(id);n=tree.map[id];}
+  }
+  tree.perLevel.forEach((nodes,depth)=>{
+    const label=svg('text',{x:12,y:nodes[0].y-10,class:'depth'},'L'+(depth+1));
+    const terminalOnly=nodes.every(n=>n.result);
+    const role=terminalOnly?'END':depth%2===0?'MAX':'MIN';
+    label.append(svg('tspan',{x:12,dy:27,class:'level-role '+role.toLowerCase()+'-label'},role));chart.append(label);
+  });
+  for(const node of tree.nodes) for(const child of node.children) {
+    const x1=node.x,y1=node.y+72,x2=child.x,y2=child.y-72;
+    chart.append(svg('path',{d:`M${x1} ${y1} C${x1} ${y1+28},${x2} ${y2-28},${x2} ${y2}`,class:'edge'+(path.has(child.id)?' path':'')+(chosen.has(child.id)?' choice':'')}));
+    chart.append(svg('text',{x:child.x,y:child.y-81,'text-anchor':'middle',class:'move-label'},`${child.playedBy} at ${tttMove(child.move)}`));
+  }
+  for(const node of tree.nodes) {
+    const state=event.states[node.id],selected=inspected?.key==='ttt'&&inspected.id===node.id;
+    const cls=['node','board-node',node.role.toLowerCase(),state.status==='done'?'resolved':'',event.node===node.id?'active':'',selected?'selected':''].join(' ');
+    const label=`${node.id}, ${tttNodeRole(node)}, ${state.status}, value ${state.value===null?'unknown':signed(state.value)}. Board ${node.board.map(v=>v||'empty').join(', ')}.`;
+    const group=svg('g',{class:cls,tabindex:0,role:'button','aria-label':label,'data-id':node.id});
+    group.append(svg('title',{},label));
+    group.append(svg('rect',{x:node.x-55,y:node.y-71,width:110,height:143,rx:10,class:'shape'}));
+    group.append(svg('text',{x:node.x,y:node.y-52,'text-anchor':'middle',class:'board-role '+(node.result?(node.result.winner==='draw'?'terminal-label':node.result.winner==='X'?'x-mark':'o-mark'):node.turn==='X'?'x-mark':'o-mark')},`${node.id} · ${tttNodeRole(node)}`));
+    const left=node.x-39,top=node.y-39;
+    for(let i=0;i<9;i++) {
+      const x=left+(i%3)*26,y=top+Math.floor(i/3)*26;
+      group.append(svg('rect',{x,y,width:25,height:25,rx:2,class:'board-square'+(node.move===i?' last-move':'')+(node.result?.line.includes(i)?' winning-square':'')}));
+      if(node.board[i])group.append(svg('text',{x:x+12.5,y:y+18.5,'text-anchor':'middle',class:'board-mark '+(node.board[i]==='X'?'x-mark':'o-mark')},node.board[i]));
+    }
+    const value=state.value===null?(state.status==='open'?'…':'?'):signed(state.value);
+    group.append(svg('text',{x:node.x,y:node.y+59,'text-anchor':'middle',class:'board-value'},`v = ${value}`));
+    const inspect=()=>{inspected={key:'ttt',id:node.id};render();};
+    group.addEventListener('click',inspect);
+    group.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();inspect();$('tttTree').querySelector(`[data-id="${node.id}"]`)?.focus();}});
+    chart.append(group);
+  }
+  const options=$('tttRootOptions');options.replaceChildren();
+  options.append(element('h3','sidebar-heading',"X's choices at the root"));
+  for(const child of tree.root.children) {
+    const s=event.states[child.id],row=element('div','root-option'+(event.kind==='finish'&&event.states[tree.root.id].chosen===child.id?' best':''));
+    row.append(element('span','',`X at ${tttMove(child.move)}`),element('strong','',s.value===null?'?':signed(s.value)));options.append(row);
+  }
+  if(event.kind==='finish')options.append(element('p','root-choice',`Choose ${tttMove(tree.map[event.states[tree.root.id].chosen].move)}: X maximizes (−1, +1, 0) and wins.`));
+}
+
+// Tic-Tac-Toe uses full-depth Minimax. The cache reuses identical positions;
+// no branches are discarded using alpha/beta bounds.
+const GAME_PRESETS = {
+  empty: Array(9).fill(''),
+  win: ['X','X','','O','O','','','',''],
+  block: ['X','X','','','O','','','',''],
+  fork: ['X','','','','O','','','','X']
+};
+const gameCache = new Map();
+let game, gameTimer = null;
+function gameResult(board) {
+  for (const line of WIN_LINES) if (board[line[0]] && line.every(i=>board[i]===board[line[0]])) return {winner:board[line[0]],score:board[line[0]]==='X'?1:-1,line};
+  return board.every(Boolean) ? {winner:'draw',score:0,line:[]} : null;
+}
+function gameValue(board, turn) {
+  const result = gameResult(board);
+  if (result) return result.score;
+  const key = board.map(v=>v||'-').join('') + turn;
+  if (gameCache.has(key)) return gameCache.get(key);
+  let best = turn === 'X' ? -Infinity : Infinity;
+  for (let i=0;i<9;i++) if (!board[i]) {
+    board[i] = turn;
+    const value = gameValue(board,turn==='X'?'O':'X');
+    board[i] = '';
+    best = turn==='X' ? Math.max(best,value) : Math.min(best,value);
+  }
+  gameCache.set(key,best);
+  return best;
+}
+function gameCandidates(board,turn) {
+  if (gameResult(board)) return [];
+  return board.flatMap((value,i)=>{
+    if (value) return [];
+    const child = board.slice();child[i]=turn;
+    return [{index:i,score:gameValue(child,turn==='X'?'O':'X')}];
+  });
+}
+const moveName = index => `(${Math.floor(index/3)+1}, ${index%3+1})`;
+const outcome = score => score===1?'X can force a win':score===-1?'O can force a win':'a draw with optimal play';
+function isHumanTurn() { return $('gameMode').value === game.turn; }
+function prepareGame() {
+  game.turn = game.board.filter(v=>v==='X').length === game.board.filter(v=>v==='O').length ? 'X' : 'O';
+  game.candidates = gameCandidates(game.board,game.turn);
+  game.considered = new Set();game.current = null;game.best = game.turn==='X'?-Infinity:Infinity;game.bestIndex=null;game.formula='Choose a candidate to see its returned Minimax score.';
+}
+function stopGame() { if(gameTimer!==null)clearTimeout(gameTimer);gameTimer=null; }
+function resetGame() {
+  stopGame();
+  const board=GAME_PRESETS[$('gamePreset').value].slice();
+  game={board,history:[{board:board.slice(),index:null,player:null}]};
+  prepareGame();renderGame();
+}
+function considerMove(index) {
+  const candidate=game.candidates.find(c=>c.index===index);
+  if(!candidate)return;
+  const old=game.best;
+  game.considered.add(index);game.current=index;
+  const known=game.candidates.filter(c=>game.considered.has(c.index));
+  const chosen=known.reduce((best,c)=>game.turn==='X'?(c.score>best.score?c:best):(c.score<best.score?c:best));
+  game.best=chosen.score;game.bestIndex=chosen.index;
+  game.formula=`${game.turn==='X'?'MAX':'MIN'}: best ← ${game.turn==='X'?'max':'min'}(${fmt(old)}, ${fmt(candidate.score)}) = ${fmt(game.best)}`;
+}
+function nextCandidate() {
+  const next=game.candidates.find(c=>!game.considered.has(c.index));
+  if(next)considerMove(next.index);
+}
+function applyGameMove(index) {
+  if(gameResult(game.board)||game.board[index])return;
+  const player=game.turn;game.board[index]=player;
+  game.history.push({board:game.board.slice(),index,player});
+  prepareGame();
+}
+function playBestGameMove() {
+  if(!game.candidates.length)return;
+  // Deterministic tie handling always keeps the first square in row-major order.
+  const best=game.candidates.reduce((best,c)=>game.turn==='X'?(c.score>best.score?c:best):(c.score<best.score?c:best));
+  applyGameMove(best.index);
+}
+function autoGameTick() {
+  gameTimer=null;
+  if(view!=='game'||gameResult(game.board)||isHumanTurn()){renderGame();return;}
+  if(game.considered.size<game.candidates.length)nextCandidate();
+  else playBestGameMove();
+  if(!gameResult(game.board)&&!isHumanTurn())gameTimer=setTimeout(autoGameTick,500);
+  renderGame();
+}
+function renderGame() {
+  if(!game)return;
+  const result=gameResult(game.board),running=gameTimer!==null;
+  const human=isHumanTurn();
+  $('gameStatus').textContent=result?(result.winner==='draw'?'The game is a draw.':`${result.winner} wins.`):`${game.turn} to move · ${game.turn==='X'?'maximize':'minimize'}`;
+  $('gameHint').textContent=result?'Choose New game or undo a move to explore another line.':human?'Your turn. Choose an empty square, or inspect the candidates first.':$('gameMode').value==='watch'?'Both sides use Minimax. Auto-play reveals candidates before each move.':'Minimax’s turn. Step through candidates or play its best move.';
+  $('gameTurnBadge').textContent=result?'Game over':game.turn==='X'?'X = MAX':'O = MIN';
+  const board=$('gameBoard');board.replaceChildren();
+  for(let i=0;i<9;i++){
+    const value=game.board[i],preview=!value&&game.current===i;
+    const button=element('button','game-cell'+(value?' '+value.toLowerCase():'')+(preview?' preview':'')+(result?.line.includes(i)?' winner':'')+(!value&&game.considered.size===game.candidates.length&&game.bestIndex===i?' recommended':''));
+    const candidate=game.candidates.find(c=>c.index===i),known=game.considered.has(i);
+    button.disabled=Boolean(value)||Boolean(result)||!human||running;
+    button.setAttribute('aria-label',`Row ${Math.floor(i/3)+1}, column ${i%3+1}: ${value||'empty'}${known?', Minimax score '+fmt(candidate.score):''}`);
+    button.dataset.square=i;
+    button.append(element('span','cell-number',moveName(i)),element('span','mark',value||(preview?game.turn:'')));
+    if(!value&&!result)button.append(element('span','cell-score',known?`score ${fmt(candidate.score)}`:'score ?'));
+    button.addEventListener('click',()=>{stopGame();applyGameMove(i);renderGame();});board.append(button);
+  }
+  const current=game.candidates.find(c=>c.index===game.current),all=game.candidates.length>0&&game.considered.size===game.candidates.length;
+  $('gamePhase').textContent=result?'Terminal state':current?'Child score returned':`${game.turn==='X'?'MAX':'MIN'} to choose`;
+  $('gameDecision').textContent=result?`Utility = ${fmt(result.score)}`:current?`${game.turn} at ${moveName(current.index)} → ${fmt(current.score)}`:'What is the best legal move?';
+  $('gameExplanation').textContent=result?'Terminal utilities are backed up through the search: X win +1, O win −1, draw 0.':current?`If ${game.turn} plays here and both sides continue optimally, the result is ${current.score===1?'an X win':current.score===-1?'an O win':'a draw'}. ${all?'Every legal candidate has been analyzed.':`${game.considered.size} of ${game.candidates.length} candidates analyzed.`}`:`${game.turn} checks ${game.candidates.length} legal moves, searching each continuation to a terminal state.`;
+  const variables=$('gameVars');variables.replaceChildren();
+  for(const [label,value]of [['player',game.turn==='X'?'X / MAX':'O / MIN'],['candidate',current?moveName(current.index):'—'],['returned',current?fmt(current.score):'—'],['best',result?fmt(result.score):fmt(game.best)]]){
+    const box=element('div','var'+(current?' changed':''));box.append(element('span','',label),element('strong','',value));variables.append(box);
+  }
+  $('gameFormula').textContent=result?`return ${fmt(result.score)}`:game.formula;
+  const candidates=$('gameCandidates');candidates.replaceChildren();
+  for(const candidate of game.candidates){
+    const known=game.considered.has(candidate.index);
+    const button=element('button','candidate'+(game.current===candidate.index?' active':'')+(all&&candidate.index===game.bestIndex?' best':''));
+    button.append(element('span','',moveName(candidate.index)),element('strong','',known?fmt(candidate.score):'?'));
+    button.setAttribute('aria-label',`Analyze ${game.turn} at row ${Math.floor(candidate.index/3)+1}, column ${candidate.index%3+1}`);
+    button.disabled=running;button.addEventListener('click',()=>{stopGame();considerMove(candidate.index);renderGame();});candidates.append(button);
+  }
+  if(result)candidates.append(element('p','game-caption','No legal moves to analyze: the game is over.'));
+  $('gamePrediction').textContent=result?`Final outcome: ${result.winner==='draw'?'draw':result.winner+' wins'}.`:all?`Best move: ${moveName(game.bestIndex)} · ${outcome(game.best)}. Equal scores keep the first square.`:game.considered.size?`Best among analyzed moves: ${moveName(game.bestIndex)} → ${fmt(game.best)}. Check remaining candidates before deciding.`:'Analyze a candidate to reveal its outcome. No depth cutoff or Alpha-Beta pruning is used.';
+  $('gameCaption').textContent=result?'Game complete.':running?'Minimax is analyzing candidates. Pause to inspect a position.':human?'Click an empty square to play. Faint marks are previews only.':'Press Analyze next candidate, Play best move, or Auto-play.';
+  $('analyzeMove').disabled=Boolean(result)||all||running;$('bestMove').disabled=Boolean(result)||running;
+  $('bestMove').textContent=human?'Play suggested move':'Play best move';
+  $('autoGame').textContent=running?'Ⅱ Pause':'▶ Auto-play';$('autoGame').disabled=Boolean(result)||(human&&!running);
+  $('undoGame').disabled=game.history.length<2;
+  const history=$('gameHistory');history.replaceChildren();
+  game.history.forEach((entry,i)=>{
+    const position=element('div','history-position',i?`${i}. ${entry.player} at ${moveName(entry.index)}`:'Starting position');
+    const mini=element('div','mini-board');mini.setAttribute('aria-label',i?`Board after move ${i}`:'Starting board');
+    entry.board.forEach((v,index)=>mini.append(element('span',(v==='X'?'x-mark':v==='O'?'o-mark':'')+(entry.index===index?' last':''),v||'·')));
+    position.append(mini);history.append(position);
+  });
+  $('gameMoveCount').textContent=`${game.history.length-1} moves`;
+}
+function setupGame() {
+  $('newGame').addEventListener('click',resetGame);$('gameMode').addEventListener('change',resetGame);$('gamePreset').addEventListener('change',resetGame);
+  $('undoGame').addEventListener('click',()=>{stopGame();if(game.history.length>1){game.history.pop();game.board=game.history.at(-1).board.slice();prepareGame();renderGame();}});
+  $('analyzeMove').addEventListener('click',()=>{stopGame();nextCandidate();renderGame();});
+  $('bestMove').addEventListener('click',()=>{stopGame();playBestGameMove();renderGame();});
+  $('autoGame').addEventListener('click',()=>{if(gameTimer!==null){stopGame();renderGame();}else autoGameTick();});
+  resetGame();
+}
+
+setupPanels();
+setupGame();
+$('example').addEventListener('change',load);$('order').addEventListener('change',load);
+document.querySelectorAll('[data-view]').forEach(button=>button.addEventListener('click',()=>{pause();stopGame();view=button.dataset.view;load();}));
+$('reset').addEventListener('click',()=>seek(0));$('back').addEventListener('click',()=>seek(step-1));$('next').addEventListener('click',()=>seek(step+1));$('play').addEventListener('click',play);$('finish').addEventListener('click',()=>seek(maxStep()));
+$('cutoff').addEventListener('click',()=>{const index=traces.ab.findIndex((event,i)=>i>step&&event.kind==='cutoff');if(index>=0)seek(index);});
+$('timeline').addEventListener('input',e=>seek(Number(e.target.value)));$('speed').addEventListener('change',()=>{if(timer!==null){pause();play();}});
+document.addEventListener('keydown',e=>{
+  if(view==='game')return;
+  if(e.target.closest('input,select,button,a,summary,[role="button"]')||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.key==='ArrowRight'){e.preventDefault();seek(step+1);}else if(e.key==='ArrowLeft'){e.preventDefault();seek(step-1);}else if(e.key===' '){e.preventDefault();play();}else if(e.key==='Home'){e.preventDefault();seek(0);}else if(e.key==='End'){e.preventDefault();seek(maxStep());}
+});
+load();
+</script>
+</body>
+</html>
