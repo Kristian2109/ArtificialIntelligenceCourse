@@ -1,0 +1,3711 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A 90-minute introduction to machine learning, with original interactive diagrams, concise explanations, and teaching notes."
+    />
+    <title>Introduction to Machine Learning · Lecture 06</title>
+    <style>
+      :root {
+        --paper: #f5f4ed;
+        --white: #fffefa;
+        --ink: #203b35;
+        --muted: #53665f;
+        --line: #d7dfd5;
+        --teal: #16695e;
+        --teal-bg: #e4efe8;
+        --orange: #b44d2b;
+        --orange-bg: #f8e9dd;
+        --blue: #355fac;
+        --gold: #e5bb59;
+        --mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+        --serif: Georgia, "Times New Roman", serif;
+        --sans:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 95px;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font: 16px/1.65 var(--sans);
+      }
+      a {
+        color: var(--teal);
+        text-underline-offset: 4px;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+      button,
+      select {
+        cursor: pointer;
+      }
+      button {
+        background: var(--white);
+        border: 1px solid #aebeb3;
+        border-radius: 7px;
+        color: var(--ink);
+        padding: 9px 15px;
+        font-size: 13px;
+        font-weight: 650;
+        line-height: 1.4;
+      }
+      button:hover {
+        border-color: var(--teal);
+        background: var(--teal-bg);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      button.primary,
+      button[aria-pressed="true"] {
+        background: var(--teal);
+        color: white;
+        border-color: var(--teal);
+      }
+      :focus-visible {
+        outline: 3px solid var(--orange);
+        outline-offset: 4px;
+      }
+      input[type="range"] {
+        accent-color: var(--teal);
+        width: 100%;
+        min-width: 90px;
+      }
+      input[type="checkbox"] {
+        accent-color: var(--teal);
+        width: 17px;
+        height: 17px;
+      }
+      select {
+        border: 1px solid #adbbb0;
+        border-radius: 6px;
+        background: var(--white);
+        color: var(--ink);
+        padding: 7px 9px;
+        max-width: 100%;
+      }
+      p {
+        margin: 0 0 14px;
+      }
+      strong {
+        font-weight: 700;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        line-height: 1.15;
+      }
+      h1,
+      h2 {
+        font-family: var(--serif);
+        font-weight: 400;
+        letter-spacing: -1.4px;
+      }
+      h1 {
+        font-size: clamp(44px, 5.2vw, 76px);
+        margin: 18px 0 22px;
+      }
+      h2 {
+        font-size: clamp(32px, 3.3vw, 45px);
+        margin: 9px 0 20px;
+      }
+      h3 {
+        font-size: 19px;
+        margin: 0 0 12px;
+        letter-spacing: -0.35px;
+      }
+      h4 {
+        font-size: 15px;
+        margin: 0 0 7px;
+      }
+      .skip {
+        position: fixed;
+        top: -80px;
+        left: 15px;
+        z-index: 9;
+        background: var(--white);
+        padding: 12px;
+      }
+      .skip:focus {
+        top: 12px;
+      }
+      .topbar {
+        position: sticky;
+        top: 0;
+        background: rgba(245, 244, 237, 0.97);
+        border-bottom: 1px solid var(--line);
+        z-index: 5;
+      }
+      .top-inner {
+        max-width: 1430px;
+        margin: auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 32px;
+        gap: 15px;
+      }
+      .brand {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        text-decoration: none;
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 750;
+      }
+      .brand-icon {
+        display: grid;
+        grid-template-columns: repeat(2, 5px);
+        gap: 3px;
+        transform: rotate(-10deg);
+      }
+      .brand-icon i {
+        width: 5px;
+        height: 5px;
+        background: var(--teal);
+        border-radius: 1px;
+      }
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        font-size: 12px;
+      }
+      .top-actions a {
+        text-decoration: none;
+      }
+      .progress {
+        height: 3px;
+        background: var(--line);
+      }
+      .progress span {
+        display: block;
+        height: 3px;
+        width: 0;
+        background: var(--teal);
+      }
+      .layout {
+        max-width: 1430px;
+        margin: auto;
+        display: grid;
+        grid-template-columns: 215px minmax(0, 1fr);
+        gap: 45px;
+        padding: 0 32px;
+      }
+      .layout.route-hidden {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .contents {
+        position: sticky;
+        top: 100px;
+        align-self: start;
+        padding-top: 38px;
+        font-size: 12px;
+      }
+      .contents .eyebrow {
+        margin-bottom: 16px;
+      }
+      .contents a {
+        display: flex;
+        gap: 12px;
+        padding: 10px 8px;
+        text-decoration: none;
+        color: var(--muted);
+        border-left: 2px solid transparent;
+        line-height: 1.35;
+      }
+      .contents a span {
+        font: 11px var(--mono);
+        padding-top: 2px;
+      }
+      .contents a.active {
+        border-color: var(--teal);
+        color: var(--teal);
+        background: var(--teal-bg);
+        font-weight: 700;
+      }
+      .rail-note {
+        margin: 26px 8px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.7;
+      }
+      .rail-note b {
+        display: block;
+        color: var(--ink);
+        font-size: 13px;
+        margin-bottom: 4px;
+      }
+      main {
+        min-width: 0;
+      }
+      .hero {
+        padding: 58px 0 36px;
+        border-bottom: 1px solid var(--line);
+      }
+      .eyebrow {
+        font: 600 11px/1.5 var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--teal);
+      }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 25px;
+        align-items: center;
+      }
+      .hero .lede {
+        max-width: 540px;
+        font-size: 17px;
+        color: var(--muted);
+      }
+      .hero-art {
+        width: 100%;
+        max-height: 330px;
+      }
+      .hero-meta {
+        display: flex;
+        gap: 22px;
+        flex-wrap: wrap;
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 30px;
+      }
+      .hero-meta span {
+        border-top: 1px solid #aebdb0;
+        padding-top: 9px;
+      }
+      .hero-meta b {
+        color: var(--ink);
+        font-weight: 650;
+      }
+      .objectives {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        padding-top: 25px;
+        margin-top: 28px;
+        border-top: 1px solid var(--line);
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .objectives strong {
+        display: block;
+        color: var(--ink);
+        font-size: 13px;
+        margin-bottom: 4px;
+      }
+      .chapter {
+        padding: 48px 0;
+        border-bottom: 1px solid var(--line);
+        scroll-margin-top: 12px;
+      }
+      .chapter-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .time {
+        font: 11px var(--mono);
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .intro {
+        font-size: 17px;
+        max-width: 800px;
+        color: var(--muted);
+        margin-bottom: 26px;
+      }
+      .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+      }
+      .three {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+      }
+      .four {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+      .small {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .tiny {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .note {
+        padding: 15px 19px;
+        background: var(--teal-bg);
+        border-left: 3px solid var(--teal);
+        font-size: 13px;
+        margin: 22px 0 0;
+      }
+      .note.warm {
+        background: var(--orange-bg);
+        border-color: var(--orange);
+      }
+      .note p:last-child {
+        margin: 0;
+      }
+      .panel {
+        background: var(--white);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-top: 22px;
+      }
+      .panel-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 21px;
+        border-bottom: 1px solid var(--line);
+      }
+      .panel-head h3 {
+        font-size: 14px;
+        margin: 0;
+      }
+      .tag {
+        font: 10px var(--mono);
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: var(--teal);
+        white-space: nowrap;
+      }
+      .panel-body {
+        padding: 22px;
+      }
+      .panel p:last-child {
+        margin-bottom: 0;
+      }
+      .plot {
+        display: block;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+      }
+      .plot text,
+      .hero-art text {
+        font-family: var(--sans);
+        fill: var(--muted);
+        font-size: 12px;
+      }
+      .plot .axis {
+        stroke: #a8b8ad;
+        stroke-width: 1;
+      }
+      .plot .grid {
+        stroke: #e7eae0;
+        stroke-width: 1;
+      }
+      .plot .label {
+        fill: var(--ink);
+        font-weight: 650;
+      }
+      .plot .line {
+        fill: none;
+        stroke: var(--teal);
+        stroke-width: 3;
+      }
+      .plot .truth {
+        fill: none;
+        stroke: #71847b;
+        stroke-width: 2;
+        stroke-dasharray: 6 5;
+      }
+      .plot .fit {
+        fill: none;
+        stroke: var(--orange);
+        stroke-width: 3;
+      }
+      .plot .point {
+        fill: var(--teal);
+        stroke: var(--white);
+        stroke-width: 1.5;
+      }
+      .legend {
+        display: flex;
+        gap: 17px;
+        flex-wrap: wrap;
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+      .legend span:before {
+        content: "";
+        display: inline-block;
+        width: 16px;
+        height: 3px;
+        background: var(--teal);
+        vertical-align: middle;
+        margin-right: 6px;
+      }
+      .legend .orange:before {
+        background: var(--orange);
+      }
+      .legend .gray:before {
+        background: repeating-linear-gradient(
+          90deg,
+          #71847b 0 5px,
+          transparent 5px 8px
+        );
+      }
+      .legend .blue:before {
+        background: var(--blue);
+      }
+      .viz-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.65fr) minmax(210px, 1fr);
+        gap: 24px;
+        align-items: center;
+      }
+      .controls {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .controls label {
+        font-size: 12px;
+      }
+      .field {
+        display: block;
+        margin-bottom: 17px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .field > span {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 7px;
+      }
+      .field output {
+        color: var(--ink);
+        font: 600 12px var(--mono);
+      }
+      .readout {
+        background: var(--paper);
+        padding: 14px 17px;
+        border-radius: 8px;
+        margin: 13px 0;
+        font-size: 13px;
+        line-height: 1.55;
+      }
+      .readout b {
+        font: 600 23px var(--mono);
+        display: block;
+        color: var(--teal);
+        margin-bottom: 3px;
+      }
+      .readout .unit {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .formula {
+        font: 13px/1.7 var(--mono);
+        color: var(--ink);
+        padding: 12px 15px;
+        background: var(--paper);
+        border-radius: 6px;
+        overflow-x: auto;
+        margin: 14px 0;
+      }
+      .idea {
+        padding: 16px 0;
+        border-top: 1px solid var(--line);
+        font-size: 13px;
+      }
+      .idea h3 {
+        font-size: 15px;
+      }
+      .idea p:last-child {
+        margin-bottom: 0;
+      }
+      .idea-number {
+        color: var(--orange);
+        font: 11px var(--mono);
+        display: block;
+        margin-bottom: 9px;
+      }
+      .family-map {
+        padding: 20px;
+        background: #e8eee3;
+        border-radius: 12px;
+        font-size: 12px;
+      }
+      .family-map .nest {
+        padding: 15px 18px;
+        margin: 12px 0 0 30px;
+        border: 1px solid #9fb4a5;
+        background: rgba(255, 255, 255, 0.35);
+        border-radius: 8px;
+      }
+      .family-map strong {
+        display: block;
+        font-size: 14px;
+      }
+      .family-map > .nest > .nest > .nest {
+        background: var(--teal);
+        color: white;
+      }
+      .family-map p {
+        margin: 3px 0 0;
+        font-size: 11px;
+      }
+      .learning-types {
+        margin-top: 25px;
+      }
+      .learning-type {
+        padding: 17px 16px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--white);
+        font-size: 12px;
+      }
+      .learning-type h3 {
+        font-size: 14px;
+      }
+      .signal {
+        font: 10px var(--mono);
+        text-transform: uppercase;
+        color: var(--teal);
+        display: block;
+        margin-bottom: 9px;
+      }
+      .learning-type p {
+        margin: 0;
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        text-align: left;
+      }
+      th {
+        font-weight: 600;
+        font-size: 11px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      th,
+      td {
+        padding: 12px 13px;
+        border-bottom: 1px solid var(--line);
+      }
+      td.target,
+      th.target {
+        background: var(--orange-bg);
+        color: #8d3d25;
+      }
+      tr:last-child td {
+        border-bottom: 0;
+      }
+      .preprocess {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0;
+        margin-top: 25px;
+      }
+      .preprocess div {
+        padding: 15px 18px;
+        border-left: 1px solid var(--line);
+        border-top: 1px solid var(--line);
+        font-size: 12px;
+      }
+      .preprocess b {
+        display: block;
+        font-size: 13px;
+        margin: 4px 0;
+      }
+      .preprocess span {
+        font: 10px var(--mono);
+        color: var(--orange);
+      }
+      .preprocess p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .split-strip {
+        display: grid;
+        grid-template-columns: 3fr 1fr 1fr;
+        gap: 5px;
+        margin-bottom: 20px;
+      }
+      .split-strip div {
+        padding: 18px 16px;
+        font-size: 12px;
+        background: var(--teal-bg);
+        border-radius: 5px;
+      }
+      .split-strip div:nth-child(2) {
+        background: #f3e5be;
+      }
+      .split-strip div:nth-child(3) {
+        background: #dfe7f4;
+      }
+      .split-strip b {
+        display: block;
+        font: 700 24px var(--mono);
+        margin-bottom: 3px;
+      }
+      .split-strip span {
+        display: block;
+        font-size: 11px;
+        margin-top: 6px;
+      }
+      .folds {
+        display: grid;
+        gap: 7px;
+        margin: 18px 0;
+      }
+      .fold-row {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .fold-row button {
+        width: 72px;
+        flex: none;
+        text-align: left;
+        padding: 7px 10px;
+        font-size: 11px;
+      }
+      .fold-row .cell {
+        background: var(--teal-bg);
+        border-radius: 4px;
+        flex: 1;
+        text-align: center;
+        padding: 8px 0;
+        font: 11px var(--mono);
+        color: var(--teal);
+      }
+      .fold-row .cell.held {
+        background: #f2d994;
+        color: #604412;
+      }
+      .fold-row.selected .cell {
+        box-shadow: inset 0 0 0 1px #a0b7a7;
+      }
+      .fold-row.selected .cell.held {
+        box-shadow: inset 0 0 0 2px #85651e;
+      }
+      .batch-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin: 15px 0;
+      }
+      .batch-grid i {
+        width: 17px;
+        height: 17px;
+        border-radius: 3px;
+        background: var(--teal-bg);
+        border: 1px solid #9ab9a4;
+      }
+      .batch-grid i:nth-child(odd) {
+        background: #bed7c5;
+      }
+      .stat-pair {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .stat-pair .readout {
+        margin: 12px 0;
+      }
+      .method-picker {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        padding: 16px;
+        background: #edf0e7;
+        border-bottom: 1px solid var(--line);
+      }
+      .method-picker button {
+        text-align: left;
+        padding: 12px 11px;
+        min-width: 0;
+      }
+      .method-picker small {
+        display: block;
+        font-size: 9px;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        margin-top: 4px;
+        opacity: 0.8;
+      }
+      .method {
+        padding: 26px;
+      }
+      .method-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+        gap: 10px;
+      }
+      .method-title h3 {
+        font: 400 28px var(--serif);
+        margin: 0;
+        letter-spacing: -0.5px;
+      }
+      .method .viz-layout {
+        margin-top: 16px;
+      }
+      .method .plot {
+        max-height: 330px;
+      }
+      .method .small {
+        font-size: 12px;
+      }
+      .method .takeaway {
+        border-top: 1px solid var(--line);
+        padding-top: 14px;
+        margin-top: 16px;
+        font-size: 13px;
+      }
+      .method [data-class] {
+        font: 600 16px var(--mono);
+        color: var(--orange);
+      }
+      details {
+        margin-top: 20px;
+        border-top: 1px solid var(--line);
+        padding-top: 15px;
+        font-size: 13px;
+      }
+      summary {
+        cursor: pointer;
+        font-weight: 650;
+      }
+      details p {
+        margin-top: 12px;
+      }
+      details summary::marker {
+        color: var(--teal);
+      }
+      .compare {
+        margin-top: 22px;
+      }
+      .compare td {
+        font-size: 12px;
+      }
+      .compare th {
+        font-size: 10px;
+      }
+      .answer {
+        background: var(--teal-bg);
+        padding: 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        margin-top: 10px;
+      }
+      .check {
+        padding: 19px 0;
+        border-top: 1px solid var(--line);
+      }
+      .check:first-child {
+        border: 0;
+      }
+      .check h3 {
+        font-size: 15px;
+      }
+      .choices {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+      }
+      .choices button {
+        font-size: 12px;
+      }
+      .feedback {
+        min-height: 23px;
+        font-size: 12px;
+        margin-top: 10px;
+        color: var(--teal);
+      }
+      .take-home {
+        font: 400 27px/1.4 var(--serif);
+        padding: 27px 0 0;
+        margin-top: 15px;
+        border-top: 1px solid var(--line);
+        max-width: 780px;
+      }
+      footer {
+        font-size: 11px;
+        color: var(--muted);
+        padding: 30px 0 45px;
+      }
+      footer p {
+        margin: 8px 0;
+      }
+      footer a {
+        margin-right: 12px;
+      }
+      .noscript {
+        padding: 18px;
+        background: var(--orange-bg);
+      }
+      [hidden] {
+        display: none !important;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      @media (min-width: 1500px) {
+        .layout {
+          gap: 65px;
+        }
+        .hero {
+          padding-top: 68px;
+        }
+        .chapter {
+          padding: 58px 0;
+        }
+      }
+      @media (max-width: 1100px) {
+        .layout {
+          grid-template-columns: 175px minmax(0, 1fr);
+          gap: 25px;
+          padding: 0 24px;
+        }
+        .hero-grid {
+          grid-template-columns: 1.1fr 0.9fr;
+        }
+        .four {
+          grid-template-columns: 1fr 1fr;
+        }
+        .viz-layout {
+          grid-template-columns: 1.4fr 1fr;
+        }
+        .method-picker {
+          grid-template-columns: repeat(4, 1fr);
+        }
+        .top-inner {
+          padding: 14px 24px;
+        }
+        .method {
+          padding: 20px;
+        }
+      }
+      @media (max-width: 820px) {
+        .layout {
+          display: block;
+          max-width: 760px;
+        }
+        .contents {
+          position: static;
+          padding: 18px 0 0;
+          display: flex;
+          overflow-x: auto;
+          gap: 7px;
+        }
+        .contents > .eyebrow,
+        .rail-note {
+          display: none;
+        }
+        .contents a {
+          flex: none;
+          border: 1px solid var(--line);
+          border-radius: 5px;
+          font-size: 11px;
+          padding: 8px 11px;
+        }
+        .contents a span {
+          display: none;
+        }
+        .hero {
+          padding-top: 30px;
+        }
+        .hero-art {
+          max-height: 250px;
+        }
+        .hero-grid {
+          gap: 10px;
+        }
+        .hero-meta {
+          gap: 15px;
+        }
+        .chapter {
+          padding: 38px 0;
+        }
+        .method-picker {
+          grid-template-columns: repeat(4, 1fr);
+        }
+        .top-actions {
+          gap: 14px;
+        }
+        .objectives {
+          gap: 15px;
+        }
+        .viz-layout {
+          gap: 18px;
+        }
+      }
+      @media (max-width: 580px) {
+        body {
+          font-size: 15px;
+        }
+        .layout {
+          padding: 0 17px;
+        }
+        .top-inner {
+          padding: 12px 17px;
+        }
+        .top-actions {
+          gap: 12px;
+        }
+        .top-actions a {
+          font-size: 11px;
+        }
+        .top-actions button {
+          font-size: 11px;
+          padding: 7px 9px;
+        }
+        .brand {
+          font-size: 11px;
+          gap: 9px;
+        }
+        .brand-icon {
+          display: none;
+        }
+        .hero-grid {
+          grid-template-columns: 1fr;
+        }
+        .hero-art {
+          max-height: 245px;
+          margin-top: 15px;
+        }
+        .hero h1 {
+          font-size: 49px;
+          max-width: 420px;
+        }
+        .hero .lede {
+          font-size: 15px;
+        }
+        .objectives {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+        .objectives strong {
+          display: inline;
+          margin-right: 6px;
+        }
+        .two,
+        .three,
+        .viz-layout {
+          grid-template-columns: 1fr;
+        }
+        .four {
+          gap: 10px;
+        }
+        .learning-type {
+          padding: 14px 12px;
+        }
+        .panel-head {
+          padding: 14px;
+          gap: 10px;
+        }
+        .panel-head h3 {
+          font-size: 12px;
+        }
+        .panel-body,
+        .method {
+          padding: 16px;
+        }
+        .tag {
+          font-size: 9px;
+        }
+        .chapter-head .eyebrow {
+          font-size: 10px;
+          letter-spacing: 1px;
+        }
+        .time {
+          font-size: 9px;
+        }
+        .intro {
+          font-size: 15px;
+        }
+        .preprocess {
+          grid-template-columns: 1fr 1fr;
+        }
+        .preprocess div {
+          padding: 13px 12px;
+        }
+        .split-strip div {
+          padding: 12px 8px;
+          font-size: 11px;
+        }
+        .split-strip b {
+          font-size: 20px;
+        }
+        .split-strip span {
+          font-size: 9px;
+        }
+        .method-picker {
+          grid-template-columns: repeat(2, 1fr);
+          padding: 11px;
+          gap: 6px;
+        }
+        .method-picker button {
+          font-size: 12px;
+        }
+        .method-title h3 {
+          font-size: 25px;
+        }
+        .fold-row button {
+          width: 66px;
+          font-size: 10px;
+        }
+        .fold-row {
+          gap: 4px;
+        }
+        .fold-row .cell {
+          font-size: 10px;
+        }
+        .method .plot {
+          max-height: none;
+        }
+        .take-home {
+          font-size: 24px;
+        }
+        th,
+        td {
+          padding: 10px 9px;
+        }
+        .hero-meta {
+          font-size: 10px;
+        }
+        .family-map .nest {
+          margin-left: 19px;
+        }
+        .panel-head .controls {
+          gap: 7px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        * {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to the lesson</a>
+    <header class="topbar">
+      <div class="top-inner">
+        <a class="brand" href="#main"
+          ><span class="brand-icon" aria-hidden="true"
+            ><i></i><i></i><i></i><i></i></span
+          >ARTIFICIAL INTELLIGENCE / 06</a
+        >
+        <div class="top-actions">
+          <a href="Machine_Learning.md">Teaching notes ↗</a
+          ><button
+            type="button"
+            id="routeToggle"
+            aria-controls="learning-route"
+            aria-expanded="true"
+          >
+            Hide route
+          </button>
+        </div>
+      </div>
+      <div class="progress" aria-hidden="true"><span id="progress"></span></div>
+    </header>
+    <div class="layout">
+      <nav class="contents" id="learning-route" aria-label="Lecture chapters">
+        <p class="eyebrow">The learning route</p>
+        <a href="#idea" class="active"><span>01</span>The idea</a
+        ><a href="#data"><span>02</span>Make data useful</a
+        ><a href="#evaluation"><span>03</span>Keep an honest score</a
+        ><a href="#training"><span>04</span>How training works</a
+        ><a href="#generalization"><span>05</span>Fit vs. generalize</a
+        ><a href="#models"><span>06</span>Meet the models</a
+        ><a href="#clustering"><span>07</span>Find hidden groups</a
+        ><a href="#recap"><span>08</span>Check your intuition</a>
+        <div class="rail-note">
+          <b>90 minutes, one overview.</b>Learn what each idea is for. The
+          derivations and implementations can come later.<br /><br />All
+          examples use invented data.<br />All diagrams are made for this
+          lesson.
+        </div>
+      </nav>
+      <main id="main">
+        <noscript
+          ><p class="noscript">
+            Enable JavaScript to see the interactive plots and model examples.
+            The explanations and data tables can still be read without it.
+          </p></noscript
+        >
+        <section class="hero" aria-labelledby="title">
+          <p class="eyebrow">Lecture 06 · Introduction to machine learning</p>
+          <div class="hero-grid">
+            <div>
+              <h1 id="title">From examples<br />to predictions.</h1>
+              <p class="lede">
+                How does a computer learn a useful rule from data? And how do we
+                know that rule will work on something it has never seen?
+              </p>
+              <div class="hero-meta">
+                <span><b>90 min</b> including discussion</span
+                ><span><b>8 chapters</b> from data to models</span
+                ><span><b>Start here</b> no ML background needed</span>
+              </div>
+            </div>
+            <svg
+              class="hero-art"
+              viewBox="0 0 440 330"
+              role="img"
+              aria-labelledby="heroTitle heroDesc"
+            >
+              <title id="heroTitle">
+                Past deliveries become a prediction for a new route
+              </title>
+              <desc id="heroDesc">
+                A small table of completed deliveries feeds a learned model. The
+                model predicts 28 minutes for a new delivery.
+              </desc>
+              <defs>
+                <pattern
+                  id="heroDots"
+                  width="16"
+                  height="16"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <circle cx="1" cy="1" r="1" fill="#d2dcd0" />
+                </pattern>
+                <marker
+                  id="heroArrow"
+                  markerWidth="7"
+                  markerHeight="7"
+                  refX="6"
+                  refY="3"
+                  orient="auto"
+                >
+                  <path d="M0 0L6 3L0 6" fill="none" stroke="#648275" />
+                </marker>
+              </defs>
+              <rect
+                x="5"
+                y="5"
+                width="430"
+                height="320"
+                rx="20"
+                fill="url(#heroDots)"
+              />
+              <rect
+                x="21"
+                y="29"
+                width="184"
+                height="139"
+                rx="10"
+                fill="#fffefa"
+                stroke="#b9cabc"
+              />
+              <text x="38" y="54" style="font-size: 10px; letter-spacing: 1px">
+                PAST DELIVERIES
+              </text>
+              <path
+                d="M36 68H190M36 98H190M36 128H190M105 68V153"
+                stroke="#d7dfd5"
+              />
+              <text x="42" y="88">2 km</text>
+              <text x="120" y="88">17 min</text>
+              <text x="42" y="118">5 km</text>
+              <text x="120" y="118">26 min</text>
+              <text x="42" y="148">8 km</text>
+              <text x="120" y="148">35 min</text>
+              <path
+                d="M205 100H249V179"
+                fill="none"
+                stroke="#648275"
+                stroke-width="1.5"
+                marker-end="url(#heroArrow)"
+              />
+              <rect
+                x="162"
+                y="186"
+                width="222"
+                height="112"
+                rx="12"
+                fill="#16695e"
+              />
+              <text
+                x="181"
+                y="211"
+                style="fill: #dceade; font-size: 10px; letter-spacing: 1px"
+              >
+                A LEARNED RELATIONSHIP
+              </text>
+              <path d="M185 276L185 232M185 276H355" stroke="#86aea0" />
+              <path d="M198 265L346 230" stroke="#e5bb59" stroke-width="2.5" />
+              <g fill="#fffefa">
+                <circle cx="208" cy="264" r="3" />
+                <circle cx="234" cy="250" r="3" />
+                <circle cx="275" cy="251" r="3" />
+                <circle cx="322" cy="234" r="3" />
+              </g>
+              <rect
+                x="266"
+                y="35"
+                width="151"
+                height="100"
+                rx="10"
+                fill="#e5bb59"
+              />
+              <text
+                x="282"
+                y="58"
+                style="fill: #5e491f; font-size: 10px; letter-spacing: 1px"
+              >
+                A NEW DELIVERY
+              </text>
+              <text
+                x="281"
+                y="96"
+                style="
+                  fill: #203b35;
+                  font-family: Georgia, serif;
+                  font-size: 34px;
+                "
+              >
+                28 min
+              </text>
+              <text x="282" y="119" style="fill: #5e491f; font-size: 10px">
+                a prediction, not a promise
+              </text>
+              <path
+                d="M384 235H425V99H418"
+                fill="none"
+                stroke="#648275"
+                stroke-width="1.5"
+                marker-end="url(#heroArrow)"
+              />
+            </svg>
+          </div>
+          <div class="objectives">
+            <div>
+              <strong>Describe the task.</strong>Identify the inputs, target,
+              and kind of learning.
+            </div>
+            <div>
+              <strong>Question the result.</strong>Separate learning from
+              evaluation and spot overfitting.
+            </div>
+            <div>
+              <strong>Recognize the tools.</strong>Explain the main model
+              families in plain language.
+            </div>
+          </div>
+        </section>
+
+        <section class="chapter" id="idea" aria-labelledby="idea-title">
+          <div class="chapter-head">
+            <span class="eyebrow">01 / The idea</span
+            ><span class="time">00–08 min · 8 min</span>
+          </div>
+          <h2 id="idea-title">
+            We write the learning procedure.<br />The data shapes the rule.
+          </h2>
+          <p class="intro">
+            A rule-based program follows instructions we specify. A machine
+            learning system uses examples to fit a model, then applies that
+            model to new inputs. Its useful skill is
+            <strong>generalization</strong>: doing well beyond the examples used
+            to train it.
+          </p>
+          <div class="two">
+            <div>
+              <div class="idea">
+                <h3>Examples → a general pattern</h3>
+                <p>
+                  After seeing many deliveries, a model may learn how distance
+                  and traffic relate to travel time. This is
+                  <strong>induction</strong>. The pattern is an informed guess;
+                  another route can still surprise it.
+                </p>
+              </div>
+              <div class="idea">
+                <h3>A general rule → a particular conclusion</h3>
+                <p>
+                  “Every route over 10 km needs a long-distance fee; this route
+                  is 12 km; add the fee.” This is <strong>deduction</strong>:
+                  applying a given rule.
+                </p>
+              </div>
+              <p class="small">
+                Training does not continue automatically after release. A
+                deployed model usually stays fixed until we deliberately update
+                it.
+              </p>
+            </div>
+            <div
+              class="family-map"
+              role="img"
+              aria-label="Artificial intelligence contains machine learning, which contains neural networks, which contain deep learning."
+            >
+              <strong>Artificial intelligence</strong>
+              <p>
+                Making machines perform tasks that require intelligent behavior.
+              </p>
+              <div class="nest">
+                <strong>Machine learning</strong>
+                <p>Learning patterns from data.</p>
+                <div class="nest">
+                  <strong>Neural networks</strong>
+                  <p>Connected layers of learned computations.</p>
+                  <div class="nest">
+                    <strong>Deep learning</strong>
+                    <p>Neural networks with multiple hidden layers.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="four learning-types">
+            <div class="learning-type">
+              <span class="signal">Examples + answers</span>
+              <h3>Supervised</h3>
+              <p>
+                Learn from inputs paired with targets. Predict a delivery time
+                or whether a parcel will arrive late.
+              </p>
+            </div>
+            <div class="learning-type">
+              <span class="signal">Examples, no answers</span>
+              <h3>Unsupervised</h3>
+              <p>
+                Look for structure without target labels. Group deliveries with
+                similar characteristics.
+              </p>
+            </div>
+            <div class="learning-type">
+              <span class="signal">A few answers</span>
+              <h3>Semi-supervised</h3>
+              <p>
+                Use a small labeled set together with a larger unlabeled set.
+                Useful when labeling is expensive.
+              </p>
+            </div>
+            <div class="learning-type">
+              <span class="signal">Actions + rewards</span>
+              <h3>Reinforcement</h3>
+              <p>
+                An agent acts, observes the outcome, and learns to improve total
+                reward over time, as in a game.
+              </p>
+            </div>
+          </div>
+          <div class="note">
+            <strong>Two different questions:</strong> supervised / unsupervised
+            describes the learning signal. Shallow / deep describes the model.
+            Deep learning can be used with different learning signals.
+          </div>
+        </section>
+
+        <section class="chapter" id="data" aria-labelledby="data-title">
+          <div class="chapter-head">
+            <span class="eyebrow">02 / Make data useful</span
+            ><span class="time">08–20 min · 12 min</span>
+          </div>
+          <h2 id="data-title">Start with what one row means.</h2>
+          <p class="intro">
+            A dataset is a collection of examples. Each
+            <strong>feature</strong> is an input characteristic; the
+            <strong>target</strong> is what we want to predict. Here, one row is
+            one completed delivery.
+          </p>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Our running example: delivery time</h3>
+              <span class="tag">Illustrative data</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <caption class="sr-only">
+                  Three features and one numeric target for four deliveries
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Distance, km</th>
+                    <th>Rain?</th>
+                    <th>Departure hour</th>
+                    <th class="target">Time, min · target y</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>2</td>
+                    <td>No</td>
+                    <td>10</td>
+                    <td class="target">17</td>
+                  </tr>
+                  <tr>
+                    <td>5</td>
+                    <td>Yes</td>
+                    <td>18</td>
+                    <td class="target">34</td>
+                  </tr>
+                  <tr>
+                    <td>8</td>
+                    <td>No</td>
+                    <td>11</td>
+                    <td class="target">35</td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>No</td>
+                    <td>17</td>
+                    <td class="target">28</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="panel-body small">
+              <strong>X</strong> holds the input features;
+              <strong>y</strong> holds the target. Three input columns means
+              three dimensions. A model is a learned mapping:
+              <strong>ŷ = f(X)</strong>. The hat marks a prediction.
+            </div>
+          </div>
+          <div class="preprocess">
+            <div>
+              <span>01</span><b>Clean</b>
+              <p>
+                Check missing values, impossible entries, inconsistent units,
+                and duplicate records. Investigate outliers before deleting
+                them.
+              </p>
+            </div>
+            <div>
+              <span>02</span><b>Integrate</b>
+              <p>
+                Join sources carefully. A delivery ID should connect the same
+                delivery across files.
+              </p>
+            </div>
+            <div>
+              <span>03</span><b>Encode &amp; construct</b>
+              <p>
+                Turn categories into numeric inputs. Derive “rush hour” from the
+                departure time: this is feature engineering.
+              </p>
+            </div>
+            <div>
+              <span>04</span><b>Scale</b>
+              <p>
+                Min–max scaling maps a training range to [0, 1]. Standardization
+                subtracts the mean and divides by the standard deviation.
+              </p>
+            </div>
+            <div>
+              <span>05</span><b>Aggregate &amp; discretize</b>
+              <p>
+                Summarize events by day, or replace minutes with time bands.
+                Simpler representations can lose useful detail.
+              </p>
+            </div>
+            <div>
+              <span>06</span><b>Reduce</b>
+              <p>
+                Select useful features, sample rows, or use PCA to represent
+                numeric data in fewer dimensions.
+              </p>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Same deliveries. A different nearest neighbor.</h3>
+              <span class="tag">Try both scales</span>
+            </div>
+            <div class="panel-body viz-layout">
+              <div>
+                <svg
+                  id="scalePlot"
+                  class="plot"
+                  viewBox="0 0 490 290"
+                  role="img"
+                  aria-label="Query delivery and two candidate neighbors, before and after min–max scaling"
+                ></svg>
+              </div>
+              <div>
+                <div
+                  class="controls"
+                  role="group"
+                  aria-label="Distance calculation"
+                >
+                  <button id="rawScale" aria-pressed="true" type="button">
+                    Raw values</button
+                  ><button
+                    id="normalizedScale"
+                    aria-pressed="false"
+                    type="button"
+                  >
+                    Scaled values
+                  </button>
+                </div>
+                <div id="scaleReadout" class="readout" role="status"></div>
+                <p class="small">
+                  Distance is in km; parcel mass is in grams. Without scaling,
+                  grams dominate Euclidean distance. Scaling changes what “near”
+                  means.
+                </p>
+                <p class="tiny">
+                  Training ranges: 0–10 km and 0–5,000 g. The axes change units
+                  too, so positions stay fixed. Compare the calculated
+                  distances, not line lengths on screen.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="note warm">
+            <strong>Only use information available at prediction time.</strong>
+            “Actual arrival time” would reveal the target. Split the data first,
+            then learn imputation values, scaling statistics, and PCA from the
+            training portion.
+          </div>
+        </section>
+
+        <section class="chapter" id="evaluation" aria-labelledby="eval-title">
+          <div class="chapter-head">
+            <span class="eyebrow">03 / Keep an honest score</span
+            ><span class="time">20–32 min · 12 min</span>
+          </div>
+          <h2 id="eval-title">
+            Practicing and being examined<br />are different jobs.
+          </h2>
+          <p class="intro">
+            A low error on familiar examples is encouraging, but it does not
+            tell us how the model will handle a new delivery. Give each part of
+            the dataset a clear role.
+          </p>
+          <div
+            class="split-strip"
+            role="img"
+            aria-label="Example split: 60 percent training to learn parameters, 20 percent validation to choose settings, 20 percent test for final evaluation"
+          >
+            <div>
+              <b>60%</b>Training<span>Learn the model's parameters.</span>
+            </div>
+            <div>
+              <b>20%</b>Validation<span>Choose models and settings.</span>
+            </div>
+            <div><b>20%</b>Test<span>Evaluate the final choice.</span></div>
+          </div>
+          <p class="small">
+            These proportions are an example, not a rule. Keep future data after
+            past data for forecasting; keep the same person or delivery out of
+            multiple splits. The split should resemble the situation in which
+            the model will be used.
+          </p>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Five-fold cross-validation</h3>
+              <span class="tag">Select a round</span>
+            </div>
+            <div class="panel-body two">
+              <div>
+                <div
+                  id="folds"
+                  class="folds"
+                  aria-label="Five cross-validation rounds"
+                ></div>
+                <div class="legend">
+                  <span>used for training</span
+                  ><span class="orange">held out for validation (gold)</span>
+                </div>
+              </div>
+              <div>
+                <p>
+                  Divide the development data into five parts. For each round,
+                  fit a <strong>fresh model</strong> on four parts and validate
+                  on the remaining part. Average the five validation scores to
+                  compare settings.
+                </p>
+                <div id="foldReadout" class="readout" role="status"></div>
+                <p class="small">
+                  Fit preprocessing inside each fold. The test set stays outside
+                  this process. Once settings are chosen, refit on the
+                  development data and evaluate on the test set.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="two" style="margin-top: 24px">
+            <div class="idea">
+              <h3>A number needs an error measure</h3>
+              <p>
+                <strong>Regression:</strong> predict a numeric quantity, such as
+                27.5 minutes. Mean squared error averages squared prediction
+                errors; mean absolute error is in the target's units.
+              </p>
+            </div>
+            <div class="idea">
+              <h3>A category needs the right score</h3>
+              <p>
+                <strong>Classification:</strong> predict a discrete class, such
+                as “late” or “on time.” Accuracy is the fraction correct. If
+                only 5% of deliveries are late, always predicting “on time” gets
+                95% accuracy and misses every late delivery.
+              </p>
+            </div>
+          </div>
+          <div class="note">
+            <strong>The test set is a final check.</strong> Repeatedly changing
+            a model after seeing its test score turns that set into another
+            validation set.
+          </div>
+        </section>
+
+        <section class="chapter" id="training" aria-labelledby="training-title">
+          <div class="chapter-head">
+            <span class="eyebrow">04 / How training works</span
+            ><span class="time">32–44 min · 12 min</span>
+          </div>
+          <h2 id="training-title">
+            Make a prediction. Measure the miss.<br />Adjust the model.
+          </h2>
+          <p class="intro">
+            In <strong>linear regression</strong>, the prediction is a weighted
+            sum of the inputs plus an intercept. With one feature, that is a
+            straight line. Least squares chooses the line that minimizes squared
+            <strong>vertical residuals</strong>: actual minus predicted time.
+          </p>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Fit a line to six delivery times</h3>
+              <span class="tag">Drag → compare → fit</span>
+            </div>
+            <div class="panel-body viz-layout">
+              <div>
+                <svg
+                  id="linearPlot"
+                  class="plot"
+                  viewBox="0 0 550 350"
+                  role="img"
+                  aria-label="Delivery distance versus time, fitted line, and vertical residuals"
+                ></svg>
+                <div class="legend">
+                  <span>observations</span
+                  ><span class="orange">current prediction</span
+                  ><span class="gray">residuals</span>
+                </div>
+              </div>
+              <div>
+                <label class="field" for="slope"
+                  ><span
+                    >Slope · minutes per km
+                    <output id="slopeOut" for="slope"></output></span
+                  ><input
+                    id="slope"
+                    type="range"
+                    min="-1"
+                    max="6"
+                    value="1"
+                    step="any" /></label
+                ><label class="field" for="intercept"
+                  ><span
+                    >Intercept · minutes
+                    <output id="interceptOut" for="intercept"></output></span
+                  ><input
+                    id="intercept"
+                    type="range"
+                    min="0"
+                    max="25"
+                    value="8"
+                    step="any"
+                /></label>
+                <div id="linearReadout" class="readout" role="status"></div>
+                <div class="controls">
+                  <button id="bestFit" class="primary" type="button">
+                    Least-squares fit</button
+                  ><button id="resetLine" type="button">Reset</button>
+                </div>
+                <p class="small" style="margin-top: 14px">
+                  Move either parameter. The line changes; the six observations
+                  stay fixed.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="two" style="margin-top: 24px">
+            <div>
+              <h3>Parameters are learned.</h3>
+              <p class="small">
+                The slope and intercept are parameters. Training finds their
+                values. A <strong>loss</strong> measures the mismatch on an
+                example; the training objective usually aggregates losses over
+                the data.
+              </p>
+              <div class="formula">MSE = (1/n) Σ (yᵢ − ŷᵢ)²</div>
+              <p class="small">
+                <strong>Gradient descent</strong> is one way to optimize an
+                objective: move parameters opposite the gradient. A small
+                learning rate takes short steps; an overly large one can
+                overshoot.
+              </p>
+            </div>
+            <div>
+              <h3>Hyperparameters are chosen.</h3>
+              <p class="small">
+                The learning rate, batch size, tree depth, and neighbor count
+                are settings we choose or tune using validation. They are not
+                learned in the same way as the fitted weights.
+              </p>
+              <div class="formula">
+                parameter ← parameter − learning rate × gradient
+              </div>
+              <p class="small">
+                Least-squares regression also has a direct solution. KNN does
+                not use this gradient-descent training loop; it keeps the
+                training examples for later comparisons.
+              </p>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Batch, iteration, epoch</h3>
+              <span class="tag">A training vocabulary check</span>
+            </div>
+            <div class="panel-body two">
+              <div>
+                <label class="field" for="batchSize"
+                  ><span
+                    >Batch size · 240 training examples
+                    <output id="batchOut" for="batchSize"></output></span
+                  ><input
+                    id="batchSize"
+                    type="range"
+                    min="8"
+                    max="80"
+                    value="24"
+                    step="8"
+                /></label>
+                <div id="batchGrid" class="batch-grid" aria-hidden="true"></div>
+                <div id="batchReadout" class="small" role="status"></div>
+              </div>
+              <div>
+                <p class="small">
+                  A <strong>batch</strong> is a group of training examples
+                  processed together. In a typical mini-batch training loop, one
+                  batch produces one parameter update: an
+                  <strong>iteration</strong>.
+                </p>
+                <p class="small">
+                  An <strong>epoch</strong> is one complete pass through the
+                  training set. Here, the last batch is kept even when it is
+                  smaller. Three epochs mean three passes, not three updates.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="chapter"
+          id="generalization"
+          aria-labelledby="generalization-title"
+        >
+          <div class="chapter-head">
+            <span class="eyebrow">05 / Fit vs. generalize</span
+            ><span class="time">44–56 min · 12 min</span>
+          </div>
+          <h2 id="generalization-title">
+            Learning the examples<br />is not the same as learning the pattern.
+          </h2>
+          <p class="intro">
+            A model can be too rigid to capture a relationship, or so flexible
+            that it follows accidental details.
+            <strong>Complexity</strong> describes the patterns a model can
+            represent; parameter count is only one rough indicator.
+          </p>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>A regression tree with more or fewer leaves</h3>
+              <span class="tag">Actual fits, simulated data</span>
+            </div>
+            <div class="panel-body">
+              <div class="viz-layout">
+                <div>
+                  <svg
+                    id="biasPlot"
+                    class="plot"
+                    viewBox="0 0 550 345"
+                    role="img"
+                    aria-label="Regression tree fit, noisy training observations, and the underlying simulated relationship"
+                  ></svg>
+                  <div class="legend">
+                    <span>training examples</span
+                    ><span class="orange">tree prediction</span
+                    ><span class="gray">underlying pattern</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="field" for="leaves"
+                    ><span
+                      >Maximum leaves
+                      <output id="leavesOut" for="leaves"></output></span
+                    ><input
+                      id="leaves"
+                      type="range"
+                      min="1"
+                      max="18"
+                      step="1"
+                      value="4"
+                  /></label>
+                  <div class="stat-pair">
+                    <div class="readout">
+                      <b id="trainMSE"></b
+                      ><span class="unit">training MSE · min²</span>
+                    </div>
+                    <div class="readout">
+                      <b id="valMSE"></b
+                      ><span class="unit">validation MSE · min²</span>
+                    </div>
+                  </div>
+                  <div class="controls">
+                    <button id="resample" type="button">
+                      New training sample</button
+                    ><button
+                      id="showVariance"
+                      type="button"
+                      aria-pressed="false"
+                    >
+                      Compare samples
+                    </button>
+                  </div>
+                  <p
+                    id="biasReadout"
+                    class="small"
+                    role="status"
+                    style="margin-top: 14px"
+                  ></p>
+                </div>
+              </div>
+              <p class="tiny" style="margin-top: 14px">
+                The dashed curve is known only because this dataset is
+                simulated. Each tree learns its split points from 18
+                observations. The 120 validation examples stay fixed. “Compare
+                samples” overlays four trees trained on other samples.
+              </p>
+            </div>
+          </div>
+          <div class="three" style="margin-top: 25px">
+            <div class="idea">
+              <span class="idea-number">TOO RIGID</span>
+              <h3>Underfitting &amp; bias</h3>
+              <p>
+                A model with strong restrictions can miss a real relationship.
+                <strong>Bias</strong> is systematic error in the model's average
+                prediction across training samples.
+              </p>
+            </div>
+            <div class="idea">
+              <span class="idea-number">TOO SENSITIVE</span>
+              <h3>Overfitting &amp; variance</h3>
+              <p>
+                A model may fit the training data closely but perform worse on
+                new examples. <strong>Variance</strong> is how much its
+                predictions change when the training sample changes.
+              </p>
+            </div>
+            <div class="idea">
+              <span class="idea-number">UNPREDICTABLE DETAIL</span>
+              <h3>Noise</h3>
+              <p>
+                Some variation is not explained by the available inputs: a
+                traffic light, a recording error, or an unmeasured delay.
+                Fitting it more closely may not help.
+              </p>
+            </div>
+          </div>
+          <div class="note">
+            <strong>The practical trade-off:</strong> increasing flexibility
+            often lowers bias and raises variance. It is a useful tendency, not
+            a law for every model. Use validation to choose complexity; the
+            lowest training error is not the goal.
+          </div>
+        </section>
+
+        <section class="chapter" id="models" aria-labelledby="models-title">
+          <div class="chapter-head">
+            <span class="eyebrow">06 / Meet the models</span
+            ><span class="time">56–74 min · 18 min</span>
+          </div>
+          <h2 id="models-title">
+            Different ways to turn<br />examples into a decision.
+          </h2>
+          <p class="intro">
+            We have already used linear regression for a numeric target. For
+            classification, imagine predicting whether a delivery will be late.
+            Each method below approaches that question differently.
+          </p>
+          <div class="panel">
+            <div
+              class="method-picker"
+              role="group"
+              aria-label="Choose a model to explore"
+            >
+              <button
+                type="button"
+                data-method="logistic"
+                aria-pressed="true"
+                aria-controls="method-logistic"
+              >
+                Logistic regression<small>A probability</small></button
+              ><button
+                type="button"
+                data-method="knn"
+                aria-pressed="false"
+                aria-controls="method-knn"
+              >
+                K-nearest neighbors<small>A local vote</small></button
+              ><button
+                type="button"
+                data-method="svm"
+                aria-pressed="false"
+                aria-controls="method-svm"
+              >
+                Support vector machine<small>A wide margin</small></button
+              ><button
+                type="button"
+                data-method="bayes"
+                aria-pressed="false"
+                aria-controls="method-bayes"
+              >
+                Naive Bayes<small>Combined evidence</small></button
+              ><button
+                type="button"
+                data-method="tree"
+                aria-pressed="false"
+                aria-controls="method-tree"
+              >
+                Decision tree<small>A chain of questions</small></button
+              ><button
+                type="button"
+                data-method="ensemble"
+                aria-pressed="false"
+                aria-controls="method-ensemble"
+              >
+                Ensembles<small>Models working together</small></button
+              ><button
+                type="button"
+                data-method="neural"
+                aria-pressed="false"
+                aria-controls="method-neural"
+              >
+                Neural networks<small>Learned representations</small>
+              </button>
+            </div>
+            <article
+              class="method"
+              id="method-logistic"
+              aria-labelledby="logistic-title"
+            >
+              <div class="method-title">
+                <h3 id="logistic-title">Logistic regression</h3>
+                <span class="tag">Classification</span>
+              </div>
+              <p class="small">
+                First compute a weighted score, <strong>z = w·x + b</strong>.
+                The sigmoid turns that score into a probability between 0 and 1.
+                A threshold turns the probability into a class. Despite the
+                name, logistic regression is a classifier.
+              </p>
+              <div class="viz-layout">
+                <svg
+                  id="logisticPlot"
+                  class="plot"
+                  viewBox="0 0 490 300"
+                  role="img"
+                  aria-label="Sigmoid probability curve with selected score and classification threshold"
+                ></svg>
+                <div>
+                  <label class="field" for="logisticScore"
+                    ><span
+                      >Model score z
+                      <output id="logisticScoreOut"></output></span
+                    ><input
+                      id="logisticScore"
+                      type="range"
+                      min="-6"
+                      max="6"
+                      step="0.1"
+                      value="1" /></label
+                  ><label class="field" for="threshold"
+                    ><span
+                      >Decision threshold
+                      <output id="thresholdOut"></output></span
+                    ><input
+                      id="threshold"
+                      type="range"
+                      min="0.1"
+                      max="0.9"
+                      step="0.05"
+                      value="0.5"
+                  /></label>
+                  <div id="logisticReadout" class="readout" role="status"></div>
+                </div>
+              </div>
+              <div class="formula">P(late | x) = σ(z) = 1 / (1 + e⁻ᶻ)</div>
+              <p class="takeaway">
+                Changing the threshold changes the decision, without changing
+                the fitted probabilities. Training usually minimizes log loss,
+                not squared error.
+              </p>
+            </article>
+            <article
+              class="method"
+              id="method-knn"
+              aria-labelledby="knn-title"
+              hidden
+            >
+              <div class="method-title">
+                <h3 id="knn-title">K-nearest neighbors</h3>
+                <span class="tag">Classification / regression</span>
+              </div>
+              <p class="small">
+                Keep the training examples. For a new point, find its
+                <strong>K nearest neighbors</strong>. Classification uses a
+                majority vote; regression can average their target values.
+                “Non-parametric” means the model is not restricted to a
+                fixed-size parameterized form.
+              </p>
+              <div class="viz-layout">
+                <svg
+                  id="knnPlot"
+                  class="plot"
+                  viewBox="0 0 490 310"
+                  role="img"
+                  aria-label="Two classes, a query point, and its K nearest neighbors"
+                ></svg>
+                <div>
+                  <label class="field" for="neighborK"
+                    ><span
+                      >Neighbor count K
+                      <output id="neighborKOut"></output></span
+                    ><input
+                      id="neighborK"
+                      type="range"
+                      min="1"
+                      max="9"
+                      step="2"
+                      value="3" /></label
+                  ><label class="field" for="queryX"
+                    ><span
+                      >Query · feature 1 <output id="queryXOut"></output></span
+                    ><input
+                      id="queryX"
+                      type="range"
+                      min="0"
+                      max="10"
+                      step="0.1"
+                      value="5.2" /></label
+                  ><label class="field" for="queryY"
+                    ><span
+                      >Query · feature 2 <output id="queryYOut"></output></span
+                    ><input
+                      id="queryY"
+                      type="range"
+                      min="0"
+                      max="10"
+                      step="0.1"
+                      value="5"
+                  /></label>
+                  <div id="knnReadout" class="readout" role="status"></div>
+                </div>
+              </div>
+              <p class="takeaway">
+                Small K follows local detail; larger K smooths the vote. Tune K
+                with validation. Distance depends on feature scaling. Circles
+                mark “on time,” squares mark “late,” and the gold diamond is the
+                query.
+              </p>
+            </article>
+            <article
+              class="method"
+              id="method-svm"
+              aria-labelledby="svm-title"
+              hidden
+            >
+              <div class="method-title">
+                <h3 id="svm-title">Support vector machine</h3>
+                <span class="tag">Classification / regression variant</span>
+              </div>
+              <p class="small">
+                A linear SVM seeks a separating boundary with a wide
+                <strong>margin</strong>. The most influential training points
+                are the <strong>support vectors</strong>. Soft-margin SVMs allow
+                violations rather than forcing perfect separation.
+              </p>
+              <div class="viz-layout">
+                <svg
+                  id="svmPlot"
+                  class="plot"
+                  viewBox="0 0 490 300"
+                  role="img"
+                  aria-label="Two separated classes with a maximum-margin boundary and highlighted support vectors"
+                ></svg>
+                <div>
+                  <h4>What the picture says</h4>
+                  <p class="small">
+                    The solid line makes the decision. Dashed lines mark the
+                    margin. Rings identify points touching the margin in this
+                    separable example.
+                  </p>
+                  <p class="small">
+                    A kernel can represent nonlinear boundaries. The
+                    regularization setting <strong>C</strong> controls the
+                    penalty for margin violations. Support vector regression
+                    uses a related idea for numeric targets.
+                  </p>
+                </div>
+              </div>
+              <p class="takeaway">
+                “Separate the classes” is not enough: the margin helps
+                distinguish possible boundaries. Feature scaling matters here,
+                too.
+              </p>
+            </article>
+            <article
+              class="method"
+              id="method-bayes"
+              aria-labelledby="bayes-title"
+              hidden
+            >
+              <div class="method-title">
+                <h3 id="bayes-title">Naive Bayes</h3>
+                <span class="tag">Classification</span>
+              </div>
+              <p class="small">
+                For a text example, start with a class prior and combine the
+                evidence from words. The “naive” assumption is that features are
+                <strong>conditionally independent given the class</strong>.
+                Words often violate this assumption, but the classifier can
+                still be useful.
+              </p>
+              <div class="viz-layout">
+                <svg
+                  id="bayesPlot"
+                  class="plot"
+                  viewBox="0 0 490 275"
+                  role="img"
+                  aria-label="Normalized spam and non-spam probabilities from selected word evidence"
+                ></svg>
+                <div>
+                  <p class="small"><strong>Select observed words:</strong></p>
+                  <div class="controls">
+                    <button type="button" data-word="free" aria-pressed="true">
+                      free</button
+                    ><button
+                      type="button"
+                      data-word="meeting"
+                      aria-pressed="false"
+                    >
+                      meeting
+                    </button>
+                  </div>
+                  <div id="bayesReadout" class="readout" role="status"></div>
+                  <p class="tiny">
+                    Toy probabilities: P(spam) = .30; P(free | spam) = .70,
+                    P(free | not spam) = .10; P(meeting | spam) = .05, P(meeting
+                    | not spam) = .60. Only selected words contribute; absence
+                    is ignored.
+                  </p>
+                </div>
+              </div>
+              <div class="formula">
+                P(class | words) ∝ P(class) × ∏ P(word | class)
+              </div>
+              <p class="takeaway">
+                Normalize the two class scores so they sum to 1. The
+                independence assumption concerns words <em>within a class</em>,
+                not words in the whole dataset.
+              </p>
+            </article>
+            <article
+              class="method"
+              id="method-tree"
+              aria-labelledby="tree-title"
+              hidden
+            >
+              <div class="method-title">
+                <h3 id="tree-title">Decision tree</h3>
+                <span class="tag">Classification / regression</span>
+              </div>
+              <p class="small">
+                A tree splits the feature space by asking questions. Training
+                chooses splits that improve class purity or reduce numeric
+                prediction error. A leaf gives a class, a class probability, or
+                a numeric prediction.
+              </p>
+              <div class="viz-layout">
+                <svg
+                  id="treePlot"
+                  class="plot"
+                  viewBox="0 0 490 300"
+                  role="img"
+                  aria-label="An illustrative delivery decision tree with the active prediction path highlighted"
+                ></svg>
+                <div>
+                  <label class="field" for="treeDistance"
+                    ><span
+                      >Delivery distance, km
+                      <output id="treeDistanceOut"></output></span
+                    ><input
+                      id="treeDistance"
+                      type="range"
+                      min="1"
+                      max="10"
+                      value="7"
+                      step="0.5" /></label
+                  ><label class="controls small"
+                    ><input id="treeRain" type="checkbox" checked /> Rain on the
+                    route</label
+                  >
+                  <div id="treeReadout" class="readout" role="status"></div>
+                  <p class="tiny">
+                    A hand-built example to show traversal. A trained tree would
+                    learn its questions from data.
+                  </p>
+                </div>
+              </div>
+              <p class="takeaway">
+                A deep tree can memorize small groups of training examples.
+                Depth limits and minimum leaf sizes help control overfitting.
+                Trees usually do not need numeric feature scaling.
+              </p>
+            </article>
+            <article
+              class="method"
+              id="method-ensemble"
+              aria-labelledby="ensemble-title"
+              hidden
+            >
+              <div class="method-title">
+                <h3 id="ensemble-title">Ensembles</h3>
+                <span class="tag">Classification / regression</span>
+              </div>
+              <p class="small">
+                Combine several models instead of relying on one.
+                <strong>Bagging</strong> trains models on resampled data and
+                combines their predictions. A
+                <strong>random forest</strong> adds random feature subsets when
+                splitting trees, helping make their errors less alike.
+              </p>
+              <div class="viz-layout">
+                <svg
+                  id="ensemblePlot"
+                  class="plot"
+                  viewBox="0 0 490 270"
+                  role="img"
+                  aria-label="Three illustrative trees predict late probabilities of 20, 70, and 80 percent, averaging to 57 percent"
+                ></svg>
+                <div>
+                  <h4>Another approach: boosting</h4>
+                  <p class="small">
+                    Build models sequentially so later ones address errors left
+                    by the current ensemble. AdaBoost increases attention to
+                    misclassified examples; gradient boosting fits successive
+                    corrections to a loss.
+                  </p>
+                  <p class="small">
+                    Averaging helps most when models make different errors.
+                    Boosting also needs control over complexity.
+                  </p>
+                </div>
+              </div>
+              <p class="takeaway">
+                The figure averages class probabilities, as a forest classifier
+                commonly does. Other ensembles combine votes or weighted scores.
+              </p>
+            </article>
+            <article
+              class="method"
+              id="method-neural"
+              aria-labelledby="neural-title"
+              hidden
+            >
+              <div class="method-title">
+                <h3 id="neural-title">Neural networks &amp; deep learning</h3>
+                <span class="tag">Many kinds of tasks</span>
+              </div>
+              <p class="small">
+                Each layer computes weighted combinations of its inputs and
+                applies an activation function. Hidden layers learn intermediate
+                <strong>representations</strong>; multiple hidden layers make
+                the network deep. Training adjusts weights through
+                backpropagation and an optimizer.
+              </p>
+              <div class="viz-layout">
+                <svg
+                  id="neuralPlot"
+                  class="plot"
+                  viewBox="0 0 490 300"
+                  role="img"
+                  aria-label="Three inputs pass through two hidden layers to an output probability"
+                ></svg>
+                <div>
+                  <h4>Why hidden layers help</h4>
+                  <p class="small">
+                    In images, early layers may detect edges, while later layers
+                    combine them into more useful patterns. These features are
+                    learned from a training objective rather than individually
+                    specified.
+                  </p>
+                  <p class="small">
+                    The output and loss depend on the task: a numeric value for
+                    regression, class probabilities for classification, or other
+                    structures for other tasks.
+                  </p>
+                </div>
+              </div>
+              <p class="takeaway">
+                A perceptron is a basic linear classifier. Nonlinear activations
+                between layers let a network represent relationships that a
+                stack of purely linear layers cannot.
+              </p>
+            </article>
+          </div>
+          <details>
+            <summary>A few more names from the lecture materials</summary>
+            <div class="table-wrap">
+              <table class="compare">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Idea to recognize</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Quadratic classifiers</td>
+                    <td>
+                      Allow quadratic decision boundaries rather than only
+                      straight ones; quadratic discriminant analysis is one
+                      example.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Least-squares SVM</td>
+                    <td>
+                      A related SVM formulation using squared errors and
+                      equality constraints.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Learning vector quantization</td>
+                    <td>
+                      A supervised prototype method: compare inputs with labeled
+                      representative vectors.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="small">
+              Recognize these as alternatives; their derivations are outside
+              this introduction.
+            </p>
+          </details>
+        </section>
+
+        <section
+          class="chapter"
+          id="clustering"
+          aria-labelledby="clustering-title"
+        >
+          <div class="chapter-head">
+            <span class="eyebrow">07 / Find hidden groups</span
+            ><span class="time">74–85 min · 11 min</span>
+          </div>
+          <h2 id="clustering-title">What if nobody gave us the labels?</h2>
+          <p class="intro">
+            <strong>Clustering</strong> groups examples by similarity in their
+            features. Classification learns known target classes; clustering
+            discovers groups under a chosen definition of similarity. A cluster
+            is not automatically a meaningful real-world category.
+          </p>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>K-means: assign, move, repeat</h3>
+              <span class="tag">Step through the algorithm</span>
+            </div>
+            <div class="panel-body viz-layout">
+              <div>
+                <svg
+                  id="kmeansPlot"
+                  class="plot"
+                  viewBox="0 0 550 350"
+                  role="img"
+                  aria-label="Unlabeled examples assigned to clusters and their current centroids"
+                ></svg>
+                <div class="legend">
+                  <span>circles: examples</span
+                  ><span class="orange">crosses: centroids</span>
+                </div>
+              </div>
+              <div>
+                <label class="field" for="clusterK"
+                  ><span>Number of clusters K</span
+                  ><select id="clusterK">
+                    <option>2</option>
+                    <option selected>3</option>
+                    <option>4</option>
+                  </select></label
+                >
+                <div id="kmeansReadout" class="readout" role="status"></div>
+                <div class="controls">
+                  <button id="clusterStep" class="primary" type="button">
+                    Assign points</button
+                  ><button id="clusterReset" type="button">Reset</button>
+                </div>
+                <p class="small" style="margin-top: 15px">
+                  <strong>Assign:</strong> give each point to its nearest
+                  centroid.<br /><strong>Update:</strong> move each centroid to
+                  the mean of its assigned points.<br />Repeat until assignments
+                  stop changing.
+                </p>
+                <p id="inertia" class="tiny" style="margin-top: 10px"></p>
+              </div>
+            </div>
+          </div>
+          <p class="small" style="margin-top: 20px">
+            K-means minimizes within-cluster squared Euclidean distances. Choose
+            K beforehand; try multiple initializations. It is sensitive to
+            scale, outliers, and starting centers, and it works best with
+            compact groups. Here, both axes are already on comparable scales.
+          </p>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Hierarchical clustering: keep the merge history</h3>
+              <span class="tag">One dataset, three linkages</span>
+            </div>
+            <div class="panel-body two">
+              <div>
+                <svg
+                  id="hierarchyPlot"
+                  class="plot"
+                  viewBox="0 0 490 315"
+                  role="img"
+                  aria-label="Agglomerative clustering dendrogram for five one-dimensional points"
+                ></svg>
+              </div>
+              <div>
+                <label class="field" for="linkage"
+                  ><span>How far apart are two clusters?</span
+                  ><select id="linkage">
+                    <option value="single">
+                      Single linkage · nearest pair
+                    </option>
+                    <option value="complete">
+                      Complete linkage · farthest pair
+                    </option>
+                    <option value="average">
+                      Average linkage · mean of all cross-pairs
+                    </option>
+                  </select></label
+                >
+                <p class="small">
+                  <strong>Agglomerative:</strong> start with one cluster per
+                  point; repeatedly merge the closest pair of clusters. A
+                  dendrogram records the merges. Its height shows merge
+                  distance.
+                </p>
+                <p class="small">
+                  <strong>Divisive:</strong> start with one large cluster and
+                  split it. These are bottom-up and top-down approaches,
+                  respectively.
+                </p>
+                <div id="hierarchyReadout" class="readout" role="status"></div>
+              </div>
+            </div>
+          </div>
+          <div class="note">
+            <strong>K has different jobs.</strong> In KNN, K counts labeled
+            neighbors used for a prediction. In K-means, K counts unlabeled
+            groups we ask the algorithm to form.
+          </div>
+        </section>
+
+        <section class="chapter" id="recap" aria-labelledby="recap-title">
+          <div class="chapter-head">
+            <span class="eyebrow">08 / Check your intuition</span
+            ><span class="time">85–90 min · 5 min</span>
+          </div>
+          <h2 id="recap-title">Explain the choice,<br />not just the name.</h2>
+          <p class="intro">
+            Take a minute to answer, then explain your reasoning to someone
+            nearby.
+          </p>
+          <div
+            class="check"
+            data-answer="regression"
+            data-explanation="The target is a numeric duration, so this is supervised regression. If the target were simply ‘late / on time,’ it would be classification."
+          >
+            <h3>
+              1. We have past delivery times and want to predict minutes for a
+              new delivery. What is the task?
+            </h3>
+            <div class="choices">
+              <button type="button" data-choice="classification">
+                Classification</button
+              ><button type="button" data-choice="regression">Regression</button
+              ><button type="button" data-choice="clustering">
+                Clustering
+              </button>
+            </div>
+            <div class="feedback" role="status"></div>
+          </div>
+          <div
+            class="check"
+            data-answer="validation"
+            data-explanation="Use validation data or cross-validation to choose K. Training performance alone favors overly local fits; the test set is reserved for the final choice."
+          >
+            <h3>
+              2. We need to choose K for KNN. Which results should guide that
+              choice?
+            </h3>
+            <div class="choices">
+              <button type="button" data-choice="training">
+                Training scores</button
+              ><button type="button" data-choice="validation">
+                Validation scores</button
+              ><button type="button" data-choice="test">
+                Repeated test scores
+              </button>
+            </div>
+            <div class="feedback" role="status"></div>
+          </div>
+          <div
+            class="check"
+            data-answer="overfit"
+            data-explanation="This gap suggests overfitting: strong performance on familiar data does not carry over. Try controlling complexity, check the split and preprocessing, and inspect whether the new data differs."
+          >
+            <h3>
+              3. A tree makes almost no training errors but many validation
+              errors. What should we suspect first?
+            </h3>
+            <div class="choices">
+              <button type="button" data-choice="underfit">Underfitting</button
+              ><button type="button" data-choice="overfit">Overfitting</button
+              ><button type="button" data-choice="solved">
+                The task is solved
+              </button>
+            </div>
+            <div class="feedback" role="status"></div>
+          </div>
+          <p class="take-home">
+            Define the task. Make the data usable. Learn on one set of examples,
+            choose with another, and keep an honest final check.
+          </p>
+        </section>
+        <footer>
+          <p>
+            <strong>Prepared for a 90-minute introduction.</strong> The
+            companion <a href="Machine_Learning.md">teaching notes</a> expand
+            the explanations, discussion prompts, and caveats.
+          </p>
+          <p>
+            Content synthesized and reworded from the supplied
+            <a href="../../AI_FMI_course/docs/labs/lab06-intro-ml.html"
+              >Lab 06 notes</a
+            ><a href="../../AI_FMI_course/notebooks/06_Introduction_to_ML.ipynb"
+              >Lab 06 notebook</a
+            ><a href="Intro%20ML.pdf">Intro ML slides · Boris Velichkov</a>
+          </p>
+          <p>
+            Original SVG diagrams and interactive examples. All numerical
+            examples are illustrative; this page needs no external scripts,
+            fonts, or images.
+          </p>
+        </footer>
+      </main>
+    </div>
+    <script>
+      "use strict";
+      // The page uses only local, deterministic examples. No data leaves the browser.
+      const $ = (id) => document.getElementById(id),
+        C = {
+          teal: "#16695e",
+          orange: "#b44d2b",
+          blue: "#355fac",
+          gold: "#d2a142",
+          gray: "#71847b",
+          paper: "#fffefa",
+        },
+        clusterColors = ["#16695e", "#b44d2b", "#355fac", "#80599d"];
+      const txt = (x, y, s, extra = "") =>
+        `<text x="${x}" y="${y}" ${extra}>${s}</text>`;
+      const circle = (x, y, r, fill, extra = "") =>
+        `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" ${extra}/>`;
+      const line = (x1, y1, x2, y2, extra = "") =>
+        `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${extra}/>`;
+      const path = (pts, extra = "") =>
+        `<path d="${pts.map((p, i) => (i ? "L" : "M") + p.join(",")).join(" ")}" ${extra}/>`;
+      const fmt = (n, d = 1) => Number(n).toFixed(d);
+      const number = (id) => Number($(id).value);
+      function plotBase(w, h, xmax, ymax, xlabel, ylabel, xmin = 0) {
+        const m = { l: 53, r: 20, t: 28, b: 44 },
+          X = (x) => m.l + ((x - xmin) / (xmax - xmin)) * (w - m.l - m.r),
+          Y = (y) => h - m.b - (y / ymax) * (h - m.t - m.b);
+        let s = "";
+        for (let i = 0; i <= 4; i++) {
+          let x = xmin + ((xmax - xmin) * i) / 4,
+            y = (ymax * i) / 4;
+          s +=
+            line(X(x), m.t, X(x), h - m.b, 'class="grid"') +
+            line(m.l, Y(y), w - m.r, Y(y), 'class="grid"');
+          s +=
+            txt(
+              X(x),
+              h - m.b + 20,
+              String(Number(x.toFixed(2))),
+              'text-anchor="middle"',
+            ) +
+            txt(
+              m.l - 9,
+              Y(y) + 4,
+              String(Number(y.toFixed(2))),
+              'text-anchor="end"',
+            );
+        }
+        s +=
+          line(m.l, m.t, m.l, h - m.b, 'class="axis"') +
+          line(m.l, h - m.b, w - m.r, h - m.b, 'class="axis"') +
+          txt((m.l + w - m.r) / 2, h - 4, xlabel, 'text-anchor="middle"') +
+          txt(m.l, 14, ylabel, 'class="label"');
+        return { s, X, Y, m };
+      }
+      function random(seed) {
+        return () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      function mse(data, predict) {
+        return (
+          data.reduce((sum, p) => sum + (p.y - predict(p.x)) ** 2, 0) /
+          data.length
+        );
+      }
+
+      // Scaling: fixed training ranges make the unit conversion explicit.
+      let scaled = false;
+      function renderScale() {
+        const q = { x: 5, y: 2000 },
+          a = { x: 5.2, y: 2600 },
+          b = { x: 8, y: 2050 },
+          dist = (p) =>
+            Math.hypot(
+              (p.x - q.x) / (scaled ? 10 : 1),
+              (p.y - q.y) / (scaled ? 5000 : 1),
+            );
+        const da = dist(a),
+          db = dist(b),
+          near = da < db ? "A" : "B",
+          base = plotBase(
+            490,
+            290,
+            scaled ? 1 : 10,
+            scaled ? 1 : 5000,
+            scaled ? "distance · scaled" : "distance · km",
+            scaled ? "parcel mass · scaled" : "parcel mass · g",
+          ),
+          { X, Y } = base;
+        const conv = (p) => [
+          X(p.x / (scaled ? 10 : 1)),
+          Y(p.y / (scaled ? 5000 : 1)),
+        ];
+        let s = base.s;
+        [a, b].forEach((p, i) => {
+          const [x, y] = conv(p),
+            [qx, qy] = conv(q);
+          s +=
+            line(
+              qx,
+              qy,
+              x,
+              y,
+              `stroke="${near === (i ? "B" : "A") ? C.orange : "#b5c2b8"}" stroke-width="${near === (i ? "B" : "A") ? 3 : 1.5}" stroke-dasharray="5 4"`,
+            ) +
+            circle(x, y, 7, C.teal) +
+            txt(
+              x + (i ? -11 : 11),
+              y - 9,
+              i ? "B (8 km, 2050 g)" : "A (5.2 km, 2600 g)",
+              i ? 'text-anchor="end"' : "",
+            );
+        });
+        const [qx, qy] = conv(q);
+        s +=
+          `<path d="M${qx},${qy - 9}l9,9l-9,9l-9,-9Z" fill="${C.gold}" stroke="#7d601d"/>` +
+          txt(qx - 8, qy + 26, "New delivery", 'text-anchor="end"');
+        $("scalePlot").innerHTML = s;
+        $("scaleReadout").innerHTML =
+          `<b>Neighbor ${near}</b>Distance to A: ${fmt(da, scaled ? 3 : 1)}<br>Distance to B: ${fmt(db, scaled ? 3 : 1)}<br><span class="unit">${scaled ? "Dimensionless Euclidean distance after min–max scaling." : "Euclidean distance on raw, mixed units."}</span>`;
+        $("rawScale").setAttribute("aria-pressed", !scaled);
+        $("normalizedScale").setAttribute("aria-pressed", scaled);
+      }
+      $("rawScale").onclick = () => {
+        scaled = false;
+        renderScale();
+      };
+      $("normalizedScale").onclick = () => {
+        scaled = true;
+        renderScale();
+      };
+      renderScale();
+
+      // Five folds are all part of development data; the test set is deliberately absent.
+      function selectFold(i) {
+        document.querySelectorAll(".fold-row").forEach((r, j) => {
+          r.classList.toggle("selected", i === j);
+          r.querySelector("button").setAttribute("aria-pressed", i === j);
+        });
+        $("foldReadout").innerHTML =
+          `<strong>Round ${i + 1}</strong><br>Validate on part ${i + 1}.<br>Train on parts ${[1, 2, 3, 4, 5].filter((x) => x !== i + 1).join(", ")}.`;
+      }
+      $("folds").innerHTML = Array.from(
+        { length: 5 },
+        (_, i) =>
+          `<div class="fold-row"><button type="button" aria-pressed="${i === 0}" aria-label="Show cross-validation round ${i + 1}">Round ${i + 1}</button>${Array.from({ length: 5 }, (_, j) => `<span class="cell ${i === j ? "held" : ""}" aria-label="Part ${j + 1}: ${i === j ? "validation" : "training"}">${j + 1}</span>`).join("")}</div>`,
+      ).join("");
+      document
+        .querySelectorAll(".fold-row button")
+        .forEach((b, i) => (b.onclick = () => selectFold(i)));
+      selectFold(0);
+
+      // Ordinary least squares with one input, and manipulable residuals.
+      const linearData = [
+        { x: 1, y: 13 },
+        { x: 2.5, y: 20 },
+        { x: 4, y: 22 },
+        { x: 6, y: 30 },
+        { x: 7.5, y: 31 },
+        { x: 9, y: 39 },
+      ];
+      function renderLine() {
+        const m = number("slope"),
+          b = number("intercept"),
+          base = plotBase(
+            550,
+            350,
+            10,
+            60,
+            "distance · km",
+            "delivery time · min",
+          ),
+          { X, Y } = base;
+        let s =
+          base.s +
+          '<defs><clipPath id="linearClip"><rect x="53" y="28" width="477" height="278"/></clipPath></defs><g clip-path="url(#linearClip)">';
+        linearData.forEach((p) => {
+          s +=
+            line(
+              X(p.x),
+              Y(p.y),
+              X(p.x),
+              Y(m * p.x + b),
+              `stroke="${C.gray}" stroke-dasharray="4 4" stroke-width="1.5"`,
+            ) + circle(X(p.x), Y(p.y), 5.5, C.teal);
+        });
+        s +=
+          line(
+            X(0),
+            Y(b),
+            X(10),
+            Y(m * 10 + b),
+            `stroke="${C.orange}" stroke-width="3"`,
+          ) + "</g>";
+        $("linearPlot").innerHTML = s;
+        $("slopeOut").textContent = fmt(m, 2);
+        $("interceptOut").textContent = fmt(b, 2);
+        $("linearReadout").innerHTML = `<b>${fmt(
+          mse(linearData, (x) => m * x + b),
+          2,
+        )} min²</b>Mean squared error<br><span class="unit">ŷ = ${fmt(m, 2)} × distance + ${fmt(b, 2)}</span>`;
+      }
+      ["slope", "intercept"].forEach((id) => ($(id).oninput = renderLine));
+      $("bestFit").onclick = () => {
+        const n = linearData.length,
+          mx = linearData.reduce((s, p) => s + p.x, 0) / n,
+          my = linearData.reduce((s, p) => s + p.y, 0) / n,
+          m =
+            linearData.reduce((s, p) => s + (p.x - mx) * (p.y - my), 0) /
+            linearData.reduce((s, p) => s + (p.x - mx) ** 2, 0);
+        $("slope").value = m;
+        $("intercept").value = my - m * mx;
+        renderLine();
+      };
+      $("resetLine").onclick = () => {
+        $("slope").value = 1;
+        $("intercept").value = 8;
+        renderLine();
+      };
+      renderLine();
+      function renderBatch() {
+        const b = number("batchSize"),
+          updates = Math.ceil(240 / b),
+          last = 240 - (updates - 1) * b;
+        $("batchOut").textContent = b + " examples";
+        $("batchGrid").innerHTML = Array.from(
+          { length: updates },
+          () => "<i></i>",
+        ).join("");
+        $("batchReadout").innerHTML =
+          `<strong>${updates} updates per epoch</strong> = ⌈240 / ${b}⌉<br>Last batch: ${last} examples. Three epochs: <strong>${3 * updates} updates</strong>.<br><span class="tiny">Each block represents one batch.</span>`;
+      }
+      $("batchSize").oninput = renderBatch;
+      renderBatch();
+
+      // A small CART-style regressor: greedily split the leaf that most reduces SSE.
+      const truth = (x) => 14 + 3 * x + 6 * Math.sin(x * 0.8);
+      function sample(seed, n) {
+        const r = random(seed);
+        return Array.from({ length: n }, () => {
+          const x = r() * 10;
+          return { x, y: truth(x) + (r() - 0.5) * 16 };
+        }).sort((a, b) => a.x - b.x);
+      }
+      function fitTree(data, maxLeaves) {
+        const root = { data },
+          leaves = [root],
+          error = (d) => {
+            const mean = d.reduce((s, p) => s + p.y, 0) / d.length;
+            return d.reduce((s, p) => s + (p.y - mean) ** 2, 0);
+          };
+        while (leaves.length < maxLeaves) {
+          let best = null;
+          for (const leaf of leaves) {
+            const d = leaf.data,
+              parent = error(d);
+            for (let i = 1; i < d.length; i++) {
+              if (d[i - 1].x === d[i].x) continue;
+              const left = d.slice(0, i),
+                right = d.slice(i),
+                gain = parent - error(left) - error(right);
+              if (!best || gain > best.gain)
+                best = {
+                  leaf,
+                  left,
+                  right,
+                  split: (d[i - 1].x + d[i].x) / 2,
+                  gain,
+                };
+            }
+          }
+          if (!best || best.gain <= 1e-10) break;
+          const { leaf, left, right, split } = best;
+          leaf.cut = split;
+          leaf.left = { data: left };
+          leaf.right = { data: right };
+          leaves.splice(leaves.indexOf(leaf), 1, leaf.left, leaf.right);
+        }
+        function predict(x) {
+          let node = root;
+          while (node.left) node = x <= node.cut ? node.left : node.right;
+          return node.data.reduce((s, p) => s + p.y, 0) / node.data.length;
+        }
+        return { predict, root };
+      }
+      let sampleSeed = 7,
+        compareSamples = false;
+      const validationData = sample(140, 120);
+      function treePath(tree, X, Y) {
+        const pts = [];
+        function walk(node, lo, hi) {
+          if (node.left) {
+            walk(node.left, lo, node.cut);
+            walk(node.right, node.cut, hi);
+          } else {
+            const v = node.data.reduce((s, p) => s + p.y, 0) / node.data.length;
+            pts.push([X(lo), Y(v)], [X(hi), Y(v)]);
+          }
+        }
+        walk(tree.root, 0, 10);
+        return pts;
+      }
+      function renderBias() {
+        const count = number("leaves"),
+          train = sample(sampleSeed, 18),
+          tree = fitTree(train, count),
+          base = plotBase(
+            550,
+            345,
+            10,
+            60,
+            "distance · km",
+            "delivery time · min",
+          ),
+          { X, Y } = base;
+        let s = base.s;
+        s += path(
+          Array.from({ length: 101 }, (_, i) => [X(i / 10), Y(truth(i / 10))]),
+          'class="truth"',
+        );
+        if (compareSamples)
+          for (let j = 1; j <= 4; j++)
+            s += path(
+              treePath(fitTree(sample(sampleSeed + j * 31, 18), count), X, Y),
+              `fill="none" stroke="${C.orange}" stroke-opacity=".24" stroke-width="1.7"`,
+            );
+        s += path(treePath(tree, X, Y), 'class="fit"');
+        train.forEach(
+          (p) =>
+            (s += circle(
+              X(p.x),
+              Y(p.y),
+              4.7,
+              C.teal,
+              'stroke="white" stroke-width="1.2"',
+            )),
+        );
+        $("biasPlot").innerHTML = s;
+        $("leavesOut").textContent = count;
+        $("trainMSE").textContent = fmt(mse(train, tree.predict));
+        $("valMSE").textContent = fmt(mse(validationData, tree.predict));
+        $("showVariance").setAttribute("aria-pressed", compareSamples);
+        $("biasReadout").textContent =
+          count === 1
+            ? "One leaf predicts the same mean everywhere: it cannot follow the relationship."
+            : count >= 13
+              ? "Many leaves can fit individual observations. Compare validation error and retrain on another sample."
+              : "The tree can follow broader changes without giving every observation its own leaf. Compare several complexities.";
+      }
+      $("leaves").oninput = renderBias;
+      $("resample").onclick = () => {
+        sampleSeed += 17;
+        renderBias();
+      };
+      $("showVariance").onclick = () => {
+        compareSamples = !compareSamples;
+        renderBias();
+      };
+      renderBias();
+
+      // Model atlas. Render every plot before its panel is selected.
+      document.querySelectorAll("[data-method]").forEach(
+        (b) =>
+          (b.onclick = () => {
+            document
+              .querySelectorAll("[data-method]")
+              .forEach((x) => x.setAttribute("aria-pressed", x === b));
+            document
+              .querySelectorAll(".method")
+              .forEach(
+                (p) => (p.hidden = p.id !== "method-" + b.dataset.method),
+              );
+          }),
+      );
+      function renderLogistic() {
+        const z = number("logisticScore"),
+          t = number("threshold"),
+          prob = 1 / (1 + Math.exp(-z)),
+          base = plotBase(490, 300, 6, 1, "model score z", "P(late | x)", -6),
+          { X, Y } = base;
+        let s = base.s;
+        s +=
+          line(
+            X(-6),
+            Y(t),
+            X(6),
+            Y(t),
+            `stroke="${C.orange}" stroke-dasharray="5 4"`,
+          ) +
+          txt(
+            X(-5.8),
+            Y(t) - 8,
+            "decision threshold",
+            `style="fill:${C.orange}"`,
+          ) +
+          path(
+            Array.from({ length: 121 }, (_, i) => {
+              const x = -6 + i * 0.1;
+              return [X(x), Y(1 / (1 + Math.exp(-x)))];
+            }),
+            'class="line"',
+          ) +
+          line(
+            X(z),
+            Y(0),
+            X(z),
+            Y(prob),
+            `stroke="${C.gray}" stroke-dasharray="3 4"`,
+          ) +
+          circle(X(z), Y(prob), 6, C.gold, 'stroke="#7d601d"');
+        $("logisticPlot").innerHTML = s;
+        $("logisticScoreOut").textContent = fmt(z);
+        $("thresholdOut").textContent = fmt(t, 2);
+        $("logisticReadout").innerHTML =
+          `<b>${fmt(prob * 100)}% late</b>Decision: <strong>${prob >= t ? "late" : "on time"}</strong><br><span class="unit">Probability ${prob >= t ? "≥" : "<"} threshold ${fmt(t, 2)}.</span>`;
+      }
+      ["logisticScore", "threshold"].forEach(
+        (id) => ($(id).oninput = renderLogistic),
+      );
+      renderLogistic();
+      const neighbors = [
+        { x: 1, y: 2, c: 0 },
+        { x: 2, y: 4, c: 0 },
+        { x: 3, y: 2.7, c: 0 },
+        { x: 3.8, y: 6, c: 0 },
+        { x: 4.4, y: 4.6, c: 0 },
+        { x: 2.5, y: 7.2, c: 0 },
+        { x: 7, y: 8, c: 1 },
+        { x: 8.2, y: 6, c: 1 },
+        { x: 7.2, y: 4.3, c: 1 },
+        { x: 6, y: 5.7, c: 1 },
+        { x: 8.7, y: 8.6, c: 1 },
+        { x: 5.7, y: 2.5, c: 1 },
+      ];
+      function renderKnn() {
+        const q = { x: number("queryX"), y: number("queryY") },
+          k = number("neighborK"),
+          ordered = neighbors
+            .map((p, i) => ({
+              ...p,
+              i,
+              d: (p.x - q.x) ** 2 + (p.y - q.y) ** 2,
+            }))
+            .sort((a, b) => a.d - b.d || a.i - b.i),
+          chosen = new Set(ordered.slice(0, k).map((p) => p.i)),
+          late = ordered.slice(0, k).reduce((s, p) => s + p.c, 0),
+          base = plotBase(
+            490,
+            310,
+            10,
+            10,
+            "feature 1 · scaled",
+            "feature 2 · scaled",
+          ),
+          { X, Y } = base;
+        let s = base.s;
+        ordered
+          .slice(0, k)
+          .forEach(
+            (p) =>
+              (s += line(
+                X(q.x),
+                Y(q.y),
+                X(p.x),
+                Y(p.y),
+                'stroke="#bdc8b6" stroke-dasharray="4 4"',
+              )),
+          );
+        neighbors.forEach((p, i) => {
+          const x = X(p.x),
+            y = Y(p.y);
+          s += p.c
+            ? `<rect x="${x - 5}" y="${y - 5}" width="10" height="10" fill="${C.orange}"/>`
+            : circle(x, y, 5, C.teal);
+          if (chosen.has(i))
+            s += circle(
+              x,
+              y,
+              9,
+              "none",
+              `stroke="${p.c ? C.orange : C.teal}" stroke-width="2"`,
+            );
+        });
+        const x = X(q.x),
+          y = Y(q.y);
+        s += `<path d="M${x},${y - 8}l8,8l-8,8l-8,-8Z" fill="${C.gold}" stroke="#7d601d"/>`;
+        $("knnPlot").innerHTML = s;
+        $("neighborKOut").textContent = k;
+        $("queryXOut").textContent = fmt(q.x);
+        $("queryYOut").textContent = fmt(q.y);
+        $("knnReadout").innerHTML =
+          `<b>${late > k / 2 ? "Late" : "On time"}</b>${late} late / ${k - late} on-time neighbors<br><span class="unit">Majority vote among ${k} nearest examples.</span>`;
+      }
+      ["neighborK", "queryX", "queryY"].forEach(
+        (id) => ($(id).oninput = renderKnn),
+      );
+      renderKnn();
+      function renderSvm() {
+        const base = plotBase(
+            490,
+            300,
+            10,
+            10,
+            "feature 1 · scaled",
+            "feature 2 · scaled",
+          ),
+          { X, Y } = base;
+        let s = base.s;
+        // Class supports lie on x+y=8 and x+y=12; the boundary is x+y=10.
+        s += `<polygon points="${X(0)},${Y(8)} ${X(8)},${Y(0)} ${X(10)},${Y(0)} ${X(10)},${Y(2)} ${X(2)},${Y(10)} ${X(0)},${Y(10)}" fill="#e6eee3" opacity=".75"/>`;
+        [
+          [0, 8, 8, 0],
+          [2, 10, 10, 2],
+        ].forEach(
+          (a) =>
+            (s += line(
+              X(a[0]),
+              Y(a[1]),
+              X(a[2]),
+              Y(a[3]),
+              `stroke="${C.gray}" stroke-width="1.8" stroke-dasharray="5 4"`,
+            )),
+        );
+        s += line(
+          X(0),
+          Y(10),
+          X(10),
+          Y(0),
+          `stroke="${C.ink || "#203b35"}" stroke-width="2.5"`,
+        );
+        [
+          [1, 2, 0],
+          [2, 4, 0],
+          [4, 2, 0],
+          [3, 5, 0],
+          [5, 3, 0],
+          [6, 8, 1],
+          [8, 7, 1],
+          [7, 5, 1],
+          [5, 7, 1],
+        ].forEach(([x, y, c]) => {
+          s += c
+            ? `<rect x="${X(x) - 5}" y="${Y(y) - 5}" width="10" height="10" fill="${C.orange}"/>`
+            : circle(X(x), Y(y), 5, C.teal);
+          if (x + y === 8 || x + y === 12)
+            s += circle(
+              X(x),
+              Y(y),
+              10,
+              "none",
+              `stroke="${c ? C.orange : C.teal}" stroke-width="1.8"`,
+            );
+        });
+        $("svmPlot").innerHTML = s;
+      }
+      renderSvm();
+      const words = new Set(["free"]);
+      function renderBayes() {
+        let a = 0.3,
+          b = 0.7;
+        for (const w of words) {
+          a *= w === "free" ? 0.7 : 0.05;
+          b *= w === "free" ? 0.1 : 0.6;
+        }
+        const p = a / (a + b),
+          w = 490;
+        let s = txt(
+          35,
+          35,
+          "Posterior after selected evidence",
+          'class="label"',
+        );
+        [
+          [p, "Spam", C.orange],
+          [1 - p, "Not spam", C.teal],
+        ].forEach(([v, label, color], i) => {
+          const y = 70 + i * 90;
+          s +=
+            txt(35, y, label) +
+            `<rect x="35" y="${y + 12}" width="410" height="26" rx="4" fill="#e7ece2"/><rect x="35" y="${y + 12}" width="${410 * v}" height="26" rx="4" fill="${color}"/>` +
+            txt(445, y, fmt(v * 100) + "%", 'text-anchor="end"');
+        });
+        s += txt(
+          w / 2,
+          265,
+          "Normalize: each score ÷ sum of scores",
+          'text-anchor="middle"',
+        );
+        $("bayesPlot").innerHTML = s;
+        $("bayesReadout").innerHTML =
+          `<b>${fmt(p * 100)}% spam</b>Unnormalized scores:<br>spam = ${fmt(a, 5)}<br>not spam = ${fmt(b, 5)}`;
+        document
+          .querySelectorAll("[data-word]")
+          .forEach((b) =>
+            b.setAttribute("aria-pressed", words.has(b.dataset.word)),
+          );
+      }
+      document.querySelectorAll("[data-word]").forEach(
+        (b) =>
+          (b.onclick = () => {
+            words.has(b.dataset.word)
+              ? words.delete(b.dataset.word)
+              : words.add(b.dataset.word);
+            renderBayes();
+          }),
+      );
+      renderBayes();
+      function renderDecisionTree() {
+        const d = number("treeDistance"),
+          rain = $("treeRain").checked,
+          long = d > 5,
+          late = long && rain;
+        let s = "";
+        const edge = (x1, y1, x2, y2, on, label) =>
+          line(
+            x1,
+            y1,
+            x2,
+            y2,
+            `stroke="${on ? C.teal : "#c1cdc0"}" stroke-width="${on ? 3 : 1.4}"`,
+          ) +
+          txt(
+            (x1 + x2) / 2 + (x2 > x1 ? 13 : -13),
+            (y1 + y2) / 2,
+            label,
+            'text-anchor="middle"',
+          );
+        const box = (x, y, w, label, on, leaf = false) =>
+          `<rect x="${x - w / 2}" y="${y - 20}" width="${w}" height="40" rx="7" fill="${on ? C.teal : leaf ? "#edf0e6" : C.paper}" stroke="${on ? C.teal : "#bccbbd"}"/>` +
+          txt(
+            x,
+            y + 4,
+            label,
+            `text-anchor="middle" style="fill:${on ? "white" : "#203b35"};font-size:12px"`,
+          );
+        s +=
+          edge(220, 60, 100, 145, !long, "no") +
+          edge(220, 60, 345, 145, long, "yes") +
+          edge(345, 165, 265, 245, long && !rain, "no") +
+          edge(345, 165, 415, 245, late, "yes");
+        s +=
+          box(220, 40, 155, "Distance > 5 km?", true) +
+          box(100, 165, 118, "On time", !long, true) +
+          box(345, 165, 118, "Rain?", long) +
+          box(265, 265, 112, "On time", long && !rain, true) +
+          box(415, 265, 100, "Late", late, true);
+        $("treePlot").innerHTML = s;
+        $("treeDistanceOut").textContent = fmt(d);
+        $("treeReadout").innerHTML =
+          `<b>${late ? "Late" : "On time"}</b>${!long ? "Short route → on-time leaf." : rain ? "Long route + rain → late leaf." : "Long route + no rain → on-time leaf."}`;
+      }
+      ["treeDistance", "treeRain"].forEach(
+        (id) => ($(id).oninput = renderDecisionTree),
+      );
+      renderDecisionTree();
+      function renderEnsemble() {
+        let s = "";
+        [0.2, 0.7, 0.8].forEach((p, i) => {
+          const x = 80 + i * 165;
+          s +=
+            line(x, 83, x, 154, 'stroke="#9aafa1"') +
+            path(
+              [
+                [x - 28, 60],
+                [x, 31],
+                [x + 28, 60],
+              ],
+              'fill="none" stroke="#16695e" stroke-width="2"',
+            ) +
+            line(x - 28, 60, x - 40, 83, 'stroke="#16695e" stroke-width="2"') +
+            line(x + 28, 60, x + 40, 83, 'stroke="#16695e" stroke-width="2"') +
+            txt(x, 106, "Tree " + (i + 1), 'text-anchor="middle"') +
+            txt(
+              x,
+              132,
+              fmt(p * 100, 0) + "% late",
+              'text-anchor="middle" class="label"',
+            ) +
+            line(x, 150, 245, 195, 'stroke="#a7b8a7" stroke-width="1.5"');
+        });
+        s +=
+          `<rect x="136" y="192" width="218" height="55" rx="8" fill="#e4efe8"/>` +
+          txt(245, 215, "Mean probability", 'text-anchor="middle"') +
+          txt(
+            245,
+            235,
+            "(20 + 70 + 80) / 3 ≈ 57%",
+            'text-anchor="middle" class="label"',
+          );
+        $("ensemblePlot").innerHTML = s;
+      }
+      renderEnsemble();
+      function renderNeural() {
+        const layers = [
+          [55, [95, 160, 225]],
+          [190, [65, 125, 185, 245]],
+          [325, [95, 160, 225]],
+          [443, [160]],
+        ];
+        let s = "";
+        for (let l = 0; l < layers.length - 1; l++)
+          for (const a of layers[l][1])
+            for (const b of layers[l + 1][1])
+              s += line(
+                layers[l][0],
+                a,
+                layers[l + 1][0],
+                b,
+                'stroke="#bccdbb" stroke-width="1"',
+              );
+        layers.forEach(([x, ys], l) =>
+          ys.forEach(
+            (y) =>
+              (s += circle(
+                x,
+                y,
+                13,
+                l === 3 ? C.orange : l === 0 ? C.gold : C.teal,
+                'stroke="white" stroke-width="2"',
+              )),
+          ),
+        );
+        s +=
+          txt(55, 24, "Inputs", 'text-anchor="middle"') +
+          txt(190, 24, "Hidden 1", 'text-anchor="middle"') +
+          txt(325, 24, "Hidden 2", 'text-anchor="middle"') +
+          txt(443, 24, "Output", 'text-anchor="middle"') +
+          txt(
+            245,
+            292,
+            "weighted sums → nonlinear activations → prediction",
+            'text-anchor="middle"',
+          );
+        $("neuralPlot").innerHTML = s;
+      }
+      renderNeural();
+
+      // Lloyd's K-means, with assignment and update exposed as separate steps.
+      const kr = random(83),
+        clusterData = [];
+      [
+        [2.3, 2.5],
+        [7.7, 3],
+        [5, 7.8],
+      ].forEach(([x, y]) => {
+        for (let i = 0; i < 12; i++)
+          clusterData.push({
+            x: x + (kr() - 0.5) * 2.8,
+            y: y + (kr() - 0.5) * 2.8,
+          });
+      });
+      let centers = [],
+        assignments = [],
+        clusterPhase = "assign",
+        clusterRound = 0,
+        converged = false;
+      function resetClusters() {
+        const k = number("clusterK");
+        centers = [
+          { x: 1, y: 1 },
+          { x: 3, y: 8 },
+          { x: 9, y: 8 },
+          { x: 9, y: 1 },
+        ].slice(0, k);
+        assignments = clusterData.map(() => -1);
+        clusterPhase = "assign";
+        clusterRound = 0;
+        converged = false;
+        renderClusters();
+      }
+      function renderClusters() {
+        const base = plotBase(
+            550,
+            350,
+            10,
+            10,
+            "feature 1 · scaled",
+            "feature 2 · scaled",
+          ),
+          { X, Y } = base;
+        let s = base.s;
+        clusterData.forEach((p, i) => {
+          const c = assignments[i];
+          if (c >= 0)
+            s += line(
+              X(p.x),
+              Y(p.y),
+              X(centers[c].x),
+              Y(centers[c].y),
+              `stroke="${clusterColors[c]}" stroke-opacity=".22"`,
+            );
+          s += circle(
+            X(p.x),
+            Y(p.y),
+            4.6,
+            c < 0 ? "#8c9c8f" : clusterColors[c],
+          );
+        });
+        centers.forEach((c, i) => {
+          const x = X(c.x),
+            y = Y(c.y);
+          s +=
+            circle(
+              x,
+              y,
+              10,
+              "white",
+              `stroke="${clusterColors[i]}" stroke-width="1.4"`,
+            ) +
+            path(
+              [
+                [x - 6, y],
+                [x + 6, y],
+              ],
+              `stroke="${clusterColors[i]}" stroke-width="3"`,
+            ) +
+            path(
+              [
+                [x, y - 6],
+                [x, y + 6],
+              ],
+              `stroke="${clusterColors[i]}" stroke-width="3"`,
+            ) +
+            txt(
+              x + 13,
+              y - 11,
+              "C" + (i + 1),
+              `style="fill:${clusterColors[i]}"`,
+            );
+        });
+        $("kmeansPlot").innerHTML = s;
+        const assigned = assignments.every((i) => i >= 0),
+          error = assigned
+            ? clusterData.reduce(
+                (sum, p, i) =>
+                  sum +
+                  (p.x - centers[assignments[i]].x) ** 2 +
+                  (p.y - centers[assignments[i]].y) ** 2,
+                0,
+              )
+            : null;
+        $("kmeansReadout").innerHTML =
+          `<b>${converged ? "Converged" : clusterRound ? "Round " + clusterRound : "Initial centers"}</b>${converged ? "Assignments did not change." : clusterPhase === "assign" ? "Next: assign each point to its nearest center." : "Next: recompute each center as a mean."}`;
+        $("inertia").textContent =
+          error === null
+            ? "Squared distance sum appears after the first assignment."
+            : "Within-cluster squared distance sum: " + fmt(error, 2) + ".";
+        $("clusterStep").textContent = converged
+          ? "Converged"
+          : clusterPhase === "assign"
+            ? "Assign points"
+            : "Move centers";
+        $("clusterStep").disabled = converged;
+      }
+      $("clusterStep").onclick = () => {
+        if (converged) return;
+        if (clusterPhase === "assign") {
+          const next = clusterData.map((p) => {
+            let best = 0;
+            centers.forEach((c, i) => {
+              if (
+                (p.x - c.x) ** 2 + (p.y - c.y) ** 2 <
+                (p.x - centers[best].x) ** 2 + (p.y - centers[best].y) ** 2
+              )
+                best = i;
+            });
+            return best;
+          });
+          converged = next.every((c, i) => c === assignments[i]);
+          assignments = next;
+          clusterPhase = "update";
+          clusterRound++;
+        } else {
+          centers = centers.map((c, i) => {
+            const pts = clusterData.filter((_, j) => assignments[j] === i);
+            return pts.length
+              ? {
+                  x: pts.reduce((s, p) => s + p.x, 0) / pts.length,
+                  y: pts.reduce((s, p) => s + p.y, 0) / pts.length,
+                }
+              : c;
+          });
+          clusterPhase = "assign";
+        }
+        renderClusters();
+      };
+      $("clusterReset").onclick = resetClusters;
+      $("clusterK").onchange = resetClusters;
+      resetClusters();
+
+      // Agglomerative clustering computed from pairwise distances of five scalar points.
+      function renderHierarchy() {
+        const values = [0, 1, 4, 6, 9.5],
+          names = ["A", "B", "C", "D", "E"],
+          mode = $("linkage").value;
+        let nodes = values.map((v, i) => ({
+            ids: [i],
+            height: 0,
+            x: 72 + i * 90,
+            label: names[i],
+          })),
+          merges = [];
+        function distance(a, b) {
+          const ds = a.ids.flatMap((i) =>
+            b.ids.map((j) => Math.abs(values[i] - values[j])),
+          );
+          return mode === "single"
+            ? Math.min(...ds)
+            : mode === "complete"
+              ? Math.max(...ds)
+              : ds.reduce((s, d) => s + d, 0) / ds.length;
+        }
+        while (nodes.length > 1) {
+          let best = { d: Infinity };
+          for (let i = 0; i < nodes.length; i++)
+            for (let j = i + 1; j < nodes.length; j++) {
+              const d = distance(nodes[i], nodes[j]);
+              if (d < best.d) best = { i, j, d };
+            }
+          const a = nodes[best.i],
+            b = nodes[best.j],
+            n = {
+              ids: [...a.ids, ...b.ids],
+              height: best.d,
+              x: (a.x + b.x) / 2,
+              left: a,
+              right: b,
+            };
+          merges.push(n);
+          nodes = nodes.filter((_, i) => i !== best.i && i !== best.j);
+          nodes.push(n);
+          nodes.sort((a, b) => Math.min(...a.ids) - Math.min(...b.ids));
+        }
+        const Y = (h) => 258 - (h / 10) * 210;
+        let s = txt(50, 17, "Merge distance", 'class="label"');
+        for (let i = 0; i <= 10; i += 2)
+          s +=
+            line(47, Y(i), 455, Y(i), 'class="grid"') +
+            txt(35, Y(i) + 4, i, 'text-anchor="end"');
+        for (const n of merges)
+          s +=
+            path(
+              [
+                [n.left.x, Y(n.left.height)],
+                [n.left.x, Y(n.height)],
+                [n.right.x, Y(n.height)],
+                [n.right.x, Y(n.right.height)],
+              ],
+              `fill="none" stroke="${C.teal}" stroke-width="2.5"`,
+            ) + circle(n.x, Y(n.height), 3.5, C.orange);
+        values.forEach(
+          (v, i) =>
+            (s +=
+              txt(
+                72 + i * 90,
+                279,
+                names[i],
+                'text-anchor="middle" class="label"',
+              ) + txt(72 + i * 90, 299, "x = " + v, 'text-anchor="middle"')),
+        );
+        $("hierarchyPlot").innerHTML = s;
+        $("hierarchyReadout").innerHTML =
+          `<strong>${mode[0].toUpperCase() + mode.slice(1)} linkage</strong><br>Final merge distance: ${fmt(merges.at(-1).height, 2)}.<br><span class="unit">Same five points; the linkage changes the hierarchy and its distances.</span>`;
+      }
+      $("linkage").onchange = renderHierarchy;
+      renderHierarchy();
+
+      document.querySelectorAll(".check").forEach((q) =>
+        q.querySelectorAll("[data-choice]").forEach(
+          (b) =>
+            (b.onclick = () => {
+              const correct = b.dataset.choice === q.dataset.answer;
+              q.querySelector(".feedback").textContent =
+                (correct ? "Correct. " : "Try again. ") +
+                (correct
+                  ? q.dataset.explanation
+                  : "Think about the target, the role of the split, or the gap between training and validation.");
+              q.querySelectorAll("button").forEach((x) =>
+                x.setAttribute("aria-pressed", x === b),
+              );
+            }),
+        ),
+      );
+      const chapters = [...document.querySelectorAll(".chapter")],
+        navLinks = [...document.querySelectorAll(".contents>a")];
+      let pending = false;
+      function updateReading() {
+        pending = false;
+        const max = document.documentElement.scrollHeight - innerHeight;
+        $("progress").style.width =
+          (max > 0 ? Math.min(100, (scrollY / max) * 100) : 0) + "%";
+        let active = chapters[0];
+        for (const section of chapters)
+          if (section.getBoundingClientRect().top < 160) active = section;
+        navLinks.forEach((a) => {
+          const current = a.hash === "#" + active.id;
+          a.classList.toggle("active", current);
+          if (current) a.setAttribute("aria-current", "location");
+          else a.removeAttribute("aria-current");
+        });
+      }
+      function setRouteVisible(visible) {
+        $("learning-route").hidden = !visible;
+        document
+          .querySelector(".layout")
+          .classList.toggle("route-hidden", !visible);
+        $("routeToggle").setAttribute("aria-expanded", String(visible));
+        $("routeToggle").textContent = visible ? "Hide route" : "Show route";
+        updateReading();
+      }
+      let routeVisible = true;
+      try {
+        routeVisible = localStorage.getItem("intro-ml-route-hidden") !== "true";
+      } catch {
+        // The toggle also works when browser storage is unavailable.
+      }
+      setRouteVisible(routeVisible);
+      $("routeToggle").onclick = () => {
+        const visible = $("learning-route").hidden;
+        setRouteVisible(visible);
+        try {
+          localStorage.setItem("intro-ml-route-hidden", String(!visible));
+        } catch {
+          // Keep the current page usable without persistence.
+        }
+      };
+      addEventListener(
+        "scroll",
+        () => {
+          if (!pending) {
+            pending = true;
+            requestAnimationFrame(updateReading);
+          }
+        },
+        { passive: true },
+      );
+      addEventListener("resize", updateReading);
+      updateReading();
+    </script>
+  </body>
+</html>
