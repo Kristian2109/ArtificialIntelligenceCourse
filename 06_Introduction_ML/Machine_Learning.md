@@ -9,10 +9,9 @@ Companion to [the interactive HTML lesson](machine_learning.html). The HTML is t
 | 01 · Foundations | Learning from examples; learning signals; AI, ML, neural networks, deep learning | Ask what information a delivery-time predictor needs. |
 | 02 · Data and preprocessing | Features, targets, preprocessing, dimensionality | Compare nearest neighbors before and after scaling. |
 | 03 · Model evaluation | Train / validation / test; cross-validation; regression vs. classification | Select one cross-validation round and explain every block. |
-| 04 · Training and optimization | Model, parameters, objective, hyperparameters, optimization, batches | Adjust a regression line, then fit it. Change batch size. |
-| 05 · Complexity and generalization | Bias, variance, noise, underfitting, overfitting | Compare 1, 4, and 18 tree leaves; change the training sample. |
-| 06 · Supervised algorithms | Recognize the main supervised model families | Compare how each method uses the inputs to make a prediction. |
-| 07 · Unsupervised learning | K-means; hierarchical clustering; similarity | Step through K-means; compare dendrogram linkages. |
+| 04 · Complexity and generalization | Bias, variance, noise, underfitting, overfitting | Compare 1, 4, and 18 tree leaves; change the training sample. |
+| 05 · Supervised algorithms | Recognize the main supervised model families | Compare how each method uses the inputs to make a prediction. |
+| 06 · Unsupervised learning | K-means; hierarchical clustering; similarity | Step through K-means; compare dendrogram linkages. |
 
 This is an overview, so students should leave able to explain the ideas without implementing every algorithm.
 
@@ -42,6 +41,15 @@ The learning signals answer a different question:
 
 In reinforcement learning, the learner chooses actions that can change future observations. A reward can be delayed; it is not necessarily a correct answer for each action. A policy describes how the agent chooses actions. Supervised learning usually receives a fixed dataset instead. Semi-supervised learning can help when unlabeled data carries relevant structure, but adding it is not a guarantee of improvement.
 
+### Demonstrations of the learning signals
+
+- **Supervised — Fit and predict:** circles and squares are deliveries with known “on time” and “late” labels. The demo computes the mean feature position of each class and classifies the new diamond by its nearest class mean. The boundary separates those two regions. The diamond is not used for training, and its actual outcome is not supplied.
+- **Unsupervised — Find groups:** the points begin without target labels. A small K-means example groups them by feature similarity. Group numbers are assigned by the algorithm; they do not establish that a group means “late” or any other real-world category.
+- **Semi-supervised — Use unlabeled structure:** only two points have supplied labels. A graph connects each example to nearby examples, and label information spreads through those connections while the original labels remain fixed. The unlabeled points help describe the geometry. The new labels are inferred, not verified answers. This example works because the graph follows the two curved groups; misleading connections could spread the wrong label.
+- **Reinforcement — Train agent:** an agent explores a small grid and updates action values from rewards. Reaching the goal gives +10, a move costs 0.2, and a blocked move costs 0.6. One episode is one attempt, ending at the goal or after a step limit. Each button press runs another set of exploration episodes; the displayed route follows the resulting greedy policy. No target route is provided. The environment is fixed, so reaching this goal demonstrates learning in that environment rather than performance on unfamiliar maps.
+
+For comparison, ask what feedback each learner receives: known answers, feature structure, a few answers plus structure, or rewards from actions. The small induction and deduction flow diagrams distinguish learning a general relationship from examples from applying an already specified rule.
+
 Avoid assigning a percentage of all ML applications to supervised learning. The supplied notebook and HTML give an approximate percentage without establishing what is being counted; it is unnecessary for this lesson.
 
 ## 2. Data representation and preprocessing
@@ -54,16 +62,14 @@ Use $X$ for the feature matrix, $y$ for observed targets, and $\hat y$ for predi
 
 ### Preprocessing objectives and common transformations
 
-| Step | Concrete example | Explanation worth adding |
+| Step | Examples used in the HTML | Explanation worth adding |
 | --- | --- | --- |
-| Cleaning | Missing rain flag, a negative distance, mixed “yes” / “Y” codes | Fix known errors; investigate missingness and unusual values. An extreme value can be a valid rare event. |
-| Integration | Join route data and parcel data by delivery ID | Incorrect joins and duplicate records can change the effective sample or leak information between splits. |
-| Encoding | Represent a rain flag as 0/1; one-hot encode unordered vehicle types | Giving arbitrary integers to unordered categories can create a misleading order or distance. |
-| Feature engineering | Convert departure time into a rush-hour indicator | Use domain knowledge to make relevant information easier to use. The feature must be available when predicting. |
-| Scaling | Put distance and parcel mass on comparable scales | Especially relevant to distance-based methods and many optimization procedures. Tree splits generally do not require it. |
-| Aggregation / generalization | Summarize delivery events by day; replace a detailed vehicle subtype with a broader category | Changes the resolution of the data. It may make patterns easier to estimate while discarding detail. |
-| Discretization | Turn minutes into short / medium / long intervals | Replaces a numeric feature with categories. Boundaries matter; binning is not the same as scaling. |
-| Reduction | Select features, project numeric features with PCA, or sample rows | Reduces input dimensions or data volume. Check what information is lost. |
+| 01 · Clean | Fill a missing distance with a training median of 4.5 km; investigate −3 km; convert 2,500 m to 2.5 km; unify “Yes,” “Y,” and “yes”; remove confirmed duplicates. | Imputation is an estimate, not a recovered measurement. Negative values need investigation; a long duration can be a legitimate rare event. |
+| 02 · Integrate | Join delivery D43's 5 km route record with its 2,000 g parcel record. Flag D44 if its parcel information is missing. Check whether repeated IDs multiply joined rows. | Decide the intended row unit before joining. Multiple scan events per delivery are not automatically duplicate deliveries; aggregate them or use an appropriate join. |
+| 03 · Encode and construct | Rain: No → 0, Yes → 1. Vehicle columns [bike, van]: bike → [1, 0], van → [0, 1]. An 18:00 departure gives rush_hour = 1 under an illustrative 17:00–19:00 rule. Extract weekday from the departure date. | Encoding changes the representation; construction derives a new feature. Rush-hour boundaries are a domain choice, not a universal rule. An unseen category needs a defined handling policy. |
+| 04 · Scale | A 0–10 km training range maps 5 km to 0.5. A 0–5,000 g range maps 2,500 g to 0.5. With training mean 5 km and standard deviation 2 km, 9 km standardizes to 2. | The standardized value means two standard deviations above the training mean. Estimate every transformation on training data and apply that same transformation to later data. |
+| 05 · Aggregate and discretize | Durations 10, 20, 30 minutes become count 3 and mean 20 minutes. Distance bins are short below 3 km, medium from 3 km up to but excluding 7 km, and long from 7 km upward. Thus 2 km is short; 8 km is long. | Aggregation combines observations; discretization replaces precise values with categories. Both discard detail. A historical mean used as a predictor must use only records available before the new prediction. |
+| 06 · Reduce | Omit an uninformative delivery ID from predictors, remove a duplicate distance unit, sample 10,000 of 100,000 rows, or replace three correlated parcel dimensions with two PCA components. | Feature selection keeps original columns; PCA creates combinations. Sampling reduces rows, not dimensions. Check rare conditions, retained variance, and predictive performance before accepting the reduction. |
 
 Common missing-value strategies include a training-set median for numeric inputs and a frequent category for categorical inputs. A missingness indicator can also be useful. Dropping rows may be reasonable, but it changes the sample. More elaborate imputers predict missing features from other features. For this overview, explain the choice rather than implementing several imputers.
 
@@ -116,44 +122,7 @@ The diagram uses ordinary folds. Time-dependent data needs a corresponding time-
 
 For rare late deliveries, an always-on-time classifier can have high accuracy while being useless for finding delays. If asked, **precision** is the fraction of predicted late deliveries that really are late; **recall** is the fraction of actual late deliveries that were found. Choose measures around the practical cost of mistakes. A simple baseline makes a score easier to interpret: compare with predicting the training-set mean time, or the most common class.
 
-## 4. Model training and optimization
-
-For the one-feature regression model,
-
-$$\hat y=mx+b,$$
-
-$m$ is minutes per kilometer and $b$ is a predicted time at zero distance. Do not assume the intercept has a sensible physical interpretation outside the observed range. The fitted line is an approximation, not a claim that distance is the only cause of delay.
-
-The **residual** is $y-\hat y$: an observed vertical gap in the plot. Ordinary least squares minimizes the sum of squared vertical residuals, not perpendicular distances to the line. Dividing the sum by the number of examples gives MSE and leaves the minimizing parameters unchanged. The page uses six invented deliveries; they are a separate illustrative sample from the four-row feature table.
-
-**Suggested demonstration:** move the line away from the observations and ask why the error grows. Adjust slope and intercept by eye, then press **Least-squares fit**. An optimized line still has nonzero error because the observations do not lie perfectly on one line.
-
-A **parameter** is learned from the training data: slope, intercept, or neural-network weights. A **hyperparameter** is a setting selected around that fitting procedure: learning rate, batch size, maximum tree depth, or K in KNN. Tuning hyperparameters with validation is still part of development, so validation scores are not an untouched final performance estimate.
-
-A **loss** usually measures one example's prediction error. A **cost / objective** aggregates losses, and it may include a regularization penalty. The words are sometimes used interchangeably, but this distinction is helpful.
-
-**Gradient descent** updates parameters in the direction that locally reduces a differentiable objective:
-
-$$\theta\leftarrow\theta-\eta\nabla_\theta L.$$
-
-The learning rate $\eta$ sets the step size. Too small can be slow; too large can oscillate or diverge. This is one optimization method, not the definition of all ML training. Ordinary least squares can be solved directly. A decision tree searches for useful splits. KNN mostly stores examples and does its comparisons at prediction time.
-
-### Batches, iterations, and epochs
-
-Use the three terms for three different things: a **batch is data**, an **iteration is a learning step**, and an **epoch is a complete pass through the data**. In this example, each delivery record contains the inputs and the actual delivery time.
-
-With **240 deliveries** and a **batch size of 40**, walk through training in order:
-
-1. Take deliveries **1–40**: this group is the first batch. Predict their times, compare predictions with actual times, and adjust the model's parameters **once**. That is iteration 1.
-2. Take deliveries **41–80** and repeat the process: a second batch and a second iteration. The same model continues learning; it is not reset between batches.
-3. After the sixth iteration, deliveries **201–240** have also been processed. All 240 examples have been used once, so **epoch 1 is complete**.
-4. Iteration 7 starts epoch 2, using the same dataset again with the already updated model. Three epochs give **18 iterations** and three uses of each example, not 720 distinct examples.
-
-In the HTML, press **Next iteration** to process one batch. Completed batches are marked, and the explanation identifies both the update count and the current epoch. At an epoch boundary, pause to emphasize that one whole pass contains several updates. The delivery numbers make the sequence explicit; practical training often shuffles the examples before a new epoch.
-
-Keeping a smaller final batch gives $\lceil n/B\rceil$ updates per epoch. For a batch size of 32, there are 8 updates, and the last batch contains 16 examples. Some training systems drop the last incomplete batch; the HTML explicitly keeps it. These definitions describe a common training loop and should not imply that every model learns through epochs.
-
-## 5. Model complexity and generalization
+## 4. Model complexity and generalization
 
 **Underfitting** means a model fails to capture important structure, often producing poor training and validation results. **Overfitting** means the fitted solution captures training-specific detail that does not carry over, often producing a gap between strong training performance and weaker validation performance. Distribution shift or evaluation mistakes can also produce a gap, so it is a clue to investigate rather than a complete diagnosis.
 
@@ -172,7 +141,7 @@ The page fits actual one-dimensional regression trees by greedily choosing split
 
 Complexity is about representational flexibility, not just a parameter count. Deeper trees, higher-degree polynomials, and smaller K in KNN can all increase flexibility in different ways. The familiar bias–variance trade-off is a useful tendency, not a universal monotonic law. More relevant data, regularization, and suitable model choices can improve both prediction error and stability.
 
-## 6. Supervised learning algorithms
+## 5. Supervised learning algorithms
 
 The goal is to explain what each method does with an input. Avoid turning this section into seven separate algorithm lectures.
 
@@ -229,7 +198,7 @@ A **perceptron** is a basic linear classifier. A neural network composes layers 
 
 Deep networks can learn useful features from images, audio, and text. The PDF's driving example illustrates representation learning: road-related image features can emerge from a steering prediction objective. Use that to explain the idea without implying that every hidden unit has a neat human-readable meaning or that deep learning is always the best choice. Neural architectures can also be trained with unsupervised, semi-supervised, or reinforcement signals.
 
-## 7. Unsupervised learning and clustering
+## 6. Unsupervised learning and clustering
 
 Classification has supplied class labels. Clustering has a similarity measure and a grouping procedure. An algorithm can partition data even when there are no distinct natural categories. Ask, “Would changing the features or their units change these groups?” Often it would.
 

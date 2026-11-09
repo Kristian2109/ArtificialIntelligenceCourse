@@ -602,10 +602,79 @@
         margin: 3px 0 0;
         font-size: 16px;
       }
+      .learning-viz {
+        margin: 22px 0 16px;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: var(--paper);
+      }
+      .learning-plot {
+        display: block;
+        width: 100%;
+        min-width: 340px;
+        height: auto;
+      }
+      .learning-plot text {
+        font: 17px var(--sans);
+        fill: var(--ink);
+      }
+      .learning-key {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+        font-size: 15px;
+        margin-bottom: 18px;
+      }
+      .learning-key span {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .learning-key i {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        background: var(--teal);
+        border-radius: 50%;
+      }
+      .learning-key .square {
+        background: var(--orange);
+        border-radius: 1px;
+      }
+      .learning-key .unknown {
+        background: #85938a;
+      }
+      .learning-key .query {
+        border-radius: 1px;
+        background: var(--gold);
+        transform: rotate(45deg);
+      }
+      .learning-status {
+        padding-top: 16px;
+        margin-top: 18px;
+        border-top: 1px solid var(--line);
+        font-size: 17px;
+      }
+      .reasoning-flow {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+        font-size: 15px;
+      }
+      .reasoning-flow span,
+      .reasoning-flow strong {
+        padding: 9px 12px;
+        background: var(--teal-bg);
+        border-radius: 6px;
+      }
       .learning-types {
         margin-top: 25px;
       }
       .learning-type {
+        min-width: 0;
         padding: 24px;
         border: 1px solid var(--line);
         border-radius: 8px;
@@ -674,6 +743,11 @@
         font: 12px var(--mono);
         color: var(--orange);
       }
+      .preprocess code {
+        font: 0.95em var(--mono);
+        color: var(--ink);
+        overflow-wrap: anywhere;
+      }
       .preprocess p {
         margin: 0;
         color: var(--muted);
@@ -741,40 +815,6 @@
       }
       .fold-row.selected .cell.held {
         box-shadow: inset 0 0 0 2px #85651e;
-      }
-      .batch-grid {
-        display: flex;
-        gap: 12px;
-        margin: 18px 0;
-        padding: 4px 2px 14px;
-        list-style: none;
-        overflow-x: auto;
-      }
-      .batch-grid li {
-        flex: 1 0 144px;
-        padding: 15px;
-        border: 1px solid #aebeb3;
-        border-radius: 8px;
-        background: var(--paper);
-        font-size: 15px;
-      }
-      .batch-grid li strong,
-      .batch-grid li span {
-        display: block;
-      }
-      .batch-grid li span {
-        margin-top: 7px;
-        font-size: 14px;
-      }
-      .batch-grid li.done {
-        background: var(--teal-bg);
-      }
-      .batch-grid li.current {
-        outline: 2px solid var(--teal);
-        outline-offset: -2px;
-      }
-      .batch-grid li.current strong {
-        color: var(--teal);
       }
       .stat-pair {
         display: grid;
@@ -1169,12 +1209,12 @@
         <p class="eyebrow">Lecture contents</p>
         <a href="#idea" class="active"><span>01</span>Foundations</a
         ><a href="#data"><span>02</span>Data and preprocessing</a
-        ><a href="#evaluation"><span>03</span>Model evaluation</a
-        ><a href="#training"><span>04</span>Training and optimization</a
-        ><a href="#generalization"
-          ><span>05</span>Complexity and generalization</a
-        ><a href="#models"><span>06</span>Supervised algorithms</a
-        ><a href="#clustering"><span>07</span>Unsupervised learning</a>
+        ><a href="#evaluation"><span>03</span>Model evaluation</a>
+        <a href="#generalization"
+          ><span>04</span>Complexity and generalization</a
+        >
+        <a href="#models"><span>05</span>Supervised algorithms</a>
+        <a href="#clustering"><span>06</span>Unsupervised learning</a>
         <div class="rail-note">
           <b>Lecture overview.</b>Learn what each idea is for. The derivations
           and implementations can come later.<br /><br />All examples use
@@ -1198,7 +1238,7 @@
                 know that rule will work on something it has never seen?
               </p>
               <div class="hero-meta">
-                <span><b>7 chapters</b> from data to models</span
+                <span><b>6 chapters</b> from data to models</span
                 ><span><b>Start here</b> no ML background needed</span>
               </div>
             </div>
@@ -1378,6 +1418,10 @@
                   <strong>induction</strong>. The pattern is an informed guess;
                   another route can still surprise it.
                 </p>
+                <div class="reasoning-flow">
+                  <span>Completed deliveries</span><b aria-hidden="true">→</b
+                  ><strong>General relationship</strong>
+                </div>
               </div>
               <div class="idea">
                 <h3>Deductive reasoning: applying general rules</h3>
@@ -1386,6 +1430,10 @@
                   is 12 km; add the fee.” This is <strong>deduction</strong>:
                   applying a given rule.
                 </p>
+                <div class="reasoning-flow">
+                  <span>Fee rule + 12 km route</span><b aria-hidden="true">→</b
+                  ><strong>Apply the fee</strong>
+                </div>
               </div>
               <p class="small">
                 Training does not continue automatically after release. A
@@ -1420,6 +1468,25 @@
             <div class="learning-type">
               <span class="signal">Examples + answers</span>
               <h3>Supervised learning</h3>
+              <div
+                class="learning-viz"
+                tabindex="0"
+                role="region"
+                aria-label="Supervised learning visualization"
+              >
+                <svg
+                  id="supervisedVisual"
+                  class="learning-plot"
+                  viewBox="0 0 460 260"
+                  role="img"
+                  aria-label="Labeled examples, a new delivery, and a classifier learned from the labeled data"
+                ></svg>
+              </div>
+              <div class="learning-key">
+                <span><i></i>On time</span
+                ><span><i class="square"></i>Late</span
+                ><span><i class="query"></i>New delivery</span>
+              </div>
               <ul class="concept-points">
                 <li>
                   <strong>Learn from:</strong> inputs paired with known targets.
@@ -1429,10 +1496,39 @@
                   will arrive late.
                 </li>
               </ul>
+              <div class="controls" style="margin-top: 20px">
+                <button type="button" id="supervisedLearn" aria-pressed="false">
+                  Fit and predict
+                </button>
+              </div>
+              <div
+                id="supervisedStatus"
+                class="learning-status"
+                role="status"
+              ></div>
             </div>
             <div class="learning-type">
               <span class="signal">Examples, no answers</span>
               <h3>Unsupervised learning</h3>
+              <div
+                class="learning-viz"
+                tabindex="0"
+                role="region"
+                aria-label="Unsupervised learning visualization"
+              >
+                <svg
+                  id="unsupervisedVisual"
+                  class="learning-plot"
+                  viewBox="0 0 460 260"
+                  role="img"
+                  aria-label="Unlabeled examples and groups found from their feature similarity"
+                ></svg>
+              </div>
+              <div class="learning-key">
+                <span
+                  ><i class="unknown"></i>Examples without target labels</span
+                >
+              </div>
               <ul class="concept-points">
                 <li>
                   <strong>Learn from:</strong> examples without target labels.
@@ -1442,10 +1538,43 @@
                   characteristics.
                 </li>
               </ul>
+              <div class="controls" style="margin-top: 20px">
+                <button
+                  type="button"
+                  id="unsupervisedLearn"
+                  aria-pressed="false"
+                >
+                  Find groups
+                </button>
+              </div>
+              <div
+                id="unsupervisedStatus"
+                class="learning-status"
+                role="status"
+              ></div>
             </div>
             <div class="learning-type">
               <span class="signal">A few answers</span>
               <h3>Semi-supervised learning</h3>
+              <div
+                class="learning-viz"
+                tabindex="0"
+                role="region"
+                aria-label="Semi-supervised learning visualization"
+              >
+                <svg
+                  id="semisupervisedVisual"
+                  class="learning-plot"
+                  viewBox="0 0 460 260"
+                  role="img"
+                  aria-label="Two known class labels and unlabeled examples arranged in two curved groups"
+                ></svg>
+              </div>
+              <div class="learning-key">
+                <span><i></i>Class A</span
+                ><span><i class="square"></i>Class B</span
+                ><span><i class="unknown"></i>Unlabeled</span>
+              </div>
               <ul class="concept-points">
                 <li>
                   <strong>Learn from:</strong> a small labeled set and a larger
@@ -1455,10 +1584,42 @@
                   <strong>Useful when:</strong> labeling examples is expensive.
                 </li>
               </ul>
+              <div class="controls" style="margin-top: 20px">
+                <button
+                  type="button"
+                  id="semisupervisedLearn"
+                  aria-pressed="false"
+                >
+                  Use unlabeled structure
+                </button>
+              </div>
+              <div
+                id="semisupervisedStatus"
+                class="learning-status"
+                role="status"
+              ></div>
             </div>
             <div class="learning-type">
               <span class="signal">Actions + rewards</span>
               <h3>Reinforcement learning</h3>
+              <div
+                class="learning-viz"
+                tabindex="0"
+                role="region"
+                aria-label="Reinforcement learning visualization"
+              >
+                <svg
+                  id="reinforcementVisual"
+                  class="learning-plot"
+                  viewBox="0 0 460 260"
+                  role="img"
+                  aria-label="A grid world with a starting point, a goal, obstacles, and a route learned from rewards"
+                ></svg>
+              </div>
+              <div class="learning-key">
+                <span><i></i>Agent at start</span
+                ><span><i class="query"></i>Goal</span>
+              </div>
               <ul class="concept-points">
                 <li>
                   <strong>Learn through:</strong> actions and feedback from
@@ -1469,6 +1630,16 @@
                   game.
                 </li>
               </ul>
+              <div class="controls" style="margin-top: 20px">
+                <button type="button" id="reinforcementLearn">
+                  Train agent</button
+                ><button type="button" id="reinforcementReset">Reset</button>
+              </div>
+              <div
+                id="reinforcementStatus"
+                class="learning-status"
+                role="status"
+              ></div>
             </div>
           </div>
           <div class="note">
@@ -1555,29 +1726,76 @@
               <span>01</span><b>Clean</b>
               <ul class="concept-points">
                 <li>
-                  Check missing values, impossible entries, inconsistent units,
-                  and duplicates.
+                  <strong>Missing values:</strong> a missing distance can be
+                  filled with the training-set median, for example
+                  <code>4.5 km</code>.
                 </li>
-                <li>Investigate outliers before deleting them.</li>
+                <li>
+                  <strong>Invalid values:</strong> flag <code>−3 km</code> and
+                  check the source; do not silently turn it into a valid
+                  distance.
+                </li>
+                <li>
+                  <strong>Consistent units:</strong> convert
+                  <code>2,500 m → 2.5 km</code>. Use the same unit across
+                  records.
+                </li>
+                <li>
+                  <strong>Consistent categories:</strong> map <code>Yes</code>,
+                  <code>Y</code>, and <code>yes</code> to one rain value.
+                </li>
+                <li>
+                  <strong>Duplicates and outliers:</strong> remove confirmed
+                  duplicate records. Investigate an unusually long delivery
+                  before deciding it is an error.
+                </li>
               </ul>
             </div>
             <div>
               <span>02</span><b>Integrate</b>
-              <p>
-                Join sources carefully. A delivery ID should connect the same
-                delivery across files.
-              </p>
+              <ul class="concept-points">
+                <li>
+                  <strong>Join related records:</strong> match the route file
+                  and parcel file using the same delivery ID.
+                </li>
+                <li>
+                  <strong>Example:</strong> delivery <code>D43</code> has
+                  <code>5 km</code> in one file and <code>2,000 g</code> in
+                  another. The joined row contains both features.
+                </li>
+                <li>
+                  <strong>Missing matches:</strong> if <code>D44</code> has no
+                  parcel record, flag the missing information rather than
+                  silently losing the delivery.
+                </li>
+                <li>
+                  <strong>Check the result:</strong> unexpected extra rows may
+                  mean an ID appeared several times. Confirm what one joined row
+                  represents.
+                </li>
+              </ul>
             </div>
             <div>
               <span>03</span><b>Encode &amp; construct</b>
               <ul class="concept-points">
                 <li>
-                  <strong>Encoding:</strong> turn categories into numeric
-                  inputs.
+                  <strong>Binary encoding:</strong> represent the rain flag as
+                  <code>No → 0</code> and <code>Yes → 1</code>.
                 </li>
                 <li>
-                  <strong>Feature engineering:</strong> derive “rush hour” from
-                  departure time.
+                  <strong>One-hot encoding:</strong> with columns
+                  <code>[bike, van]</code>, encode a bike as
+                  <code>[1, 0]</code> and a van as <code>[0, 1]</code>.
+                </li>
+                <li>
+                  <strong>Construct a useful feature:</strong> if rush hour is
+                  defined as 17:00–19:00, a departure at
+                  <code>18:00 → rush_hour = 1</code>.
+                </li>
+                <li>
+                  <strong>Extract date information:</strong> turn a departure
+                  date into its day of the week. Use only information available
+                  before the delivery begins.
                 </li>
               </ul>
             </div>
@@ -1585,32 +1803,75 @@
               <span>04</span><b>Scale</b>
               <ul class="concept-points">
                 <li>
-                  <strong>Min–max scaling:</strong> map a training range to [0,
-                  1].
+                  <strong>Min–max example:</strong> with a training distance
+                  range of 0–10 km,
+                  <code>5 km → (5 − 0) / (10 − 0) = 0.5</code>.
                 </li>
                 <li>
-                  <strong>Standardization:</strong> subtract the mean and divide
-                  by the standard deviation.
+                  <strong>Another unit:</strong> with a training mass range of
+                  0–5,000 g, <code>2,500 g → 0.5</code>. Large gram values no
+                  longer dominate merely because of their units.
+                </li>
+                <li>
+                  <strong>Standardization example:</strong> if the training mean
+                  is 5 km and standard deviation is 2 km,
+                  <code>9 km → (9 − 5) / 2 = 2</code>.
+                </li>
+                <li>
+                  <strong>Apply consistently:</strong> learn the ranges, means,
+                  and standard deviations from training data; reuse them for
+                  validation, test, and future deliveries.
                 </li>
               </ul>
             </div>
             <div>
               <span>05</span><b>Aggregate &amp; discretize</b>
               <ul class="concept-points">
-                <li><strong>Aggregation:</strong> summarize events by day.</li>
                 <li>
-                  <strong>Discretization:</strong> replace minutes with time
-                  bands. Both can lose useful detail.
+                  <strong>Aggregation:</strong> three completed deliveries
+                  lasting 10, 20, and 30 minutes can become a daily count of
+                  <code>3</code> and mean duration of <code>20 minutes</code>.
+                </li>
+                <li>
+                  <strong>Discretization:</strong> replace exact distances with
+                  bands: short <code>&lt; 3 km</code>, medium
+                  <code>3–&lt;7 km</code>, and long <code>≥ 7 km</code>.
+                </li>
+                <li>
+                  <strong>Example:</strong> <code>2 km → short</code>;
+                  <code>8 km → long</code>. Distances of 3.1 km and 6.9 km both
+                  become “medium.”
+                </li>
+                <li>
+                  <strong>What is lost:</strong> a mean hides individual delays,
+                  and a band hides exact distances. Historical summaries used as
+                  inputs must contain only earlier deliveries.
                 </li>
               </ul>
             </div>
             <div>
               <span>06</span><b>Reduce</b>
               <ul class="concept-points">
-                <li>Select useful features or sample rows.</li>
                 <li>
-                  Use <strong>PCA</strong> to represent numeric data in fewer
-                  dimensions.
+                  <strong>Select features:</strong> keep an arbitrary delivery
+                  ID for joining files, but leave it out of the predictors when
+                  it carries no useful pattern.
+                </li>
+                <li>
+                  <strong>Remove redundancy:</strong> if
+                  <code>distance_m</code> is just
+                  <code>distance_km × 1,000</code>, keep one version.
+                </li>
+                <li>
+                  <strong>Sample rows:</strong> use a representative subset,
+                  such as 10,000 of 100,000 deliveries, while checking that
+                  important routes and conditions remain represented.
+                </li>
+                <li>
+                  <strong>PCA example:</strong> three correlated parcel
+                  dimensions—length, width, and height—can be represented by two
+                  learned components. These are combinations of the original
+                  features; check how much information is retained.
                 </li>
               </ul>
             </div>
@@ -1766,213 +2027,13 @@
           </div>
         </section>
 
-        <section class="chapter" id="training" aria-labelledby="training-title">
-          <div class="chapter-head">
-            <span class="eyebrow">04 / Training and optimization</span>
-          </div>
-          <h2 id="training-title">Model training and optimization</h2>
-          <ul class="concept-points intro">
-            <li>
-              <strong>Model:</strong> a weighted sum of inputs plus an
-              intercept; with one feature, a straight line.
-            </li>
-            <li>
-              <strong>Residual:</strong> the vertical gap between actual and
-              predicted time.
-            </li>
-            <li>
-              <strong>Least squares:</strong> choose the line that minimizes
-              squared residuals.
-            </li>
-          </ul>
-          <div class="panel">
-            <div class="panel-head">
-              <h3>Linear regression: parameter fitting and residuals</h3>
-              <span class="tag">Drag → compare → fit</span>
-            </div>
-            <div class="panel-body viz-layout">
-              <div>
-                <svg
-                  id="linearPlot"
-                  class="plot"
-                  viewBox="0 0 550 350"
-                  role="img"
-                  aria-label="Delivery distance versus time, fitted line, and vertical residuals"
-                ></svg>
-                <div class="legend">
-                  <span>observations</span
-                  ><span class="orange">current prediction</span
-                  ><span class="gray">residuals</span>
-                </div>
-              </div>
-              <div>
-                <label class="field" for="slope"
-                  ><span
-                    >Slope · minutes per km
-                    <output id="slopeOut" for="slope"></output></span
-                  ><input
-                    id="slope"
-                    type="range"
-                    min="-1"
-                    max="6"
-                    value="1"
-                    step="any" /></label
-                ><label class="field" for="intercept"
-                  ><span
-                    >Intercept · minutes
-                    <output id="interceptOut" for="intercept"></output></span
-                  ><input
-                    id="intercept"
-                    type="range"
-                    min="0"
-                    max="25"
-                    value="8"
-                    step="any"
-                /></label>
-                <div id="linearReadout" class="readout" role="status"></div>
-                <div class="controls">
-                  <button id="bestFit" class="primary" type="button">
-                    Least-squares fit</button
-                  ><button id="resetLine" type="button">Reset</button>
-                </div>
-                <p class="small" style="margin-top: 14px">
-                  Move either parameter. The line changes; the six observations
-                  stay fixed.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="two" style="margin-top: 24px">
-            <div>
-              <h3>Model parameters and the training objective</h3>
-              <ul class="concept-points small">
-                <li>
-                  <strong>Parameters:</strong> the slope and intercept; training
-                  finds their values.
-                </li>
-                <li><strong>Loss:</strong> the mismatch on an example.</li>
-                <li>
-                  <strong>Objective:</strong> usually an aggregate of losses
-                  over the data.
-                </li>
-              </ul>
-              <div class="formula">MSE = (1/n) Σ (yᵢ − ŷᵢ)²</div>
-              <ul class="concept-points small">
-                <li>
-                  <strong>Gradient descent:</strong> move parameters opposite
-                  the gradient to reduce the objective.
-                </li>
-                <li>
-                  <strong>Learning rate:</strong> small values take short steps;
-                  an overly large value can overshoot.
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3>Hyperparameters and model configuration</h3>
-              <ul class="concept-points small">
-                <li>
-                  <strong>Examples:</strong> learning rate, batch size, tree
-                  depth, and neighbor count.
-                </li>
-                <li>
-                  <strong>Selection:</strong> choose or tune these settings
-                  using validation, rather than fitting them like weights.
-                </li>
-              </ul>
-              <div class="formula">
-                parameter ← parameter − learning rate × gradient
-              </div>
-              <p class="small">
-                Least-squares regression also has a direct solution. KNN does
-                not use this gradient-descent training loop; it keeps the
-                training examples for later comparisons.
-              </p>
-            </div>
-          </div>
-          <div class="panel">
-            <div class="panel-head">
-              <h3>Mini-batches, iterations, and epochs</h3>
-              <span class="tag">A step-by-step training example</span>
-            </div>
-            <div class="panel-body">
-              <p class="small">
-                Suppose we have <strong>240 completed deliveries</strong>. Each
-                training example contains a delivery's inputs and its actual
-                delivery time. We train one model by processing these examples
-                in groups.
-              </p>
-              <div class="three">
-                <div class="idea">
-                  <h4>Batch: a group of examples</h4>
-                  <p>
-                    A batch size of
-                    <span id="batchDefinitionSize">40</span> means taking
-                    <strong
-                      ><span id="batchDefinitionCount">40</span> deliveries
-                      together</strong
-                    >, rather than processing all 240 at once.
-                  </p>
-                </div>
-                <div class="idea">
-                  <h4>Iteration: one model update</h4>
-                  <p>
-                    Predict times for one batch, compare them with the actual
-                    times, then
-                    <strong>adjust the model's parameters once</strong>. That
-                    learning step is one iteration.
-                  </p>
-                </div>
-                <div class="idea">
-                  <h4>Epoch: one complete pass</h4>
-                  <p>
-                    Process every batch until the model has used
-                    <strong>all 240 deliveries once</strong>. That finishes one
-                    epoch. The next epoch reuses the same dataset with the
-                    updated model.
-                  </p>
-                </div>
-              </div>
-              <label class="field" for="batchSize" style="max-width: 540px"
-                ><span
-                  >Batch size · deliveries per group
-                  <output id="batchOut" for="batchSize"></output></span
-                ><input
-                  id="batchSize"
-                  type="range"
-                  min="8"
-                  max="80"
-                  value="40"
-                  step="8"
-              /></label>
-              <h4 id="batchEpoch">Epoch 1 of 3</h4>
-              <ol
-                id="batchGrid"
-                class="batch-grid"
-                aria-label="Batches in the current epoch"
-                tabindex="0"
-              ></ol>
-              <div class="controls">
-                <button id="batchNext" class="primary" type="button">
-                  Next iteration
-                </button>
-                <button id="batchReset" type="button">
-                  Restart training example
-                </button>
-              </div>
-              <div id="batchStepReadout" class="readout" role="status"></div>
-              <div id="batchReadout" class="small"></div>
-            </div>
-          </div>
-        </section>
-
         <section
           class="chapter"
           id="generalization"
           aria-labelledby="generalization-title"
         >
           <div class="chapter-head">
-            <span class="eyebrow">05 / Complexity and generalization</span>
+            <span class="eyebrow">04 / Complexity and generalization</span>
           </div>
           <h2 id="generalization-title">Model complexity and generalization</h2>
           <p class="intro">
@@ -2101,13 +2162,15 @@
 
         <section class="chapter" id="models" aria-labelledby="models-title">
           <div class="chapter-head">
-            <span class="eyebrow">06 / Supervised algorithms</span>
+            <span class="eyebrow">05 / Supervised algorithms</span>
           </div>
           <h2 id="models-title">Supervised learning algorithms</h2>
           <p class="intro">
-            We have already used linear regression for a numeric target. For
-            classification, imagine predicting whether a delivery will be late.
-            Each method below approaches that question differently.
+            Linear regression predicts a numeric target, such as delivery time,
+            using a weighted sum of the inputs plus an intercept. For
+            classification, the target is a category, such as “late” or “on
+            time.” The methods below illustrate different approaches to
+            supervised prediction.
           </p>
           <div class="panel">
             <div
@@ -2604,7 +2667,7 @@
           aria-labelledby="clustering-title"
         >
           <div class="chapter-head">
-            <span class="eyebrow">07 / Unsupervised learning</span>
+            <span class="eyebrow">06 / Unsupervised learning</span>
           </div>
           <h2 id="clustering-title">Unsupervised learning and clustering</h2>
           <ul class="concept-points intro">
@@ -2909,140 +2972,6 @@
         .querySelectorAll(".fold-row button")
         .forEach((b, i) => (b.onclick = () => selectFold(i)));
       selectFold(0);
-
-      // Ordinary least squares with one input, and manipulable residuals.
-      const linearData = [
-        { x: 1, y: 13 },
-        { x: 2.5, y: 20 },
-        { x: 4, y: 22 },
-        { x: 6, y: 30 },
-        { x: 7.5, y: 31 },
-        { x: 9, y: 39 },
-      ];
-      function renderLine() {
-        const m = number("slope"),
-          b = number("intercept"),
-          base = plotBase(
-            550,
-            350,
-            10,
-            60,
-            "distance · km",
-            "delivery time · min",
-          ),
-          { X, Y } = base;
-        let s =
-          base.s +
-          '<defs><clipPath id="linearClip"><rect x="53" y="28" width="477" height="278"/></clipPath></defs><g clip-path="url(#linearClip)">';
-        linearData.forEach((p) => {
-          s +=
-            line(
-              X(p.x),
-              Y(p.y),
-              X(p.x),
-              Y(m * p.x + b),
-              `stroke="${C.gray}" stroke-dasharray="4 4" stroke-width="1.5"`,
-            ) + circle(X(p.x), Y(p.y), 5.5, C.teal);
-        });
-        s +=
-          line(
-            X(0),
-            Y(b),
-            X(10),
-            Y(m * 10 + b),
-            `stroke="${C.orange}" stroke-width="3"`,
-          ) + "</g>";
-        $("linearPlot").innerHTML = s;
-        $("slopeOut").textContent = fmt(m, 2);
-        $("interceptOut").textContent = fmt(b, 2);
-        $("linearReadout").innerHTML = `<b>${fmt(
-          mse(linearData, (x) => m * x + b),
-          2,
-        )} min²</b>Mean squared error<br><span class="unit">ŷ = ${fmt(m, 2)} × distance + ${fmt(b, 2)}</span>`;
-      }
-      ["slope", "intercept"].forEach((id) => ($(id).oninput = renderLine));
-      $("bestFit").onclick = () => {
-        const n = linearData.length,
-          mx = linearData.reduce((s, p) => s + p.x, 0) / n,
-          my = linearData.reduce((s, p) => s + p.y, 0) / n,
-          m =
-            linearData.reduce((s, p) => s + (p.x - mx) * (p.y - my), 0) /
-            linearData.reduce((s, p) => s + (p.x - mx) ** 2, 0);
-        $("slope").value = m;
-        $("intercept").value = my - m * mx;
-        renderLine();
-      };
-      $("resetLine").onclick = () => {
-        $("slope").value = 1;
-        $("intercept").value = 8;
-        renderLine();
-      };
-      renderLine();
-      let batchIteration = 0;
-      function renderBatch() {
-        const b = number("batchSize"),
-          updates = Math.ceil(240 / b),
-          last = 240 - (updates - 1) * b;
-        const epoch = Math.max(1, Math.ceil(batchIteration / updates)),
-          completed =
-            batchIteration === 0 ? 0 : ((batchIteration - 1) % updates) + 1,
-          first = completed === 0 ? 0 : (completed - 1) * b + 1,
-          end = Math.min(completed * b, 240),
-          finished = batchIteration === updates * 3;
-        $("batchOut").textContent = b + " deliveries";
-        $("batchDefinitionSize").textContent = b;
-        $("batchDefinitionCount").textContent = b;
-        $("batchEpoch").textContent =
-          `Epoch ${epoch} of 3 · ${completed} of ${updates} batches processed`;
-        $("batchGrid").innerHTML = Array.from(
-          { length: updates },
-          (
-            _,
-            i,
-          ) => `<li class="${i < completed ? "done" : ""} ${i === completed - 1 ? "current" : ""}" ${i === completed - 1 ? 'aria-current="step"' : ""}>
-            <strong>Batch ${i + 1}</strong>
-            <span>Deliveries ${i * b + 1}–${Math.min((i + 1) * b, 240)}</span>
-            <span>Iteration ${(epoch - 1) * updates + i + 1}${i < completed ? " · done" : ""}</span>
-          </li>`,
-        ).join("");
-        $("batchStepReadout").innerHTML =
-          batchIteration === 0
-            ? `No updates yet. Select <strong>Next iteration</strong> to predict times for deliveries 1–${b}, compare them with their actual times, and update the model once.`
-            : `<strong>Iteration ${batchIteration}:</strong> used deliveries ${first}–${end} and updated the model once.
-            <br>${
-              completed === updates
-                ? `<strong>Epoch ${epoch} complete:</strong> all 240 deliveries have been used in this pass.${finished ? " Three passes are finished." : " The next iteration starts another pass through the same dataset."}`
-                : `<strong>Epoch ${epoch} in progress:</strong> ${end} of 240 deliveries have been used in this pass.`
-            }`;
-        $("batchReadout").innerHTML =
-          `<strong>${updates} batches → ${updates} iterations → 1 epoch.</strong>
-           Three epochs reuse the same 240 examples three times, giving <strong>${3 * updates} iterations in total</strong>.
-           ${last < b ? `The final batch has ${last} deliveries; it still produces one update.` : ""}`;
-        $("batchNext").disabled = finished;
-        $("batchNext").textContent = finished
-          ? "Three epochs complete"
-          : "Next iteration";
-        const current = $("batchGrid").querySelector(".current");
-        if (current) {
-          const grid = $("batchGrid"),
-            rect = current.getBoundingClientRect(),
-            frame = grid.getBoundingClientRect();
-          if (rect.right > frame.right || rect.left < frame.left)
-            grid.scrollLeft += rect.left - frame.left;
-        } else $("batchGrid").scrollLeft = 0;
-      }
-      function resetBatch() {
-        batchIteration = 0;
-        renderBatch();
-      }
-      $("batchSize").oninput = resetBatch;
-      $("batchReset").onclick = resetBatch;
-      $("batchNext").onclick = () => {
-        if (batchIteration < Math.ceil(240 / number("batchSize")) * 3)
-          batchIteration++;
-        renderBatch();
-      };
-      renderBatch();
 
       // A small CART-style regressor: greedily split the leaf that most reduces SSE.
       const truth = (x) => 14 + 3 * x + 6 * Math.sin(x * 0.8);
@@ -3775,6 +3704,374 @@
       }
       $("linkage").onchange = renderHierarchy;
       renderHierarchy();
+
+      // Learning signals: four small demonstrations with distinct sources of feedback.
+      const signalPoints = [
+        [63, 87, 0],
+        [94, 158, 0],
+        [128, 105, 0],
+        [155, 182, 0],
+        [177, 67, 0],
+        [196, 147, 0],
+        [277, 87, 1],
+        [293, 184, 1],
+        [329, 128, 1],
+        [358, 64, 1],
+        [384, 182, 1],
+        [409, 112, 1],
+      ];
+      function signalSymbol(x, y, label, extra = "") {
+        return label === 1
+          ? `<rect x="${x - 6}" y="${y - 6}" width="12" height="12" rx="1" fill="${C.orange}" ${extra}/>`
+          : circle(x, y, 6, label === 0 ? C.teal : "#85938a", extra);
+      }
+      function signalBackground() {
+        return `<path d="M35 225H430M35 225V25" fill="none" stroke="#aebeb3"/>
+          <text x="232" y="249" text-anchor="middle">Two input features locate each example</text>`;
+      }
+      let supervisedFitted = false;
+      function renderSupervisedSignal() {
+        let svg = signalBackground();
+        const means = [0, 1].map((label) => {
+          const group = signalPoints.filter((p) => p[2] === label);
+          return [0, 1].map(
+            (axis) => group.reduce((sum, p) => sum + p[axis], 0) / group.length,
+          );
+        });
+        const [a, b] = means,
+          query = [204, 116];
+        const predicted =
+          Math.hypot(query[0] - a[0], query[1] - a[1]) <=
+          Math.hypot(query[0] - b[0], query[1] - b[1])
+            ? 0
+            : 1;
+        if (supervisedFitted) {
+          const cut = (y) =>
+            (b[0] ** 2 +
+              b[1] ** 2 -
+              a[0] ** 2 -
+              a[1] ** 2 -
+              2 * (b[1] - a[1]) * y) /
+            (2 * (b[0] - a[0]));
+          svg += line(
+            cut(25),
+            25,
+            cut(225),
+            225,
+            `stroke="${C.teal}" stroke-width="2.5" stroke-dasharray="7 5"`,
+          );
+          svg += `<text x="${cut(40) + 12}" y="42">Learned boundary</text>`;
+        }
+        signalPoints.forEach((p) => (svg += signalSymbol(...p)));
+        svg += `<path d="M${query[0]},${query[1] - 10}l10,10l-10,10l-10,-10Z" fill="${C.gold}" stroke="#806123" stroke-width="1.5"/>`;
+        if (supervisedFitted)
+          svg += circle(
+            query[0],
+            query[1],
+            17,
+            "none",
+            `stroke="${predicted ? C.orange : C.teal}" stroke-width="2"`,
+          );
+        $("supervisedVisual").innerHTML = svg;
+        $("supervisedLearn").textContent = supervisedFitted
+          ? "Hide prediction"
+          : "Fit and predict";
+        $("supervisedLearn").setAttribute("aria-pressed", supervisedFitted);
+        $("supervisedStatus").textContent = supervisedFitted
+          ? `The model learns from the known labels and predicts “${predicted ? "late" : "on time"}” for the new delivery. The diamond's true label is not supplied.`
+          : "The circles and squares already have known labels. The gold diamond is a new delivery awaiting a prediction.";
+      }
+      $("supervisedLearn").onclick = () => {
+        supervisedFitted = !supervisedFitted;
+        renderSupervisedSignal();
+      };
+      renderSupervisedSignal();
+
+      const signalClusterPoints = [],
+        signalRandom = random(613);
+      [
+        [105, 85],
+        [345, 90],
+        [230, 185],
+      ].forEach(([x, y]) => {
+        for (let i = 0; i < 9; i++)
+          signalClusterPoints.push({
+            x: x + (signalRandom() - 0.5) * 86,
+            y: y + (signalRandom() - 0.5) * 58,
+          });
+      });
+      let signalGrouped = false;
+      function renderUnsupervisedSignal() {
+        let centers = [
+            { x: 60, y: 50 },
+            { x: 230, y: 200 },
+            { x: 400, y: 50 },
+          ],
+          groups = [];
+        for (let step = 0; step < 20; step++) {
+          groups = signalClusterPoints.map((p) => {
+            const distances = centers.map(
+              (c) => (p.x - c.x) ** 2 + (p.y - c.y) ** 2,
+            );
+            return distances.indexOf(Math.min(...distances));
+          });
+          centers = centers.map((c, k) => {
+            const ps = signalClusterPoints.filter((_, i) => groups[i] === k);
+            return ps.length
+              ? {
+                  x: ps.reduce((s, p) => s + p.x, 0) / ps.length,
+                  y: ps.reduce((s, p) => s + p.y, 0) / ps.length,
+                }
+              : c;
+          });
+        }
+        let svg = signalBackground();
+        if (signalGrouped)
+          centers.forEach((c, k) => {
+            const ps = signalClusterPoints.filter((_, i) => groups[i] === k);
+            const rx = Math.max(...ps.map((p) => Math.abs(p.x - c.x))) + 18,
+              ry = Math.max(...ps.map((p) => Math.abs(p.y - c.y))) + 16;
+            svg += `<ellipse cx="${c.x}" cy="${c.y}" rx="${rx}" ry="${ry}" fill="${clusterColors[k]}" fill-opacity=".07" stroke="${clusterColors[k]}" stroke-dasharray="5 4"/>
+            <text x="${c.x}" y="${c.y - ry - 7}" text-anchor="middle">Group ${k + 1}</text>`;
+          });
+        signalClusterPoints.forEach(
+          (p, i) =>
+            (svg += circle(
+              p.x,
+              p.y,
+              5.5,
+              signalGrouped ? clusterColors[groups[i]] : "#85938a",
+            )),
+        );
+        $("unsupervisedVisual").innerHTML = svg;
+        $("unsupervisedLearn").textContent = signalGrouped
+          ? "Hide groups"
+          : "Find groups";
+        $("unsupervisedLearn").setAttribute("aria-pressed", signalGrouped);
+        $("unsupervisedStatus").textContent = signalGrouped
+          ? "Three groups were formed from feature similarity. “Group 1” is an algorithm-assigned name, not a supplied class such as “late.”"
+          : "Every point is unlabeled. The algorithm receives the features, but no examples of correct groups.";
+      }
+      $("unsupervisedLearn").onclick = () => {
+        signalGrouped = !signalGrouped;
+        renderUnsupervisedSignal();
+      };
+      renderUnsupervisedSignal();
+
+      // Two-neighbor graph diffusion: only the two seed labels are supplied.
+      const partialPoints = Array.from({ length: 36 }, (_, i) => {
+        const angle = ((i % 18) * Math.PI) / 17,
+          second = i >= 18;
+        const x = second ? 1 - Math.cos(angle) : Math.cos(angle),
+          y = second ? 0.5 - Math.sin(angle) : Math.sin(angle);
+        return { x: 50 + (x + 1) * 116, y: 210 - (y + 0.5) * 110 };
+      });
+      const knownSignals = new Map([
+          [7, 0],
+          [25, 1],
+        ]),
+        signalEdges = new Set();
+      partialPoints.forEach((p, i) => {
+        partialPoints
+          .map((q, j) => ({ j, d: (p.x - q.x) ** 2 + (p.y - q.y) ** 2 }))
+          .filter((q) => q.j !== i)
+          .sort((a, b) => a.d - b.d)
+          .slice(0, 2)
+          .forEach((q) =>
+            signalEdges.add([Math.min(i, q.j), Math.max(i, q.j)].join(",")),
+          );
+      });
+      const graphEdges = [...signalEdges].map((e) => e.split(",").map(Number)),
+        adjacency = partialPoints.map(() => []);
+      graphEdges.forEach(([a, b]) => {
+        adjacency[a].push(b);
+        adjacency[b].push(a);
+      });
+      let partialInferred = false;
+      function renderPartialSignal() {
+        let scores = partialPoints.map((_, i) =>
+          knownSignals.has(i)
+            ? knownSignals.get(i) === 0
+              ? [1, 0]
+              : [0, 1]
+            : [0, 0],
+        );
+        if (partialInferred)
+          for (let round = 0; round < 400; round++)
+            scores = scores.map((s, i) =>
+              knownSignals.has(i)
+                ? s
+                : [0, 1].map(
+                    (c) =>
+                      adjacency[i].reduce((sum, j) => sum + scores[j][c], 0) /
+                      adjacency[i].length,
+                  ),
+            );
+        let svg = signalBackground(),
+          inferred = 0;
+        if (partialInferred)
+          graphEdges.forEach(
+            ([a, b]) =>
+              (svg += line(
+                partialPoints[a].x,
+                partialPoints[a].y,
+                partialPoints[b].x,
+                partialPoints[b].y,
+                'stroke="#acbcaf" stroke-width="1.4"',
+              )),
+          );
+        partialPoints.forEach((p, i) => {
+          let label = knownSignals.has(i) ? knownSignals.get(i) : -1;
+          if (label < 0 && partialInferred && Math.max(...scores[i]) > 0) {
+            label = scores[i][0] >= scores[i][1] ? 0 : 1;
+            inferred++;
+          }
+          svg += signalSymbol(
+            p.x,
+            p.y,
+            label,
+            !knownSignals.has(i) && label >= 0 ? 'opacity=".65"' : "",
+          );
+          if (knownSignals.has(i))
+            svg +=
+              circle(
+                p.x,
+                p.y,
+                12,
+                "none",
+                `stroke="${label === 0 ? C.teal : C.orange}" stroke-width="2"`,
+              ) +
+              txt(
+                p.x,
+                p.y - 19,
+                label === 0 ? "A" : "B",
+                'text-anchor="middle"',
+              );
+        });
+        $("semisupervisedVisual").innerHTML = svg;
+        $("semisupervisedLearn").textContent = partialInferred
+          ? "Show only known labels"
+          : "Use unlabeled structure";
+        $("semisupervisedLearn").setAttribute("aria-pressed", partialInferred);
+        $("semisupervisedStatus").textContent = partialInferred
+          ? `The neighborhood graph connects similar examples. Two supplied labels guide ${inferred} inferred labels; rings mark the original labels. Inferred labels are estimates, not additional ground truth.`
+          : "Only the two ringed points have supplied labels. The other 34 examples still provide information about the shape of the data.";
+      }
+      $("semisupervisedLearn").onclick = () => {
+        partialInferred = !partialInferred;
+        renderPartialSignal();
+      };
+      renderPartialSignal();
+
+      // Q-learning on a fixed grid. The learner receives rewards, never a target route.
+      const signalWalls = new Set([5, 9]),
+        signalStart = 12,
+        signalGoal = 3,
+        signalMoves = [
+          [0, -1],
+          [1, 0],
+          [0, 1],
+          [-1, 0],
+        ];
+      let signalQ = Array.from({ length: 16 }, () => [0, 0, 0, 0]),
+        signalEpisodes = 0,
+        signalPolicy = [];
+      let rewardRandom = random(314);
+      function rewardTransition(state, action) {
+        const [dx, dy] = signalMoves[action],
+          x = (state % 4) + dx,
+          y = Math.floor(state / 4) + dy,
+          next = y * 4 + x;
+        if (x < 0 || x > 3 || y < 0 || y > 3 || signalWalls.has(next))
+          return { state, reward: -0.6, terminal: false };
+        return {
+          state: next,
+          reward: next === signalGoal ? 10 : -0.2,
+          terminal: next === signalGoal,
+        };
+      }
+      function rewardPolicy() {
+        let state = signalStart,
+          reward = 0;
+        const route = [state],
+          seen = new Set([state]);
+        for (let i = 0; i < 32; i++) {
+          const action = signalQ[state].indexOf(Math.max(...signalQ[state])),
+            result = rewardTransition(state, action);
+          reward += result.reward;
+          route.push(result.state);
+          state = result.state;
+          if (result.terminal) return { route, reward, reached: true };
+          if (seen.has(state)) break;
+          seen.add(state);
+        }
+        return { route, reward, reached: false };
+      }
+      function renderRewardSignal() {
+        let svg = "",
+          cell = 48,
+          left = 24,
+          top = 29;
+        for (let state = 0; state < 16; state++) {
+          const x = left + (state % 4) * cell,
+            y = top + Math.floor(state / 4) * cell;
+          svg += `<rect x="${x}" y="${y}" width="${cell - 3}" height="${cell - 3}" rx="5" fill="${signalWalls.has(state) ? "#a1afa3" : state === signalGoal ? "#f0d388" : "#fffefa"}" stroke="#c4cec0"/>`;
+        }
+        const pos = (s) => [
+          left + (s % 4) * cell + 22,
+          top + Math.floor(s / 4) * cell + 22,
+        ];
+        if (signalPolicy.length)
+          svg += path(
+            signalPolicy.map(pos),
+            `fill="none" stroke="${C.teal}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"`,
+          );
+        const [sx, sy] = pos(signalStart),
+          [gx, gy] = pos(signalGoal);
+        svg +=
+          circle(sx, sy, 11, C.teal) +
+          `<path d="M${gx},${gy - 12}l12,12l-12,12l-12,-12Z" fill="${C.gold}" stroke="#806123"/>`;
+        svg += `<text x="265" y="60">Choose an action</text><path d="M345 75V98" stroke="#71847b" stroke-width="2"/><text x="265" y="128">Observe new state</text><text x="265" y="155">and receive reward</text><path d="M345 170V193" stroke="#71847b" stroke-width="2"/><text x="265" y="220">Update the policy</text>`;
+        $("reinforcementVisual").innerHTML = svg;
+        if (!signalEpisodes)
+          $("reinforcementStatus").textContent =
+            "An episode is one attempt from start to goal. Goal: +10; each move: −0.2; a blocked move: −0.6. No example route is supplied.";
+      }
+      $("reinforcementLearn").onclick = () => {
+        for (let episode = 0; episode < 100; episode++) {
+          let state = signalStart;
+          for (let step = 0; step < 80; step++) {
+            const action =
+              rewardRandom() < 0.3
+                ? Math.floor(rewardRandom() * 4)
+                : signalQ[state].indexOf(Math.max(...signalQ[state]));
+            const result = rewardTransition(state, action),
+              target =
+                result.reward +
+                (result.terminal
+                  ? 0
+                  : 0.9 * Math.max(...signalQ[result.state]));
+            signalQ[state][action] += 0.4 * (target - signalQ[state][action]);
+            state = result.state;
+            if (result.terminal) break;
+          }
+        }
+        signalEpisodes += 100;
+        const policy = rewardPolicy();
+        signalPolicy = policy.route;
+        renderRewardSignal();
+        $("reinforcementStatus").textContent = policy.reached
+          ? `After ${signalEpisodes} training episodes, the learned policy reaches the goal in ${policy.route.length - 1} moves, with total reward ${fmt(policy.reward)}. The agent learned from action outcomes, not labeled routes.`
+          : `After ${signalEpisodes} episodes, the current policy still gets stuck. Further exploration can improve it.`;
+      };
+      $("reinforcementReset").onclick = () => {
+        signalQ = Array.from({ length: 16 }, () => [0, 0, 0, 0]);
+        signalEpisodes = 0;
+        signalPolicy = [];
+        rewardRandom = random(314);
+        renderRewardSignal();
+      };
+      renderRewardSignal();
 
       const chapters = [...document.querySelectorAll(".chapter")],
         navLinks = [...document.querySelectorAll(".contents>a")];
