@@ -1939,6 +1939,52 @@
             tell us how the model will handle a new delivery. Give each part of
             the dataset a clear role.
           </p>
+          <div class="two">
+            <div class="idea">
+              <h3>Model parameters</h3>
+              <ul class="concept-points">
+                <li>
+                  <strong>What they are:</strong> values the model learns from
+                  training data.
+                </li>
+                <li>
+                  <strong>Linear regression:</strong> in
+                  <code>ŷ = m × distance + b</code>, training determines the
+                  slope <code>m</code> and intercept <code>b</code>.
+                </li>
+                <li>
+                  <strong>Decision tree:</strong> training learns which features
+                  to split on and the split thresholds, such as
+                  <code>distance &gt; 5 km</code>.
+                </li>
+              </ul>
+            </div>
+            <div class="idea">
+              <h3>Model hyperparameters</h3>
+              <ul class="concept-points">
+                <li>
+                  <strong>What they are:</strong> settings chosen around the
+                  fitting process, rather than learned as model parameters.
+                </li>
+                <li>
+                  <strong>Examples:</strong> the neighbor count
+                  <code>K</code> in KNN or the maximum depth allowed for a
+                  decision tree.
+                </li>
+                <li>
+                  <strong>How to choose:</strong> fit models with different
+                  settings and compare their validation scores. Keep the test
+                  set for the final evaluation.
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="note" style="margin-bottom: 30px">
+            <strong>Tree example:</strong> you set a maximum depth of 3;
+            training learns the questions and thresholds within that limit. To
+            compare depths 3 and 5, use validation data. The depth limit is a
+            hyperparameter; the learned splits are part of the fitted model.
+          </div>
           <div
             class="split-strip"
             role="img"
@@ -2794,26 +2840,6 @@
           </div>
         </section>
 
-        <footer>
-          <p>
-            The companion
-            <a href="Machine_Learning.md">teaching notes</a> expand the
-            explanations, discussion prompts, and caveats.
-          </p>
-          <p>
-            Content synthesized and reworded from the supplied
-            <a href="../../AI_FMI_course/docs/labs/lab06-intro-ml.html"
-              >Lab 06 notes</a
-            ><a href="../../AI_FMI_course/notebooks/06_Introduction_to_ML.ipynb"
-              >Lab 06 notebook</a
-            ><a href="Intro%20ML.pdf">Intro ML slides · Boris Velichkov</a>
-          </p>
-          <p>
-            Original SVG diagrams and interactive examples. All numerical
-            examples are illustrative; this page needs no external scripts,
-            fonts, or images.
-          </p>
-        </footer>
       </main>
     </div>
     <script>

@@ -8,7 +8,7 @@ Companion to [the interactive HTML lesson](machine_learning.html). The HTML is t
 | --- | --- | --- |
 | 01 · Foundations | Learning from examples; learning signals; AI, ML, neural networks, deep learning | Ask what information a delivery-time predictor needs. |
 | 02 · Data and preprocessing | Features, targets, preprocessing, dimensionality | Compare nearest neighbors before and after scaling. |
-| 03 · Model evaluation | Train / validation / test; cross-validation; regression vs. classification | Select one cross-validation round and explain every block. |
+| 03 · Model evaluation | Parameters and hyperparameters; train / validation / test; cross-validation; regression vs. classification | Contrast learned tree splits with a chosen depth limit, then explain a cross-validation round. |
 | 04 · Complexity and generalization | Bias, variance, noise, underfitting, overfitting | Compare 1, 4, and 18 tree leaves; change the training sample. |
 | 05 · Supervised algorithms | Recognize the main supervised model families | Compare how each method uses the inputs to make a prediction. |
 | 06 · Unsupervised learning | K-means; hierarchical clustering; similarity | Step through K-means; compare dendrogram linkages. |
@@ -105,6 +105,16 @@ Training, validation, and test sets answer different questions:
 1. **Training:** what parameter values fit these examples?
 2. **Validation:** which model family and settings should we choose?
 3. **Test:** how well does the final procedure perform on untouched examples?
+
+### Model parameters and hyperparameters
+
+**Parameters** are learned from the training data. In linear regression, $\hat y=m\times\text{distance}+b$, the slope $m$ and intercept $b$ are parameters. A fitted decision tree also has learned structure: which features it tests, the split thresholds, and the predictions at its leaves. Parameters need not all look like weights in an equation.
+
+**Hyperparameters** are settings selected around the fitting process. Examples are K in KNN and a tree's maximum depth or maximum number of leaves. A tuning procedure can choose these automatically; “chosen” does not mean a person must set every value manually. The distinction is how they are selected: fitting learns model parameters from training examples, while model selection compares candidate settings using validation or cross-validation.
+
+Use a tree to make the distinction concrete: “We allow at most three levels of splits. Training still has to decide which questions to ask and which thresholds to use.” The depth limit is a hyperparameter; the fitted questions and thresholds belong to the learned model. To compare depth limits of 3 and 5, fit a fresh tree for each candidate and compare validation scores. The test set remains outside that choice.
+
+### Roles of the data splits
 
 The HTML uses 60 / 20 / 20 as an illustration. There is no universal split ratio. Independence and relevance matter more than copying those numbers. Random splitting can be appropriate for independent examples. Use chronological splits for forecasting and grouped splits when multiple rows belong to the same person, route session, or other unit that must remain unseen together. A stratified classification split preserves class proportions when that is appropriate for the task.
 
