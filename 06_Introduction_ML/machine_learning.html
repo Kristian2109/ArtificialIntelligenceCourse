@@ -38,7 +38,7 @@
         margin: 0;
         background: var(--paper);
         color: var(--ink);
-        font: 16px/1.65 var(--sans);
+        font: 18px/1.75 var(--sans);
       }
       a {
         color: var(--teal);
@@ -58,8 +58,8 @@
         border: 1px solid #aebeb3;
         border-radius: 7px;
         color: var(--ink);
-        padding: 9px 15px;
-        font-size: 13px;
+        padding: 11px 17px;
+        font-size: 15px;
         font-weight: 650;
         line-height: 1.4;
       }
@@ -100,7 +100,7 @@
         max-width: 100%;
       }
       p {
-        margin: 0 0 14px;
+        margin: 0 0 20px;
       }
       strong {
         font-weight: 700;
@@ -110,6 +110,8 @@
       h3,
       h4 {
         line-height: 1.15;
+        font-size: 18px;
+        margin: 0 0 12px;
       }
       h1,
       h2 {
@@ -126,8 +128,8 @@
         margin: 9px 0 20px;
       }
       h3 {
-        font-size: 19px;
-        margin: 0 0 12px;
+        font-size: 21px;
+        margin: 0 0 16px;
         letter-spacing: -0.35px;
       }
       h4 {
@@ -217,7 +219,7 @@
         top: 100px;
         align-self: start;
         padding-top: 38px;
-        font-size: 12px;
+        font-size: 14px;
       }
       .contents .eyebrow {
         margin-bottom: 16px;
@@ -246,7 +248,7 @@
         padding-top: 20px;
         border-top: 1px solid var(--line);
         color: var(--muted);
-        font-size: 11px;
+        font-size: 13px;
         line-height: 1.7;
       }
       .rail-note b {
@@ -276,7 +278,7 @@
       }
       .hero .lede {
         max-width: 540px;
-        font-size: 17px;
+        font-size: 20px;
         color: var(--muted);
       }
       .hero-art {
@@ -302,21 +304,21 @@
       .objectives {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
+        gap: 28px;
         padding-top: 25px;
         margin-top: 28px;
         border-top: 1px solid var(--line);
-        font-size: 12px;
+        font-size: 16px;
         color: var(--muted);
       }
       .objectives strong {
         display: block;
         color: var(--ink);
-        font-size: 13px;
+        font-size: 18px;
         margin-bottom: 4px;
       }
       .chapter {
-        padding: 48px 0;
+        padding: 68px 0;
         border-bottom: 1px solid var(--line);
         scroll-margin-top: 12px;
       }
@@ -332,40 +334,40 @@
         white-space: nowrap;
       }
       .intro {
-        font-size: 17px;
-        max-width: 800px;
+        font-size: 20px;
+        max-width: 70ch;
         color: var(--muted);
-        margin-bottom: 26px;
+        margin-bottom: 32px;
       }
       .two {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 25px;
+        gap: 34px;
       }
       .three {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 18px;
+        gap: 28px;
       }
       .four {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 16px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
       }
       .small {
-        font-size: 13px;
+        font-size: 17px;
         color: var(--muted);
       }
       .tiny {
-        font-size: 11px;
+        font-size: 14px;
         color: var(--muted);
       }
       .note {
-        padding: 15px 19px;
+        padding: 21px 24px;
         background: var(--teal-bg);
         border-left: 3px solid var(--teal);
-        font-size: 13px;
-        margin: 22px 0 0;
+        font-size: 17px;
+        margin: 30px 0 0;
       }
       .note.warm {
         background: var(--orange-bg);
@@ -379,18 +381,19 @@
         border: 1px solid var(--line);
         border-radius: 12px;
         overflow: hidden;
-        margin-top: 22px;
+        margin-top: 30px;
       }
       .panel-head {
         display: flex;
         justify-content: space-between;
         align-items: center;
         gap: 16px;
-        padding: 16px 21px;
+        padding: 20px 26px;
         border-bottom: 1px solid var(--line);
+        flex-wrap: wrap;
       }
       .panel-head h3 {
-        font-size: 14px;
+        font-size: 17px;
         margin: 0;
       }
       .tag {
@@ -401,7 +404,7 @@
         white-space: nowrap;
       }
       .panel-body {
-        padding: 22px;
+        padding: 28px;
       }
       .panel p:last-child {
         margin-bottom: 0;
@@ -412,11 +415,33 @@
         height: auto;
         overflow: visible;
       }
-      .plot text,
       .hero-art text {
         font-family: var(--sans);
         fill: var(--muted);
         font-size: 12px;
+      }
+      .plot text {
+        font-family: var(--sans);
+        fill: var(--muted);
+        font-size: 14px;
+      }
+      .concept-points {
+        margin: 0 0 22px;
+        padding-left: 1.25em;
+        max-width: 72ch;
+      }
+      .concept-points li {
+        padding-left: 5px;
+      }
+      .concept-points li + li {
+        margin-top: 12px;
+      }
+      .concept-points li::marker {
+        color: var(--teal);
+      }
+      .learning-type .concept-points,
+      .preprocess .concept-points {
+        margin-bottom: 0;
       }
       .plot .axis {
         stroke: #a8b8ad;
@@ -455,9 +480,9 @@
         display: flex;
         gap: 17px;
         flex-wrap: wrap;
-        font-size: 11px;
+        font-size: 14px;
         color: var(--muted);
-        margin-top: 8px;
+        margin-top: 14px;
       }
       .legend span:before {
         content: "";
@@ -483,8 +508,8 @@
       }
       .viz-layout {
         display: grid;
-        grid-template-columns: minmax(0, 1.65fr) minmax(210px, 1fr);
-        gap: 24px;
+        grid-template-columns: minmax(0, 1.4fr) minmax(270px, 1fr);
+        gap: 34px;
         align-items: center;
       }
       .controls {
@@ -494,12 +519,12 @@
         align-items: center;
       }
       .controls label {
-        font-size: 12px;
+        font-size: 15px;
       }
       .field {
         display: block;
-        margin-bottom: 17px;
-        font-size: 12px;
+        margin-bottom: 24px;
+        font-size: 15px;
         color: var(--muted);
       }
       .field > span {
@@ -510,15 +535,15 @@
       }
       .field output {
         color: var(--ink);
-        font: 600 12px var(--mono);
+        font: 600 14px var(--mono);
       }
       .readout {
         background: var(--paper);
-        padding: 14px 17px;
+        padding: 18px 20px;
         border-radius: 8px;
         margin: 13px 0;
-        font-size: 13px;
-        line-height: 1.55;
+        font-size: 16px;
+        line-height: 1.7;
       }
       .readout b {
         font: 600 23px var(--mono);
@@ -527,25 +552,25 @@
         margin-bottom: 3px;
       }
       .readout .unit {
-        font-size: 11px;
+        font-size: 14px;
         color: var(--muted);
       }
       .formula {
-        font: 13px/1.7 var(--mono);
+        font: 16px/1.8 var(--mono);
         color: var(--ink);
-        padding: 12px 15px;
+        padding: 16px 19px;
         background: var(--paper);
         border-radius: 6px;
         overflow-x: auto;
         margin: 14px 0;
       }
       .idea {
-        padding: 16px 0;
+        padding: 24px 0;
         border-top: 1px solid var(--line);
-        font-size: 13px;
+        font-size: 17px;
       }
       .idea h3 {
-        font-size: 15px;
+        font-size: 20px;
       }
       .idea p:last-child {
         margin-bottom: 0;
@@ -557,21 +582,21 @@
         margin-bottom: 9px;
       }
       .family-map {
-        padding: 20px;
+        padding: 26px;
         background: #e8eee3;
         border-radius: 12px;
-        font-size: 12px;
+        font-size: 16px;
       }
       .family-map .nest {
-        padding: 15px 18px;
-        margin: 12px 0 0 30px;
+        padding: 18px;
+        margin: 16px 0 0 20px;
         border: 1px solid #9fb4a5;
         background: rgba(255, 255, 255, 0.35);
         border-radius: 8px;
       }
       .family-map strong {
         display: block;
-        font-size: 14px;
+        font-size: 18px;
       }
       .family-map > .nest > .nest > .nest {
         background: var(--teal);
@@ -579,27 +604,27 @@
       }
       .family-map p {
         margin: 3px 0 0;
-        font-size: 11px;
+        font-size: 16px;
       }
       .learning-types {
         margin-top: 25px;
       }
       .learning-type {
-        padding: 17px 16px;
+        padding: 24px;
         border: 1px solid var(--line);
         border-radius: 8px;
         background: var(--white);
-        font-size: 12px;
+        font-size: 17px;
       }
       .learning-type h3 {
-        font-size: 14px;
+        font-size: 21px;
       }
       .signal {
-        font: 10px var(--mono);
+        font: 12px var(--mono);
         text-transform: uppercase;
         color: var(--teal);
         display: block;
-        margin-bottom: 9px;
+        margin-bottom: 14px;
       }
       .learning-type p {
         margin: 0;
@@ -610,12 +635,12 @@
       table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 13px;
+        font-size: 16px;
         text-align: left;
       }
       th {
         font-weight: 600;
-        font-size: 11px;
+        font-size: 14px;
         color: var(--muted);
         white-space: nowrap;
       }
@@ -634,23 +659,23 @@
       }
       .preprocess {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
         margin-top: 25px;
       }
       .preprocess div {
-        padding: 15px 18px;
+        padding: 22px 24px;
         border-left: 1px solid var(--line);
         border-top: 1px solid var(--line);
-        font-size: 12px;
+        font-size: 17px;
       }
       .preprocess b {
         display: block;
-        font-size: 13px;
-        margin: 4px 0;
+        font-size: 20px;
+        margin: 6px 0 12px;
       }
       .preprocess span {
-        font: 10px var(--mono);
+        font: 12px var(--mono);
         color: var(--orange);
       }
       .preprocess p {
@@ -659,13 +684,13 @@
       }
       .split-strip {
         display: grid;
-        grid-template-columns: 3fr 1fr 1fr;
-        gap: 5px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
         margin-bottom: 20px;
       }
       .split-strip div {
-        padding: 18px 16px;
-        font-size: 12px;
+        padding: 23px 20px;
+        font-size: 17px;
         background: var(--teal-bg);
         border-radius: 5px;
       }
@@ -682,7 +707,7 @@
       }
       .split-strip span {
         display: block;
-        font-size: 11px;
+        font-size: 15px;
         margin-top: 6px;
       }
       .folds {
@@ -696,11 +721,11 @@
         gap: 7px;
       }
       .fold-row button {
-        width: 72px;
+        width: 90px;
         flex: none;
         text-align: left;
         padding: 7px 10px;
-        font-size: 11px;
+        font-size: 13px;
       }
       .fold-row .cell {
         background: var(--teal-bg);
@@ -708,7 +733,7 @@
         flex: 1;
         text-align: center;
         padding: 8px 0;
-        font: 11px var(--mono);
+        font: 13px var(--mono);
         color: var(--teal);
       }
       .fold-row .cell.held {
@@ -747,34 +772,35 @@
       }
       .method-picker {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 8px;
-        padding: 16px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        padding: 20px;
         background: #edf0e7;
         border-bottom: 1px solid var(--line);
       }
       .method-picker button {
         text-align: left;
-        padding: 12px 11px;
+        padding: 16px 14px;
         min-width: 0;
       }
       .method-picker small {
         display: block;
-        font-size: 9px;
+        font-size: 12px;
         letter-spacing: 0.6px;
         text-transform: uppercase;
         margin-top: 4px;
         opacity: 0.8;
       }
       .method {
-        padding: 26px;
+        padding: 32px;
       }
       .method-title {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 14px;
+        margin-bottom: 24px;
         gap: 10px;
+        flex-wrap: wrap;
       }
       .method-title h3 {
         font: 400 28px var(--serif);
@@ -788,13 +814,13 @@
         max-height: 330px;
       }
       .method .small {
-        font-size: 12px;
+        font-size: 17px;
       }
       .method .takeaway {
         border-top: 1px solid var(--line);
-        padding-top: 14px;
-        margin-top: 16px;
-        font-size: 13px;
+        padding-top: 20px;
+        margin-top: 24px;
+        font-size: 17px;
       }
       .method [data-class] {
         font: 600 16px var(--mono);
@@ -804,7 +830,7 @@
         margin-top: 20px;
         border-top: 1px solid var(--line);
         padding-top: 15px;
-        font-size: 13px;
+        font-size: 17px;
       }
       summary {
         cursor: pointer;
@@ -820,10 +846,10 @@
         margin-top: 22px;
       }
       .compare td {
-        font-size: 12px;
+        font-size: 16px;
       }
       .compare th {
-        font-size: 10px;
+        font-size: 14px;
       }
       .answer {
         background: var(--teal-bg);
@@ -833,14 +859,14 @@
         margin-top: 10px;
       }
       .check {
-        padding: 19px 0;
+        padding: 26px 0;
         border-top: 1px solid var(--line);
       }
       .check:first-child {
         border: 0;
       }
       .check h3 {
-        font-size: 15px;
+        font-size: 19px;
       }
       .choices {
         display: flex;
@@ -848,11 +874,11 @@
         gap: 7px;
       }
       .choices button {
-        font-size: 12px;
+        font-size: 15px;
       }
       .feedback {
         min-height: 23px;
-        font-size: 12px;
+        font-size: 16px;
         margin-top: 10px;
         color: var(--teal);
       }
@@ -897,7 +923,7 @@
           padding-top: 68px;
         }
         .chapter {
-          padding: 58px 0;
+          padding: 72px 0;
         }
       }
       @media (max-width: 1100px) {
@@ -913,10 +939,10 @@
           grid-template-columns: 1fr 1fr;
         }
         .viz-layout {
-          grid-template-columns: 1.4fr 1fr;
+          grid-template-columns: 1fr;
         }
         .method-picker {
-          grid-template-columns: repeat(4, 1fr);
+          grid-template-columns: repeat(3, minmax(0, 1fr));
         }
         .top-inner {
           padding: 14px 24px;
@@ -964,10 +990,10 @@
           gap: 15px;
         }
         .chapter {
-          padding: 38px 0;
+          padding: 52px 0;
         }
         .method-picker {
-          grid-template-columns: repeat(4, 1fr);
+          grid-template-columns: repeat(3, minmax(0, 1fr));
         }
         .top-actions {
           gap: 14px;
@@ -981,7 +1007,7 @@
       }
       @media (max-width: 580px) {
         body {
-          font-size: 15px;
+          font-size: 18px;
         }
         .layout {
           padding: 0 17px;
@@ -1018,7 +1044,7 @@
           max-width: 420px;
         }
         .hero .lede {
-          font-size: 15px;
+          font-size: 18px;
         }
         .objectives {
           grid-template-columns: 1fr;
@@ -1034,17 +1060,18 @@
           grid-template-columns: 1fr;
         }
         .four {
-          gap: 10px;
+          grid-template-columns: 1fr;
+          gap: 18px;
         }
         .learning-type {
-          padding: 14px 12px;
+          padding: 22px;
         }
         .panel-head {
           padding: 14px;
           gap: 10px;
         }
         .panel-head h3 {
-          font-size: 12px;
+          font-size: 17px;
         }
         .panel-body,
         .method {
@@ -1061,23 +1088,23 @@
           font-size: 9px;
         }
         .intro {
-          font-size: 15px;
+          font-size: 18px;
         }
         .preprocess {
-          grid-template-columns: 1fr 1fr;
+          grid-template-columns: 1fr;
         }
         .preprocess div {
-          padding: 13px 12px;
+          padding: 20px;
         }
         .split-strip div {
-          padding: 12px 8px;
-          font-size: 11px;
+          padding: 15px 8px;
+          font-size: 14px;
         }
         .split-strip b {
           font-size: 20px;
         }
         .split-strip span {
-          font-size: 9px;
+          font-size: 13px;
         }
         .method-picker {
           grid-template-columns: repeat(2, 1fr);
@@ -1085,14 +1112,14 @@
           gap: 6px;
         }
         .method-picker button {
-          font-size: 12px;
+          font-size: 15px;
         }
         .method-title h3 {
           font-size: 25px;
         }
         .fold-row button {
-          width: 66px;
-          font-size: 10px;
+          width: 78px;
+          font-size: 12px;
         }
         .fold-row {
           gap: 4px;
@@ -1114,7 +1141,11 @@
           font-size: 10px;
         }
         .family-map .nest {
-          margin-left: 19px;
+          margin-left: 12px;
+          padding: 14px;
+        }
+        .family-map {
+          padding: 20px;
         }
         .panel-head .controls {
           gap: 7px;
@@ -1348,13 +1379,20 @@
           <h2 id="idea-title">
             We write the learning procedure.<br />The data shapes the rule.
           </h2>
-          <p class="intro">
-            A rule-based program follows instructions we specify. A machine
-            learning system uses examples to fit a model, then applies that
-            model to new inputs. Its useful skill is
-            <strong>generalization</strong>: doing well beyond the examples used
-            to train it.
-          </p>
+          <ul class="concept-points intro">
+            <li>
+              <strong>Rule-based programming:</strong> follow instructions we
+              specify.
+            </li>
+            <li>
+              <strong>Machine learning:</strong> fit a model from examples, then
+              apply it to new inputs.
+            </li>
+            <li>
+              <strong>Generalization:</strong> do well beyond the examples used
+              for training.
+            </li>
+          </ul>
           <div class="two">
             <div>
               <div class="idea">
@@ -1407,34 +1445,55 @@
             <div class="learning-type">
               <span class="signal">Examples + answers</span>
               <h3>Supervised</h3>
-              <p>
-                Learn from inputs paired with targets. Predict a delivery time
-                or whether a parcel will arrive late.
-              </p>
+              <ul class="concept-points">
+                <li>
+                  <strong>Learn from:</strong> inputs paired with known targets.
+                </li>
+                <li>
+                  <strong>Predict:</strong> a delivery time or whether a parcel
+                  will arrive late.
+                </li>
+              </ul>
             </div>
             <div class="learning-type">
               <span class="signal">Examples, no answers</span>
               <h3>Unsupervised</h3>
-              <p>
-                Look for structure without target labels. Group deliveries with
-                similar characteristics.
-              </p>
+              <ul class="concept-points">
+                <li>
+                  <strong>Learn from:</strong> examples without target labels.
+                </li>
+                <li>
+                  <strong>Find:</strong> groups of deliveries with similar
+                  characteristics.
+                </li>
+              </ul>
             </div>
             <div class="learning-type">
               <span class="signal">A few answers</span>
               <h3>Semi-supervised</h3>
-              <p>
-                Use a small labeled set together with a larger unlabeled set.
-                Useful when labeling is expensive.
-              </p>
+              <ul class="concept-points">
+                <li>
+                  <strong>Learn from:</strong> a small labeled set and a larger
+                  unlabeled set.
+                </li>
+                <li>
+                  <strong>Useful when:</strong> labeling examples is expensive.
+                </li>
+              </ul>
             </div>
             <div class="learning-type">
               <span class="signal">Actions + rewards</span>
               <h3>Reinforcement</h3>
-              <p>
-                An agent acts, observes the outcome, and learns to improve total
-                reward over time, as in a game.
-              </p>
+              <ul class="concept-points">
+                <li>
+                  <strong>Learn through:</strong> actions and feedback from
+                  their outcomes.
+                </li>
+                <li>
+                  <strong>Aim:</strong> improve total reward over time, as in a
+                  game.
+                </li>
+              </ul>
             </div>
           </div>
           <div class="note">
@@ -1450,12 +1509,20 @@
             ><span class="time">08–20 min · 12 min</span>
           </div>
           <h2 id="data-title">Start with what one row means.</h2>
-          <p class="intro">
-            A dataset is a collection of examples. Each
-            <strong>feature</strong> is an input characteristic; the
-            <strong>target</strong> is what we want to predict. Here, one row is
-            one completed delivery.
-          </p>
+          <ul class="concept-points intro">
+            <li>
+              <strong>Dataset:</strong> a collection of examples; here, one row
+              is one completed delivery.
+            </li>
+            <li>
+              <strong>Feature:</strong> an input characteristic, such as
+              distance or rain.
+            </li>
+            <li>
+              <strong>Target:</strong> the value we want to predict, such as
+              delivery time.
+            </li>
+          </ul>
           <div class="panel">
             <div class="panel-head">
               <h3>Our running example: delivery time</h3>
@@ -1512,11 +1579,13 @@
           <div class="preprocess">
             <div>
               <span>01</span><b>Clean</b>
-              <p>
-                Check missing values, impossible entries, inconsistent units,
-                and duplicate records. Investigate outliers before deleting
-                them.
-              </p>
+              <ul class="concept-points">
+                <li>
+                  Check missing values, impossible entries, inconsistent units,
+                  and duplicates.
+                </li>
+                <li>Investigate outliers before deleting them.</li>
+              </ul>
             </div>
             <div>
               <span>02</span><b>Integrate</b>
@@ -1527,31 +1596,49 @@
             </div>
             <div>
               <span>03</span><b>Encode &amp; construct</b>
-              <p>
-                Turn categories into numeric inputs. Derive “rush hour” from the
-                departure time: this is feature engineering.
-              </p>
+              <ul class="concept-points">
+                <li>
+                  <strong>Encoding:</strong> turn categories into numeric
+                  inputs.
+                </li>
+                <li>
+                  <strong>Feature engineering:</strong> derive “rush hour” from
+                  departure time.
+                </li>
+              </ul>
             </div>
             <div>
               <span>04</span><b>Scale</b>
-              <p>
-                Min–max scaling maps a training range to [0, 1]. Standardization
-                subtracts the mean and divides by the standard deviation.
-              </p>
+              <ul class="concept-points">
+                <li>
+                  <strong>Min–max scaling:</strong> map a training range to [0,
+                  1].
+                </li>
+                <li>
+                  <strong>Standardization:</strong> subtract the mean and divide
+                  by the standard deviation.
+                </li>
+              </ul>
             </div>
             <div>
               <span>05</span><b>Aggregate &amp; discretize</b>
-              <p>
-                Summarize events by day, or replace minutes with time bands.
-                Simpler representations can lose useful detail.
-              </p>
+              <ul class="concept-points">
+                <li><strong>Aggregation:</strong> summarize events by day.</li>
+                <li>
+                  <strong>Discretization:</strong> replace minutes with time
+                  bands. Both can lose useful detail.
+                </li>
+              </ul>
             </div>
             <div>
               <span>06</span><b>Reduce</b>
-              <p>
-                Select useful features, sample rows, or use PCA to represent
-                numeric data in fewer dimensions.
-              </p>
+              <ul class="concept-points">
+                <li>Select useful features or sample rows.</li>
+                <li>
+                  Use <strong>PCA</strong> to represent numeric data in fewer
+                  dimensions.
+                </li>
+              </ul>
             </div>
           </div>
           <div class="panel">
@@ -1633,12 +1720,14 @@
             </div>
             <div><b>20%</b>Test<span>Evaluate the final choice.</span></div>
           </div>
-          <p class="small">
-            These proportions are an example, not a rule. Keep future data after
-            past data for forecasting; keep the same person or delivery out of
-            multiple splits. The split should resemble the situation in which
-            the model will be used.
-          </p>
+          <ul class="concept-points small">
+            <li>The proportions are an example, not a rule.</li>
+            <li>For forecasting, keep future data after past data.</li>
+            <li>
+              Keep the same person or delivery out of multiple splits. Match the
+              split to how the model will be used.
+            </li>
+          </ul>
           <div class="panel">
             <div class="panel-head">
               <h3>Five-fold cross-validation</h3>
@@ -1657,12 +1746,20 @@
                 </div>
               </div>
               <div>
-                <p>
-                  Divide the development data into five parts. For each round,
-                  fit a <strong>fresh model</strong> on four parts and validate
-                  on the remaining part. Average the five validation scores to
-                  compare settings.
-                </p>
+                <ul class="concept-points">
+                  <li>
+                    <strong>Divide:</strong> split the development data into
+                    five parts.
+                  </li>
+                  <li>
+                    <strong>Repeat:</strong> fit a fresh model on four parts;
+                    validate on the remaining part.
+                  </li>
+                  <li>
+                    <strong>Compare:</strong> average the five validation scores
+                    to choose settings.
+                  </li>
+                </ul>
                 <div id="foldReadout" class="readout" role="status"></div>
                 <p class="small">
                   Fit preprocessing inside each fold. The test set stays outside
@@ -1706,12 +1803,20 @@
           <h2 id="training-title">
             Make a prediction. Measure the miss.<br />Adjust the model.
           </h2>
-          <p class="intro">
-            In <strong>linear regression</strong>, the prediction is a weighted
-            sum of the inputs plus an intercept. With one feature, that is a
-            straight line. Least squares chooses the line that minimizes squared
-            <strong>vertical residuals</strong>: actual minus predicted time.
-          </p>
+          <ul class="concept-points intro">
+            <li>
+              <strong>Model:</strong> a weighted sum of inputs plus an
+              intercept; with one feature, a straight line.
+            </li>
+            <li>
+              <strong>Residual:</strong> the vertical gap between actual and
+              predicted time.
+            </li>
+            <li>
+              <strong>Least squares:</strong> choose the line that minimizes
+              squared residuals.
+            </li>
+          </ul>
           <div class="panel">
             <div class="panel-head">
               <h3>Fit a line to six delivery times</h3>
@@ -1772,27 +1877,41 @@
           <div class="two" style="margin-top: 24px">
             <div>
               <h3>Parameters are learned.</h3>
-              <p class="small">
-                The slope and intercept are parameters. Training finds their
-                values. A <strong>loss</strong> measures the mismatch on an
-                example; the training objective usually aggregates losses over
-                the data.
-              </p>
+              <ul class="concept-points small">
+                <li>
+                  <strong>Parameters:</strong> the slope and intercept; training
+                  finds their values.
+                </li>
+                <li><strong>Loss:</strong> the mismatch on an example.</li>
+                <li>
+                  <strong>Objective:</strong> usually an aggregate of losses
+                  over the data.
+                </li>
+              </ul>
               <div class="formula">MSE = (1/n) Σ (yᵢ − ŷᵢ)²</div>
-              <p class="small">
-                <strong>Gradient descent</strong> is one way to optimize an
-                objective: move parameters opposite the gradient. A small
-                learning rate takes short steps; an overly large one can
-                overshoot.
-              </p>
+              <ul class="concept-points small">
+                <li>
+                  <strong>Gradient descent:</strong> move parameters opposite
+                  the gradient to reduce the objective.
+                </li>
+                <li>
+                  <strong>Learning rate:</strong> small values take short steps;
+                  an overly large value can overshoot.
+                </li>
+              </ul>
             </div>
             <div>
               <h3>Hyperparameters are chosen.</h3>
-              <p class="small">
-                The learning rate, batch size, tree depth, and neighbor count
-                are settings we choose or tune using validation. They are not
-                learned in the same way as the fitted weights.
-              </p>
+              <ul class="concept-points small">
+                <li>
+                  <strong>Examples:</strong> learning rate, batch size, tree
+                  depth, and neighbor count.
+                </li>
+                <li>
+                  <strong>Selection:</strong> choose or tune these settings
+                  using validation, rather than fitting them like weights.
+                </li>
+              </ul>
               <div class="formula">
                 parameter ← parameter − learning rate × gradient
               </div>
@@ -1826,17 +1945,26 @@
                 <div id="batchReadout" class="small" role="status"></div>
               </div>
               <div>
-                <p class="small">
-                  A <strong>batch</strong> is a group of training examples
-                  processed together. In a typical mini-batch training loop, one
-                  batch produces one parameter update: an
-                  <strong>iteration</strong>.
-                </p>
-                <p class="small">
-                  An <strong>epoch</strong> is one complete pass through the
-                  training set. Here, the last batch is kept even when it is
-                  smaller. Three epochs mean three passes, not three updates.
-                </p>
+                <ul class="concept-points small">
+                  <li>
+                    <strong>Batch:</strong> a group of training examples
+                    processed together.
+                  </li>
+                  <li>
+                    <strong>Iteration:</strong> one parameter update, typically
+                    from one mini-batch.
+                  </li>
+                </ul>
+                <ul class="concept-points small">
+                  <li>
+                    <strong>Epoch:</strong> one complete pass through the
+                    training set.
+                  </li>
+                  <li>
+                    Here, keep the last batch even if it is smaller. Three
+                    epochs mean three passes, not three updates.
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -1935,20 +2063,30 @@
             <div class="idea">
               <span class="idea-number">TOO RIGID</span>
               <h3>Underfitting &amp; bias</h3>
-              <p>
-                A model with strong restrictions can miss a real relationship.
-                <strong>Bias</strong> is systematic error in the model's average
-                prediction across training samples.
-              </p>
+              <ul class="concept-points">
+                <li>
+                  <strong>Underfitting:</strong> strong restrictions can make
+                  the model miss a real relationship.
+                </li>
+                <li>
+                  <strong>Bias:</strong> systematic error in the average
+                  prediction across training samples.
+                </li>
+              </ul>
             </div>
             <div class="idea">
               <span class="idea-number">TOO SENSITIVE</span>
               <h3>Overfitting &amp; variance</h3>
-              <p>
-                A model may fit the training data closely but perform worse on
-                new examples. <strong>Variance</strong> is how much its
-                predictions change when the training sample changes.
-              </p>
+              <ul class="concept-points">
+                <li>
+                  <strong>Overfitting:</strong> a close training fit that
+                  performs worse on new examples.
+                </li>
+                <li>
+                  <strong>Variance:</strong> how much predictions change when
+                  the training sample changes.
+                </li>
+              </ul>
             </div>
             <div class="idea">
               <span class="idea-number">UNPREDICTABLE DETAIL</span>
@@ -2047,12 +2185,20 @@
                 <h3 id="logistic-title">Logistic regression</h3>
                 <span class="tag">Classification</span>
               </div>
-              <p class="small">
-                First compute a weighted score, <strong>z = w·x + b</strong>.
-                The sigmoid turns that score into a probability between 0 and 1.
-                A threshold turns the probability into a class. Despite the
-                name, logistic regression is a classifier.
-              </p>
+              <ul class="concept-points small">
+                <li>
+                  <strong>Score:</strong> compute a weighted sum, z = w·x + b.
+                </li>
+                <li>
+                  <strong>Probability:</strong> the sigmoid maps that score to a
+                  value between 0 and 1.
+                </li>
+                <li>
+                  <strong>Decision:</strong> compare the probability with a
+                  threshold. Despite its name, logistic regression is a
+                  classifier.
+                </li>
+              </ul>
               <div class="viz-layout">
                 <svg
                   id="logisticPlot"
@@ -2105,13 +2251,20 @@
                 <h3 id="knn-title">K-nearest neighbors</h3>
                 <span class="tag">Classification / regression</span>
               </div>
-              <p class="small">
-                Keep the training examples. For a new point, find its
-                <strong>K nearest neighbors</strong>. Classification uses a
-                majority vote; regression can average their target values.
-                “Non-parametric” means the model is not restricted to a
-                fixed-size parameterized form.
-              </p>
+              <ul class="concept-points small">
+                <li>
+                  <strong>Find neighbors:</strong> keep the training examples
+                  and locate the K closest to the new point.
+                </li>
+                <li>
+                  <strong>Predict:</strong> use a majority vote for
+                  classification or average targets for regression.
+                </li>
+                <li>
+                  <strong>Non-parametric:</strong> the model is not restricted
+                  to a fixed-size parameterized form.
+                </li>
+              </ul>
               <div class="viz-layout">
                 <svg
                   id="knnPlot"
@@ -2173,12 +2326,20 @@
                 <h3 id="svm-title">Support vector machine</h3>
                 <span class="tag">Classification / regression variant</span>
               </div>
-              <p class="small">
-                A linear SVM seeks a separating boundary with a wide
-                <strong>margin</strong>. The most influential training points
-                are the <strong>support vectors</strong>. Soft-margin SVMs allow
-                violations rather than forcing perfect separation.
-              </p>
+              <ul class="concept-points small">
+                <li>
+                  <strong>Boundary:</strong> separate the classes with a wide
+                  margin.
+                </li>
+                <li>
+                  <strong>Support vectors:</strong> the training points that
+                  most influence that boundary.
+                </li>
+                <li>
+                  <strong>Soft margin:</strong> allow violations rather than
+                  force perfect separation.
+                </li>
+              </ul>
               <div class="viz-layout">
                 <svg
                   id="svmPlot"
@@ -2218,13 +2379,20 @@
                 <h3 id="bayes-title">Naive Bayes</h3>
                 <span class="tag">Classification</span>
               </div>
-              <p class="small">
-                For a text example, start with a class prior and combine the
-                evidence from words. The “naive” assumption is that features are
-                <strong>conditionally independent given the class</strong>.
-                Words often violate this assumption, but the classifier can
-                still be useful.
-              </p>
+              <ul class="concept-points small">
+                <li>
+                  <strong>Start:</strong> use a class prior, then combine
+                  evidence from words.
+                </li>
+                <li>
+                  <strong>Assume:</strong> features are conditionally
+                  independent given the class.
+                </li>
+                <li>
+                  <strong>In practice:</strong> words often violate this
+                  assumption, but the classifier can still be useful.
+                </li>
+              </ul>
               <div class="viz-layout">
                 <svg
                   id="bayesPlot"
@@ -2274,12 +2442,20 @@
                 <h3 id="tree-title">Decision tree</h3>
                 <span class="tag">Classification / regression</span>
               </div>
-              <p class="small">
-                A tree splits the feature space by asking questions. Training
-                chooses splits that improve class purity or reduce numeric
-                prediction error. A leaf gives a class, a class probability, or
-                a numeric prediction.
-              </p>
+              <ul class="concept-points small">
+                <li>
+                  <strong>Split:</strong> ask questions that partition the
+                  feature space.
+                </li>
+                <li>
+                  <strong>Learn:</strong> choose splits that improve class
+                  purity or reduce numeric prediction error.
+                </li>
+                <li>
+                  <strong>Predict:</strong> a leaf gives a class, a class
+                  probability, or a numeric value.
+                </li>
+              </ul>
               <div class="viz-layout">
                 <svg
                   id="treePlot"
@@ -2327,13 +2503,20 @@
                 <h3 id="ensemble-title">Ensembles</h3>
                 <span class="tag">Classification / regression</span>
               </div>
-              <p class="small">
-                Combine several models instead of relying on one.
-                <strong>Bagging</strong> trains models on resampled data and
-                combines their predictions. A
-                <strong>random forest</strong> adds random feature subsets when
-                splitting trees, helping make their errors less alike.
-              </p>
+              <ul class="concept-points small">
+                <li>
+                  <strong>Ensemble:</strong> combine the predictions of several
+                  models.
+                </li>
+                <li>
+                  <strong>Bagging:</strong> train models on resampled data and
+                  combine their predictions.
+                </li>
+                <li>
+                  <strong>Random forest:</strong> also consider random feature
+                  subsets at tree splits, helping make errors less alike.
+                </li>
+              </ul>
               <div class="viz-layout">
                 <svg
                   id="ensemblePlot"
@@ -2344,12 +2527,20 @@
                 ></svg>
                 <div>
                   <h4>Another approach: boosting</h4>
-                  <p class="small">
-                    Build models sequentially so later ones address errors left
-                    by the current ensemble. AdaBoost increases attention to
-                    misclassified examples; gradient boosting fits successive
-                    corrections to a loss.
-                  </p>
+                  <ul class="concept-points small">
+                    <li>
+                      <strong>Boosting:</strong> add models sequentially to
+                      address errors left by the ensemble.
+                    </li>
+                    <li>
+                      <strong>AdaBoost:</strong> increase attention to
+                      misclassified examples.
+                    </li>
+                    <li>
+                      <strong>Gradient boosting:</strong> fit successive
+                      corrections to a loss.
+                    </li>
+                  </ul>
                   <p class="small">
                     Averaging helps most when models make different errors.
                     Boosting also needs control over complexity.
@@ -2371,13 +2562,20 @@
                 <h3 id="neural-title">Neural networks &amp; deep learning</h3>
                 <span class="tag">Many kinds of tasks</span>
               </div>
-              <p class="small">
-                Each layer computes weighted combinations of its inputs and
-                applies an activation function. Hidden layers learn intermediate
-                <strong>representations</strong>; multiple hidden layers make
-                the network deep. Training adjusts weights through
-                backpropagation and an optimizer.
-              </p>
+              <ul class="concept-points small">
+                <li>
+                  <strong>Layer:</strong> compute weighted combinations of
+                  inputs, then apply an activation function.
+                </li>
+                <li>
+                  <strong>Hidden layers:</strong> learn intermediate
+                  representations; multiple hidden layers make the network deep.
+                </li>
+                <li>
+                  <strong>Training:</strong> adjust weights through
+                  backpropagation and an optimizer.
+                </li>
+              </ul>
               <div class="viz-layout">
                 <svg
                   id="neuralPlot"
@@ -2461,12 +2659,20 @@
             ><span class="time">74–85 min · 11 min</span>
           </div>
           <h2 id="clustering-title">What if nobody gave us the labels?</h2>
-          <p class="intro">
-            <strong>Clustering</strong> groups examples by similarity in their
-            features. Classification learns known target classes; clustering
-            discovers groups under a chosen definition of similarity. A cluster
-            is not automatically a meaningful real-world category.
-          </p>
+          <ul class="concept-points intro">
+            <li>
+              <strong>Classification:</strong> learn to predict known target
+              classes.
+            </li>
+            <li>
+              <strong>Clustering:</strong> group examples by similarity, without
+              target labels.
+            </li>
+            <li>
+              <strong>Interpretation:</strong> a discovered cluster is not
+              automatically a meaningful real-world category.
+            </li>
+          </ul>
           <div class="panel">
             <div class="panel-head">
               <h3>K-means: assign, move, repeat</h3>
@@ -2547,17 +2753,25 @@
                     </option>
                   </select></label
                 >
-                <p class="small">
-                  <strong>Agglomerative:</strong> start with one cluster per
-                  point; repeatedly merge the closest pair of clusters. A
-                  dendrogram records the merges. Its height shows merge
-                  distance.
-                </p>
-                <p class="small">
-                  <strong>Divisive:</strong> start with one large cluster and
-                  split it. These are bottom-up and top-down approaches,
-                  respectively.
-                </p>
+                <ul class="concept-points small">
+                  <li>
+                    <strong>Agglomerative:</strong> start with one cluster per
+                    point and repeatedly merge the closest pair.
+                  </li>
+                  <li>
+                    <strong>Dendrogram:</strong> record the merges; height shows
+                    merge distance.
+                  </li>
+                </ul>
+                <ul class="concept-points small">
+                  <li>
+                    <strong>Divisive:</strong> start with one large cluster and
+                    split it.
+                  </li>
+                  <li>
+                    Agglomerative works bottom-up; divisive works top-down.
+                  </li>
+                </ul>
                 <div id="hierarchyReadout" class="readout" role="status"></div>
               </div>
             </div>
