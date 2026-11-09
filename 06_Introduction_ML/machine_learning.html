@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="A 90-minute introduction to machine learning, with original interactive diagrams, concise explanations, and teaching notes."
+      content="An introduction to machine learning, with original interactive diagrams, concise explanations, and teaching notes."
     />
     <title>Introduction to Machine Learning · Lecture 06</title>
     <style>
@@ -328,11 +328,7 @@
         justify-content: space-between;
         gap: 12px;
       }
-      .time {
-        font: 11px var(--mono);
-        color: var(--muted);
-        white-space: nowrap;
-      }
+
       .intro {
         font-size: 20px;
         max-width: 70ch;
@@ -748,19 +744,37 @@
       }
       .batch-grid {
         display: flex;
-        flex-wrap: wrap;
-        gap: 5px;
-        margin: 15px 0;
+        gap: 12px;
+        margin: 18px 0;
+        padding: 4px 2px 14px;
+        list-style: none;
+        overflow-x: auto;
       }
-      .batch-grid i {
-        width: 17px;
-        height: 17px;
-        border-radius: 3px;
+      .batch-grid li {
+        flex: 1 0 144px;
+        padding: 15px;
+        border: 1px solid #aebeb3;
+        border-radius: 8px;
+        background: var(--paper);
+        font-size: 15px;
+      }
+      .batch-grid li strong,
+      .batch-grid li span {
+        display: block;
+      }
+      .batch-grid li span {
+        margin-top: 7px;
+        font-size: 14px;
+      }
+      .batch-grid li.done {
         background: var(--teal-bg);
-        border: 1px solid #9ab9a4;
       }
-      .batch-grid i:nth-child(odd) {
-        background: #bed7c5;
+      .batch-grid li.current {
+        outline: 2px solid var(--teal);
+        outline-offset: -2px;
+      }
+      .batch-grid li.current strong {
+        color: var(--teal);
       }
       .stat-pair {
         display: grid;
@@ -858,37 +872,7 @@
         font-size: 12px;
         margin-top: 10px;
       }
-      .check {
-        padding: 26px 0;
-        border-top: 1px solid var(--line);
-      }
-      .check:first-child {
-        border: 0;
-      }
-      .check h3 {
-        font-size: 19px;
-      }
-      .choices {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 7px;
-      }
-      .choices button {
-        font-size: 15px;
-      }
-      .feedback {
-        min-height: 23px;
-        font-size: 16px;
-        margin-top: 10px;
-        color: var(--teal);
-      }
-      .take-home {
-        font: 400 27px/1.4 var(--serif);
-        padding: 27px 0 0;
-        margin-top: 15px;
-        border-top: 1px solid var(--line);
-        max-width: 780px;
-      }
+
       footer {
         font-size: 11px;
         color: var(--muted);
@@ -1084,9 +1068,7 @@
           font-size: 10px;
           letter-spacing: 1px;
         }
-        .time {
-          font-size: 9px;
-        }
+
         .intro {
           font-size: 18px;
         }
@@ -1130,9 +1112,7 @@
         .method .plot {
           max-height: none;
         }
-        .take-home {
-          font-size: 24px;
-        }
+
         th,
         td {
           padding: 10px 9px;
@@ -1186,20 +1166,19 @@
     </header>
     <div class="layout">
       <nav class="contents" id="learning-route" aria-label="Lecture chapters">
-        <p class="eyebrow">The learning route</p>
-        <a href="#idea" class="active"><span>01</span>The idea</a
-        ><a href="#data"><span>02</span>Make data useful</a
-        ><a href="#evaluation"><span>03</span>Keep an honest score</a
-        ><a href="#training"><span>04</span>How training works</a
-        ><a href="#generalization"><span>05</span>Fit vs. generalize</a
-        ><a href="#models"><span>06</span>Meet the models</a
-        ><a href="#clustering"><span>07</span>Find hidden groups</a
-        ><a href="#recap"><span>08</span>Check your intuition</a>
+        <p class="eyebrow">Lecture contents</p>
+        <a href="#idea" class="active"><span>01</span>Foundations</a
+        ><a href="#data"><span>02</span>Data and preprocessing</a
+        ><a href="#evaluation"><span>03</span>Model evaluation</a
+        ><a href="#training"><span>04</span>Training and optimization</a
+        ><a href="#generalization"
+          ><span>05</span>Complexity and generalization</a
+        ><a href="#models"><span>06</span>Supervised algorithms</a
+        ><a href="#clustering"><span>07</span>Unsupervised learning</a>
         <div class="rail-note">
-          <b>90 minutes, one overview.</b>Learn what each idea is for. The
-          derivations and implementations can come later.<br /><br />All
-          examples use invented data.<br />All diagrams are made for this
-          lesson.
+          <b>Lecture overview.</b>Learn what each idea is for. The derivations
+          and implementations can come later.<br /><br />All examples use
+          invented data.<br />All diagrams are made for this lesson.
         </div>
       </nav>
       <main id="main">
@@ -1213,14 +1192,13 @@
           <p class="eyebrow">Lecture 06 · Introduction to machine learning</p>
           <div class="hero-grid">
             <div>
-              <h1 id="title">From examples<br />to predictions.</h1>
+              <h1 id="title">Introduction to<br />Machine Learning</h1>
               <p class="lede">
                 How does a computer learn a useful rule from data? And how do we
                 know that rule will work on something it has never seen?
               </p>
               <div class="hero-meta">
-                <span><b>90 min</b> including discussion</span
-                ><span><b>8 chapters</b> from data to models</span
+                <span><b>7 chapters</b> from data to models</span
                 ><span><b>Start here</b> no ML background needed</span>
               </div>
             </div>
@@ -1373,12 +1351,9 @@
 
         <section class="chapter" id="idea" aria-labelledby="idea-title">
           <div class="chapter-head">
-            <span class="eyebrow">01 / The idea</span
-            ><span class="time">00–08 min · 8 min</span>
+            <span class="eyebrow">01 / Foundations</span>
           </div>
-          <h2 id="idea-title">
-            We write the learning procedure.<br />The data shapes the rule.
-          </h2>
+          <h2 id="idea-title">Foundations of machine learning</h2>
           <ul class="concept-points intro">
             <li>
               <strong>Rule-based programming:</strong> follow instructions we
@@ -1396,7 +1371,7 @@
           <div class="two">
             <div>
               <div class="idea">
-                <h3>Examples → a general pattern</h3>
+                <h3>Inductive learning: from examples to patterns</h3>
                 <p>
                   After seeing many deliveries, a model may learn how distance
                   and traffic relate to travel time. This is
@@ -1405,7 +1380,7 @@
                 </p>
               </div>
               <div class="idea">
-                <h3>A general rule → a particular conclusion</h3>
+                <h3>Deductive reasoning: applying general rules</h3>
                 <p>
                   “Every route over 10 km needs a long-distance fee; this route
                   is 12 km; add the fee.” This is <strong>deduction</strong>:
@@ -1444,7 +1419,7 @@
           <div class="four learning-types">
             <div class="learning-type">
               <span class="signal">Examples + answers</span>
-              <h3>Supervised</h3>
+              <h3>Supervised learning</h3>
               <ul class="concept-points">
                 <li>
                   <strong>Learn from:</strong> inputs paired with known targets.
@@ -1457,7 +1432,7 @@
             </div>
             <div class="learning-type">
               <span class="signal">Examples, no answers</span>
-              <h3>Unsupervised</h3>
+              <h3>Unsupervised learning</h3>
               <ul class="concept-points">
                 <li>
                   <strong>Learn from:</strong> examples without target labels.
@@ -1470,7 +1445,7 @@
             </div>
             <div class="learning-type">
               <span class="signal">A few answers</span>
-              <h3>Semi-supervised</h3>
+              <h3>Semi-supervised learning</h3>
               <ul class="concept-points">
                 <li>
                   <strong>Learn from:</strong> a small labeled set and a larger
@@ -1483,7 +1458,7 @@
             </div>
             <div class="learning-type">
               <span class="signal">Actions + rewards</span>
-              <h3>Reinforcement</h3>
+              <h3>Reinforcement learning</h3>
               <ul class="concept-points">
                 <li>
                   <strong>Learn through:</strong> actions and feedback from
@@ -1505,10 +1480,9 @@
 
         <section class="chapter" id="data" aria-labelledby="data-title">
           <div class="chapter-head">
-            <span class="eyebrow">02 / Make data useful</span
-            ><span class="time">08–20 min · 12 min</span>
+            <span class="eyebrow">02 / Data and preprocessing</span>
           </div>
-          <h2 id="data-title">Start with what one row means.</h2>
+          <h2 id="data-title">Data representation and preprocessing</h2>
           <ul class="concept-points intro">
             <li>
               <strong>Dataset:</strong> a collection of examples; here, one row
@@ -1525,10 +1499,10 @@
           </ul>
           <div class="panel">
             <div class="panel-head">
-              <h3>Our running example: delivery time</h3>
+              <h3>Example dataset: delivery-time prediction</h3>
               <span class="tag">Illustrative data</span>
             </div>
-            <div class="table-wrap">
+            <div class="table-wrap" tabindex="0">
               <table>
                 <caption class="sr-only">
                   Three features and one numeric target for four deliveries
@@ -1643,7 +1617,7 @@
           </div>
           <div class="panel">
             <div class="panel-head">
-              <h3>Same deliveries. A different nearest neighbor.</h3>
+              <h3>Feature scaling and nearest-neighbor selection</h3>
               <span class="tag">Try both scales</span>
             </div>
             <div class="panel-body viz-layout">
@@ -1696,12 +1670,9 @@
 
         <section class="chapter" id="evaluation" aria-labelledby="eval-title">
           <div class="chapter-head">
-            <span class="eyebrow">03 / Keep an honest score</span
-            ><span class="time">20–32 min · 12 min</span>
+            <span class="eyebrow">03 / Model evaluation</span>
           </div>
-          <h2 id="eval-title">
-            Practicing and being examined<br />are different jobs.
-          </h2>
+          <h2 id="eval-title">Training, validation, and test evaluation</h2>
           <p class="intro">
             A low error on familiar examples is encouraging, but it does not
             tell us how the model will handle a new delivery. Give each part of
@@ -1771,7 +1742,7 @@
           </div>
           <div class="two" style="margin-top: 24px">
             <div class="idea">
-              <h3>A number needs an error measure</h3>
+              <h3>Regression tasks and numerical error metrics</h3>
               <p>
                 <strong>Regression:</strong> predict a numeric quantity, such as
                 27.5 minutes. Mean squared error averages squared prediction
@@ -1779,7 +1750,7 @@
               </p>
             </div>
             <div class="idea">
-              <h3>A category needs the right score</h3>
+              <h3>Classification tasks and accuracy</h3>
               <p>
                 <strong>Classification:</strong> predict a discrete class, such
                 as “late” or “on time.” Accuracy is the fraction correct. If
@@ -1797,12 +1768,9 @@
 
         <section class="chapter" id="training" aria-labelledby="training-title">
           <div class="chapter-head">
-            <span class="eyebrow">04 / How training works</span
-            ><span class="time">32–44 min · 12 min</span>
+            <span class="eyebrow">04 / Training and optimization</span>
           </div>
-          <h2 id="training-title">
-            Make a prediction. Measure the miss.<br />Adjust the model.
-          </h2>
+          <h2 id="training-title">Model training and optimization</h2>
           <ul class="concept-points intro">
             <li>
               <strong>Model:</strong> a weighted sum of inputs plus an
@@ -1819,7 +1787,7 @@
           </ul>
           <div class="panel">
             <div class="panel-head">
-              <h3>Fit a line to six delivery times</h3>
+              <h3>Linear regression: parameter fitting and residuals</h3>
               <span class="tag">Drag → compare → fit</span>
             </div>
             <div class="panel-body viz-layout">
@@ -1876,7 +1844,7 @@
           </div>
           <div class="two" style="margin-top: 24px">
             <div>
-              <h3>Parameters are learned.</h3>
+              <h3>Model parameters and the training objective</h3>
               <ul class="concept-points small">
                 <li>
                   <strong>Parameters:</strong> the slope and intercept; training
@@ -1901,7 +1869,7 @@
               </ul>
             </div>
             <div>
-              <h3>Hyperparameters are chosen.</h3>
+              <h3>Hyperparameters and model configuration</h3>
               <ul class="concept-points small">
                 <li>
                   <strong>Examples:</strong> learning rate, batch size, tree
@@ -1924,48 +1892,76 @@
           </div>
           <div class="panel">
             <div class="panel-head">
-              <h3>Batch, iteration, epoch</h3>
-              <span class="tag">A training vocabulary check</span>
+              <h3>Mini-batches, iterations, and epochs</h3>
+              <span class="tag">A step-by-step training example</span>
             </div>
-            <div class="panel-body two">
-              <div>
-                <label class="field" for="batchSize"
-                  ><span
-                    >Batch size · 240 training examples
-                    <output id="batchOut" for="batchSize"></output></span
-                  ><input
-                    id="batchSize"
-                    type="range"
-                    min="8"
-                    max="80"
-                    value="24"
-                    step="8"
-                /></label>
-                <div id="batchGrid" class="batch-grid" aria-hidden="true"></div>
-                <div id="batchReadout" class="small" role="status"></div>
+            <div class="panel-body">
+              <p class="small">
+                Suppose we have <strong>240 completed deliveries</strong>. Each
+                training example contains a delivery's inputs and its actual
+                delivery time. We train one model by processing these examples
+                in groups.
+              </p>
+              <div class="three">
+                <div class="idea">
+                  <h4>Batch: a group of examples</h4>
+                  <p>
+                    A batch size of
+                    <span id="batchDefinitionSize">40</span> means taking
+                    <strong
+                      ><span id="batchDefinitionCount">40</span> deliveries
+                      together</strong
+                    >, rather than processing all 240 at once.
+                  </p>
+                </div>
+                <div class="idea">
+                  <h4>Iteration: one model update</h4>
+                  <p>
+                    Predict times for one batch, compare them with the actual
+                    times, then
+                    <strong>adjust the model's parameters once</strong>. That
+                    learning step is one iteration.
+                  </p>
+                </div>
+                <div class="idea">
+                  <h4>Epoch: one complete pass</h4>
+                  <p>
+                    Process every batch until the model has used
+                    <strong>all 240 deliveries once</strong>. That finishes one
+                    epoch. The next epoch reuses the same dataset with the
+                    updated model.
+                  </p>
+                </div>
               </div>
-              <div>
-                <ul class="concept-points small">
-                  <li>
-                    <strong>Batch:</strong> a group of training examples
-                    processed together.
-                  </li>
-                  <li>
-                    <strong>Iteration:</strong> one parameter update, typically
-                    from one mini-batch.
-                  </li>
-                </ul>
-                <ul class="concept-points small">
-                  <li>
-                    <strong>Epoch:</strong> one complete pass through the
-                    training set.
-                  </li>
-                  <li>
-                    Here, keep the last batch even if it is smaller. Three
-                    epochs mean three passes, not three updates.
-                  </li>
-                </ul>
+              <label class="field" for="batchSize" style="max-width: 540px"
+                ><span
+                  >Batch size · deliveries per group
+                  <output id="batchOut" for="batchSize"></output></span
+                ><input
+                  id="batchSize"
+                  type="range"
+                  min="8"
+                  max="80"
+                  value="40"
+                  step="8"
+              /></label>
+              <h4 id="batchEpoch">Epoch 1 of 3</h4>
+              <ol
+                id="batchGrid"
+                class="batch-grid"
+                aria-label="Batches in the current epoch"
+                tabindex="0"
+              ></ol>
+              <div class="controls">
+                <button id="batchNext" class="primary" type="button">
+                  Next iteration
+                </button>
+                <button id="batchReset" type="button">
+                  Restart training example
+                </button>
               </div>
+              <div id="batchStepReadout" class="readout" role="status"></div>
+              <div id="batchReadout" class="small"></div>
             </div>
           </div>
         </section>
@@ -1976,12 +1972,9 @@
           aria-labelledby="generalization-title"
         >
           <div class="chapter-head">
-            <span class="eyebrow">05 / Fit vs. generalize</span
-            ><span class="time">44–56 min · 12 min</span>
+            <span class="eyebrow">05 / Complexity and generalization</span>
           </div>
-          <h2 id="generalization-title">
-            Learning the examples<br />is not the same as learning the pattern.
-          </h2>
+          <h2 id="generalization-title">Model complexity and generalization</h2>
           <p class="intro">
             A model can be too rigid to capture a relationship, or so flexible
             that it follows accidental details.
@@ -1990,7 +1983,7 @@
           </p>
           <div class="panel">
             <div class="panel-head">
-              <h3>A regression tree with more or fewer leaves</h3>
+              <h3>Model complexity: regression-tree leaf count</h3>
               <span class="tag">Actual fits, simulated data</span>
             </div>
             <div class="panel-body">
@@ -2062,7 +2055,7 @@
           <div class="three" style="margin-top: 25px">
             <div class="idea">
               <span class="idea-number">TOO RIGID</span>
-              <h3>Underfitting &amp; bias</h3>
+              <h3>Underfitting and prediction bias</h3>
               <ul class="concept-points">
                 <li>
                   <strong>Underfitting:</strong> strong restrictions can make
@@ -2076,7 +2069,7 @@
             </div>
             <div class="idea">
               <span class="idea-number">TOO SENSITIVE</span>
-              <h3>Overfitting &amp; variance</h3>
+              <h3>Overfitting and prediction variance</h3>
               <ul class="concept-points">
                 <li>
                   <strong>Overfitting:</strong> a close training fit that
@@ -2090,7 +2083,7 @@
             </div>
             <div class="idea">
               <span class="idea-number">UNPREDICTABLE DETAIL</span>
-              <h3>Noise</h3>
+              <h3>Noise and unexplained variation</h3>
               <p>
                 Some variation is not explained by the available inputs: a
                 traffic light, a recording error, or an unmeasured delay.
@@ -2108,12 +2101,9 @@
 
         <section class="chapter" id="models" aria-labelledby="models-title">
           <div class="chapter-head">
-            <span class="eyebrow">06 / Meet the models</span
-            ><span class="time">56–74 min · 18 min</span>
+            <span class="eyebrow">06 / Supervised algorithms</span>
           </div>
-          <h2 id="models-title">
-            Different ways to turn<br />examples into a decision.
-          </h2>
+          <h2 id="models-title">Supervised learning algorithms</h2>
           <p class="intro">
             We have already used linear regression for a numeric target. For
             classification, imagine predicting whether a delivery will be late.
@@ -2248,7 +2238,7 @@
               hidden
             >
               <div class="method-title">
-                <h3 id="knn-title">K-nearest neighbors</h3>
+                <h3 id="knn-title">K-nearest neighbors (KNN)</h3>
                 <span class="tag">Classification / regression</span>
               </div>
               <ul class="concept-points small">
@@ -2323,7 +2313,7 @@
               hidden
             >
               <div class="method-title">
-                <h3 id="svm-title">Support vector machine</h3>
+                <h3 id="svm-title">Support vector machines (SVM)</h3>
                 <span class="tag">Classification / regression variant</span>
               </div>
               <ul class="concept-points small">
@@ -2349,7 +2339,7 @@
                   aria-label="Two separated classes with a maximum-margin boundary and highlighted support vectors"
                 ></svg>
                 <div>
-                  <h4>What the picture says</h4>
+                  <h4>Decision boundaries, margins, and support vectors</h4>
                   <p class="small">
                     The solid line makes the decision. Dashed lines mark the
                     margin. Rings identify points touching the margin in this
@@ -2376,7 +2366,7 @@
               hidden
             >
               <div class="method-title">
-                <h3 id="bayes-title">Naive Bayes</h3>
+                <h3 id="bayes-title">Naive Bayes classification</h3>
                 <span class="tag">Classification</span>
               </div>
               <ul class="concept-points small">
@@ -2439,7 +2429,7 @@
               hidden
             >
               <div class="method-title">
-                <h3 id="tree-title">Decision tree</h3>
+                <h3 id="tree-title">Decision trees</h3>
                 <span class="tag">Classification / regression</span>
               </div>
               <ul class="concept-points small">
@@ -2500,7 +2490,7 @@
               hidden
             >
               <div class="method-title">
-                <h3 id="ensemble-title">Ensembles</h3>
+                <h3 id="ensemble-title">Ensemble methods</h3>
                 <span class="tag">Classification / regression</span>
               </div>
               <ul class="concept-points small">
@@ -2526,7 +2516,7 @@
                   aria-label="Three illustrative trees predict late probabilities of 20, 70, and 80 percent, averaging to 57 percent"
                 ></svg>
                 <div>
-                  <h4>Another approach: boosting</h4>
+                  <h4>Boosting: sequential error correction</h4>
                   <ul class="concept-points small">
                     <li>
                       <strong>Boosting:</strong> add models sequentially to
@@ -2559,7 +2549,7 @@
               hidden
             >
               <div class="method-title">
-                <h3 id="neural-title">Neural networks &amp; deep learning</h3>
+                <h3 id="neural-title">Neural networks and deep learning</h3>
                 <span class="tag">Many kinds of tasks</span>
               </div>
               <ul class="concept-points small">
@@ -2585,7 +2575,7 @@
                   aria-label="Three inputs pass through two hidden layers to an output probability"
                 ></svg>
                 <div>
-                  <h4>Why hidden layers help</h4>
+                  <h4>Hidden layers and learned representations</h4>
                   <p class="small">
                     In images, early layers may detect edges, while later layers
                     combine them into more useful patterns. These features are
@@ -2606,47 +2596,6 @@
               </p>
             </article>
           </div>
-          <details>
-            <summary>A few more names from the lecture materials</summary>
-            <div class="table-wrap">
-              <table class="compare">
-                <thead>
-                  <tr>
-                    <th>Method</th>
-                    <th>Idea to recognize</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Quadratic classifiers</td>
-                    <td>
-                      Allow quadratic decision boundaries rather than only
-                      straight ones; quadratic discriminant analysis is one
-                      example.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Least-squares SVM</td>
-                    <td>
-                      A related SVM formulation using squared errors and
-                      equality constraints.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Learning vector quantization</td>
-                    <td>
-                      A supervised prototype method: compare inputs with labeled
-                      representative vectors.
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <p class="small">
-              Recognize these as alternatives; their derivations are outside
-              this introduction.
-            </p>
-          </details>
         </section>
 
         <section
@@ -2655,10 +2604,9 @@
           aria-labelledby="clustering-title"
         >
           <div class="chapter-head">
-            <span class="eyebrow">07 / Find hidden groups</span
-            ><span class="time">74–85 min · 11 min</span>
+            <span class="eyebrow">07 / Unsupervised learning</span>
           </div>
-          <h2 id="clustering-title">What if nobody gave us the labels?</h2>
+          <h2 id="clustering-title">Unsupervised learning and clustering</h2>
           <ul class="concept-points intro">
             <li>
               <strong>Classification:</strong> learn to predict known target
@@ -2675,7 +2623,7 @@
           </ul>
           <div class="panel">
             <div class="panel-head">
-              <h3>K-means: assign, move, repeat</h3>
+              <h3>K-means clustering: assignment and centroid updates</h3>
               <span class="tag">Step through the algorithm</span>
             </div>
             <div class="panel-body viz-layout">
@@ -2725,7 +2673,7 @@
           </p>
           <div class="panel">
             <div class="panel-head">
-              <h3>Hierarchical clustering: keep the merge history</h3>
+              <h3>Hierarchical clustering and linkage criteria</h3>
               <span class="tag">One dataset, three linkages</span>
             </div>
             <div class="panel-body two">
@@ -2783,83 +2731,11 @@
           </div>
         </section>
 
-        <section class="chapter" id="recap" aria-labelledby="recap-title">
-          <div class="chapter-head">
-            <span class="eyebrow">08 / Check your intuition</span
-            ><span class="time">85–90 min · 5 min</span>
-          </div>
-          <h2 id="recap-title">Explain the choice,<br />not just the name.</h2>
-          <p class="intro">
-            Take a minute to answer, then explain your reasoning to someone
-            nearby.
-          </p>
-          <div
-            class="check"
-            data-answer="regression"
-            data-explanation="The target is a numeric duration, so this is supervised regression. If the target were simply ‘late / on time,’ it would be classification."
-          >
-            <h3>
-              1. We have past delivery times and want to predict minutes for a
-              new delivery. What is the task?
-            </h3>
-            <div class="choices">
-              <button type="button" data-choice="classification">
-                Classification</button
-              ><button type="button" data-choice="regression">Regression</button
-              ><button type="button" data-choice="clustering">
-                Clustering
-              </button>
-            </div>
-            <div class="feedback" role="status"></div>
-          </div>
-          <div
-            class="check"
-            data-answer="validation"
-            data-explanation="Use validation data or cross-validation to choose K. Training performance alone favors overly local fits; the test set is reserved for the final choice."
-          >
-            <h3>
-              2. We need to choose K for KNN. Which results should guide that
-              choice?
-            </h3>
-            <div class="choices">
-              <button type="button" data-choice="training">
-                Training scores</button
-              ><button type="button" data-choice="validation">
-                Validation scores</button
-              ><button type="button" data-choice="test">
-                Repeated test scores
-              </button>
-            </div>
-            <div class="feedback" role="status"></div>
-          </div>
-          <div
-            class="check"
-            data-answer="overfit"
-            data-explanation="This gap suggests overfitting: strong performance on familiar data does not carry over. Try controlling complexity, check the split and preprocessing, and inspect whether the new data differs."
-          >
-            <h3>
-              3. A tree makes almost no training errors but many validation
-              errors. What should we suspect first?
-            </h3>
-            <div class="choices">
-              <button type="button" data-choice="underfit">Underfitting</button
-              ><button type="button" data-choice="overfit">Overfitting</button
-              ><button type="button" data-choice="solved">
-                The task is solved
-              </button>
-            </div>
-            <div class="feedback" role="status"></div>
-          </div>
-          <p class="take-home">
-            Define the task. Make the data usable. Learn on one set of examples,
-            choose with another, and keep an honest final check.
-          </p>
-        </section>
         <footer>
           <p>
-            <strong>Prepared for a 90-minute introduction.</strong> The
-            companion <a href="Machine_Learning.md">teaching notes</a> expand
-            the explanations, discussion prompts, and caveats.
+            The companion
+            <a href="Machine_Learning.md">teaching notes</a> expand the
+            explanations, discussion prompts, and caveats.
           </p>
           <p>
             Content synthesized and reworded from the supplied
@@ -3102,19 +2978,70 @@
         renderLine();
       };
       renderLine();
+      let batchIteration = 0;
       function renderBatch() {
         const b = number("batchSize"),
           updates = Math.ceil(240 / b),
           last = 240 - (updates - 1) * b;
-        $("batchOut").textContent = b + " examples";
+        const epoch = Math.max(1, Math.ceil(batchIteration / updates)),
+          completed =
+            batchIteration === 0 ? 0 : ((batchIteration - 1) % updates) + 1,
+          first = completed === 0 ? 0 : (completed - 1) * b + 1,
+          end = Math.min(completed * b, 240),
+          finished = batchIteration === updates * 3;
+        $("batchOut").textContent = b + " deliveries";
+        $("batchDefinitionSize").textContent = b;
+        $("batchDefinitionCount").textContent = b;
+        $("batchEpoch").textContent =
+          `Epoch ${epoch} of 3 · ${completed} of ${updates} batches processed`;
         $("batchGrid").innerHTML = Array.from(
           { length: updates },
-          () => "<i></i>",
+          (
+            _,
+            i,
+          ) => `<li class="${i < completed ? "done" : ""} ${i === completed - 1 ? "current" : ""}" ${i === completed - 1 ? 'aria-current="step"' : ""}>
+            <strong>Batch ${i + 1}</strong>
+            <span>Deliveries ${i * b + 1}–${Math.min((i + 1) * b, 240)}</span>
+            <span>Iteration ${(epoch - 1) * updates + i + 1}${i < completed ? " · done" : ""}</span>
+          </li>`,
         ).join("");
+        $("batchStepReadout").innerHTML =
+          batchIteration === 0
+            ? `No updates yet. Select <strong>Next iteration</strong> to predict times for deliveries 1–${b}, compare them with their actual times, and update the model once.`
+            : `<strong>Iteration ${batchIteration}:</strong> used deliveries ${first}–${end} and updated the model once.
+            <br>${
+              completed === updates
+                ? `<strong>Epoch ${epoch} complete:</strong> all 240 deliveries have been used in this pass.${finished ? " Three passes are finished." : " The next iteration starts another pass through the same dataset."}`
+                : `<strong>Epoch ${epoch} in progress:</strong> ${end} of 240 deliveries have been used in this pass.`
+            }`;
         $("batchReadout").innerHTML =
-          `<strong>${updates} updates per epoch</strong> = ⌈240 / ${b}⌉<br>Last batch: ${last} examples. Three epochs: <strong>${3 * updates} updates</strong>.<br><span class="tiny">Each block represents one batch.</span>`;
+          `<strong>${updates} batches → ${updates} iterations → 1 epoch.</strong>
+           Three epochs reuse the same 240 examples three times, giving <strong>${3 * updates} iterations in total</strong>.
+           ${last < b ? `The final batch has ${last} deliveries; it still produces one update.` : ""}`;
+        $("batchNext").disabled = finished;
+        $("batchNext").textContent = finished
+          ? "Three epochs complete"
+          : "Next iteration";
+        const current = $("batchGrid").querySelector(".current");
+        if (current) {
+          const grid = $("batchGrid"),
+            rect = current.getBoundingClientRect(),
+            frame = grid.getBoundingClientRect();
+          if (rect.right > frame.right || rect.left < frame.left)
+            grid.scrollLeft += rect.left - frame.left;
+        } else $("batchGrid").scrollLeft = 0;
       }
-      $("batchSize").oninput = renderBatch;
+      function resetBatch() {
+        batchIteration = 0;
+        renderBatch();
+      }
+      $("batchSize").oninput = resetBatch;
+      $("batchReset").onclick = resetBatch;
+      $("batchNext").onclick = () => {
+        if (batchIteration < Math.ceil(240 / number("batchSize")) * 3)
+          batchIteration++;
+        renderBatch();
+      };
       renderBatch();
 
       // A small CART-style regressor: greedily split the leaf that most reduces SSE.
@@ -3849,22 +3776,6 @@
       $("linkage").onchange = renderHierarchy;
       renderHierarchy();
 
-      document.querySelectorAll(".check").forEach((q) =>
-        q.querySelectorAll("[data-choice]").forEach(
-          (b) =>
-            (b.onclick = () => {
-              const correct = b.dataset.choice === q.dataset.answer;
-              q.querySelector(".feedback").textContent =
-                (correct ? "Correct. " : "Try again. ") +
-                (correct
-                  ? q.dataset.explanation
-                  : "Think about the target, the role of the split, or the gap between training and validation.");
-              q.querySelectorAll("button").forEach((x) =>
-                x.setAttribute("aria-pressed", x === b),
-              );
-            }),
-        ),
-      );
       const chapters = [...document.querySelectorAll(".chapter")],
         navLinks = [...document.querySelectorAll(".contents>a")];
       let pending = false;

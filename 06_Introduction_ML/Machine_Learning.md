@@ -2,22 +2,21 @@
 
 Companion to [the interactive HTML lesson](machine_learning.html). The HTML is the concise version to show in class; these notes supply the explanations, examples, and answers that are useful while presenting it. The intended audience knows basic programming but has not studied ML. No derivations or live coding are required.
 
-## A 90-minute teaching plan
+## Lecture topics and teaching suggestions
 
-| Time | HTML chapter | Main point | Suggested activity |
-| --- | --- | --- | --- |
-| 00–08 | 01 · The idea | Learning from examples; learning signals; AI, ML, neural networks, deep learning | Ask what information a delivery-time predictor needs. |
-| 08–20 | 02 · Make data useful | Features, targets, preprocessing, dimensionality | Compare nearest neighbors before and after scaling. |
-| 20–32 | 03 · Keep an honest score | Train / validation / test; cross-validation; regression vs. classification | Select one cross-validation round and explain every block. |
-| 32–44 | 04 · How training works | Model, parameters, objective, hyperparameters, optimization, batches | Adjust a regression line, then fit it. Change batch size. |
-| 44–56 | 05 · Fit vs. generalize | Bias, variance, noise, underfitting, overfitting | Compare 1, 4, and 18 tree leaves; change the training sample. |
-| 56–74 | 06 · Meet the models | Recognize the main supervised model families | Spend about two minutes per method, with time for transitions. |
-| 74–85 | 07 · Find hidden groups | K-means; hierarchical clustering; similarity | Step through K-means; compare dendrogram linkages. |
-| 85–90 | 08 · Check your intuition | Explain a task, a model choice, and an evaluation result | Answer the three checks and discuss the reasons. |
+| HTML chapter | Main point | Suggested activity |
+| --- | --- | --- |
+| 01 · Foundations | Learning from examples; learning signals; AI, ML, neural networks, deep learning | Ask what information a delivery-time predictor needs. |
+| 02 · Data and preprocessing | Features, targets, preprocessing, dimensionality | Compare nearest neighbors before and after scaling. |
+| 03 · Model evaluation | Train / validation / test; cross-validation; regression vs. classification | Select one cross-validation round and explain every block. |
+| 04 · Training and optimization | Model, parameters, objective, hyperparameters, optimization, batches | Adjust a regression line, then fit it. Change batch size. |
+| 05 · Complexity and generalization | Bias, variance, noise, underfitting, overfitting | Compare 1, 4, and 18 tree leaves; change the training sample. |
+| 06 · Supervised algorithms | Recognize the main supervised model families | Compare how each method uses the inputs to make a prediction. |
+| 07 · Unsupervised learning | K-means; hierarchical clustering; similarity | Step through K-means; compare dendrogram linkages. |
 
-The activities are included in these times. Treat the extra model names in the expandable HTML section as a brief signpost; they do not need separate demonstrations. If discussion runs long, shorten the model walkthrough rather than removing the evaluation section. This is an overview, so students should leave able to explain the ideas without implementing every algorithm.
+This is an overview, so students should leave able to explain the ideas without implementing every algorithm.
 
-## 1. What does “learning” mean here?
+## 1. Foundations of machine learning
 
 A useful opening is: “Instead of listing every rule for estimating delivery time, we show the computer completed deliveries and ask it to fit a relationship.” We still write code: the representation, training procedure, and objective are all designed. What comes from the examples is the fitted model.
 
@@ -45,7 +44,7 @@ In reinforcement learning, the learner chooses actions that can change future ob
 
 Avoid assigning a percentage of all ML applications to supervised learning. The supplied notebook and HTML give an approximate percentage without establishing what is being counted; it is unnecessary for this lesson.
 
-## 2. From raw observations to model inputs
+## 2. Data representation and preprocessing
 
 In the running example, one row is one delivery. Distance, rain, and departure hour are **features**; observed travel time is the **target**. With three feature columns, the input has three dimensions. The dataset has four rows in the introductory table, so it has four examples, not four dimensions.
 
@@ -53,7 +52,7 @@ The target determines the task. Predicting **minutes** is regression. Predicting
 
 Use $X$ for the feature matrix, $y$ for observed targets, and $\hat y$ for predictions. A model is a fitted mathematical rule, often written $\hat y=f_\theta(x)$, with learned parameters $\theta$. The **algorithm** is the procedure used to fit or apply that rule. “Linear regression” is often used informally for both the model family and its fitting method; distinguish them when needed.
 
-### What preprocessing is trying to accomplish
+### Preprocessing objectives and common transformations
 
 | Step | Concrete example | Explanation worth adding |
 | --- | --- | --- |
@@ -72,7 +71,7 @@ Do not use the unknown target at prediction time to decide how to impute an inpu
 
 **Smoothing** attempts to reduce noise, for example by replacing values within a bin with a median or fitting a regression trend. **Binarization** represents a property using two values, often 0 and 1. These are different transformations; none should be applied simply because it is available.
 
-### The scaling demonstration
+### Demonstration: feature scaling and distance
 
 The new delivery has features **(5 km, 2,000 g)**. The two possible neighbors are:
 
@@ -93,7 +92,7 @@ Standardization does not make a distribution normal, and it is not robust to out
 
 **PCA**, mentioned in the PDF, constructs directions that retain as much numeric variance as possible in fewer dimensions. It is unsupervised; large variance need not mean useful information for the target. Scaling can strongly affect the resulting directions. Feature selection keeps some original features; PCA builds combinations of them. No matrix derivation is needed here.
 
-## 3. Evaluation: decide what “new” should mean
+## 3. Training, validation, and test evaluation
 
 Training, validation, and test sets answer different questions:
 
@@ -109,7 +108,7 @@ In **five-fold cross-validation**, the development data is divided into five par
 
 The diagram uses ordinary folds. Time-dependent data needs a corresponding time-aware validation scheme. Explain the principle rather than adding another diagram during this overview.
 
-### A score needs context
+### Evaluation metrics and baseline performance
 
 - **Mean absolute error:** $\frac1n\sum_i|y_i-\hat y_i|$. In the delivery example, it is measured in minutes.
 - **Mean squared error:** $\frac1n\sum_i(y_i-\hat y_i)^2$. It penalizes larger misses more strongly and is measured in minutes squared.
@@ -117,7 +116,7 @@ The diagram uses ordinary folds. Time-dependent data needs a corresponding time-
 
 For rare late deliveries, an always-on-time classifier can have high accuracy while being useless for finding delays. If asked, **precision** is the fraction of predicted late deliveries that really are late; **recall** is the fraction of actual late deliveries that were found. Choose measures around the practical cost of mistakes. A simple baseline makes a score easier to interpret: compare with predicting the training-set mean time, or the most common class.
 
-## 4. Training, optimization, and the words around them
+## 4. Model training and optimization
 
 For the one-feature regression model,
 
@@ -141,11 +140,20 @@ The learning rate $\eta$ sets the step size. Too small can be slow; too large ca
 
 ### Batches, iterations, and epochs
 
-With **240 examples** and a **batch size of 24**, one epoch contains **10 parameter updates** in the mini-batch loop shown. Three epochs contain 30 updates. A batch is a group of examples; an iteration is one update in this setting; an epoch is one pass through the full training set.
+Use the three terms for three different things: a **batch is data**, an **iteration is a learning step**, and an **epoch is a complete pass through the data**. In this example, each delivery record contains the inputs and the actual delivery time.
+
+With **240 deliveries** and a **batch size of 40**, walk through training in order:
+
+1. Take deliveries **1–40**: this group is the first batch. Predict their times, compare predictions with actual times, and adjust the model's parameters **once**. That is iteration 1.
+2. Take deliveries **41–80** and repeat the process: a second batch and a second iteration. The same model continues learning; it is not reset between batches.
+3. After the sixth iteration, deliveries **201–240** have also been processed. All 240 examples have been used once, so **epoch 1 is complete**.
+4. Iteration 7 starts epoch 2, using the same dataset again with the already updated model. Three epochs give **18 iterations** and three uses of each example, not 720 distinct examples.
+
+In the HTML, press **Next iteration** to process one batch. Completed batches are marked, and the explanation identifies both the update count and the current epoch. At an epoch boundary, pause to emphasize that one whole pass contains several updates. The delivery numbers make the sequence explicit; practical training often shuffles the examples before a new epoch.
 
 Keeping a smaller final batch gives $\lceil n/B\rceil$ updates per epoch. For a batch size of 32, there are 8 updates, and the last batch contains 16 examples. Some training systems drop the last incomplete batch; the HTML explicitly keeps it. These definitions describe a common training loop and should not imply that every model learns through epochs.
 
-## 5. Bias, variance, and the temptation to memorize
+## 5. Model complexity and generalization
 
 **Underfitting** means a model fails to capture important structure, often producing poor training and validation results. **Overfitting** means the fitted solution captures training-specific detail that does not carry over, often producing a gap between strong training performance and weaker validation performance. Distribution shift or evaluation mistakes can also produce a gap, so it is a clue to investigate rather than a complete diagnosis.
 
@@ -153,7 +161,7 @@ Keeping a smaller final batch gives $\lceil n/B\rceil$ updates per epoch. For a 
 
 For squared-error regression, the classical decomposition expresses expected prediction error as squared bias, variance, and irreducible noise, under the usual assumptions. Students do not need to derive it. The useful lesson is that fitting one sample more closely can come at the cost of sensitivity to which sample was collected.
 
-### How to present the tree demonstration
+### Demonstration: regression-tree complexity
 
 1. Set **1 leaf**. A constant prediction misses the changing relationship: a visible underfit.
 2. Set about **4 leaves**. The tree follows broad changes. Compare both MSE values.
@@ -164,7 +172,7 @@ The page fits actual one-dimensional regression trees by greedily choosing split
 
 Complexity is about representational flexibility, not just a parameter count. Deeper trees, higher-degree polynomials, and smaller K in KNN can all increase flexibility in different ways. The familiar bias–variance trade-off is a useful tendency, not a universal monotonic law. More relevant data, regularization, and suitable model choices can improve both prediction error and stability.
 
-## 6. A short guide to the model families
+## 6. Supervised learning algorithms
 
 The goal is to explain what each method does with an input. Avoid turning this section into seven separate algorithm lectures.
 
@@ -179,7 +187,7 @@ The goal is to explain what each method does with an input. Avoid turning this s
 | Ensemble | Combine models by averaging, voting, or sequential correction. | Shared errors do not disappear just because there are many models. |
 | Neural network | Learn compositions of weighted transformations and nonlinear activations. | Data, architecture, optimization, and regularization still determine usefulness. |
 
-### Logistic regression: probability and decision are separate
+### Logistic regression: probabilities and decision thresholds
 
 For binary classification,
 
@@ -187,17 +195,17 @@ $$P(y=1\mid x)=\sigma(w^Tx+b),\qquad\sigma(z)=\frac{1}{1+e^{-z}}.$$
 
 In the plot, $z$ is the already computed model score, not necessarily one raw feature. Increasing the score raises the late probability. With $z=1$, the probability is about 73.1%. Raising the threshold from 0.50 to 0.80 changes the predicted class without changing that probability. Choosing a threshold should reflect validation results and mistake costs, not repeated test-set experiments. The usual fitting objective is log loss (binary cross-entropy).
 
-### KNN: the training examples remain part of the predictor
+### KNN: instance-based prediction
 
 The displayed KNN uses Euclidean distance, an odd K, and equal neighbor votes. Odd K avoids vote ties for this binary example; it does not solve all possible ties in multiclass KNN. Equal-distance cases in the page use a fixed ordering. A regression version averages neighbor targets, and distance weighting is another possible variant.
 
 KNN is called **non-parametric** because its representational capacity is not limited to a fixed set of fitted coefficients. This does not mean it has no settings: K, the distance metric, and weighting are hyperparameters. Prediction can become expensive with many stored examples. In high dimensions, distances may become less informative, which is one reason feature choice matters.
 
-### SVM: explain the margin before kernels
+### SVM: margins, regularization, and kernels
 
 In the separable diagram, support vectors lie on the dashed margin boundaries. In a soft-margin solution, support vectors can also lie inside the margin or be misclassified. Increasing **C** penalizes violations more strongly, which can lead to fitting the training data more tightly. A kernel supplies similarities corresponding to a richer feature representation; it can produce a nonlinear boundary in the original input space. Support vector regression is a related formulation for numeric targets.
 
-### Naive Bayes: say what is assumed independent
+### Naive Bayes: conditional independence and class probabilities
 
 Bayes' rule is:
 
@@ -209,7 +217,7 @@ In the page's toy word example, observing **free** gives unnormalized scores $0.
 
 This is a small token-likelihood demonstration. It ignores absent words, word counts, the rest of the vocabulary, and smoothing. A Bernoulli text model would also account for absence. Real implementations typically use log probabilities to avoid numerical underflow and smoothing to avoid zero likelihoods. Mention these only if asked. The [scikit-learn Naive Bayes guide](https://scikit-learn.org/stable/modules/naive_bayes.html) explains the conditional-independence assumption and the distinctions between text-model variants.
 
-### Trees, ensembles, and networks
+### Decision trees, ensemble methods, and neural networks
 
 A classification tree chooses splits to reduce impurity, often measured with Gini impurity or entropy. A regression tree reduces a numeric loss, commonly squared error. Prediction follows a path from root to leaf. The model-atlas tree is explicitly hand-built to explain traversal; the earlier overfitting example actually learns split points.
 
@@ -221,18 +229,7 @@ A **perceptron** is a basic linear classifier. A neural network composes layers 
 
 Deep networks can learn useful features from images, audio, and text. The PDF's driving example illustrates representation learning: road-related image features can emerge from a steering prediction objective. Use that to explain the idea without implying that every hidden unit has a neat human-readable meaning or that deep learning is always the best choice. Neural architectures can also be trained with unsupervised, semi-supervised, or reinforcement signals.
 
-### Extra names from the PDF: recognition only
-
-| Name | Enough for this overview |
-| --- | --- |
-| Quadratic classifiers | Permit quadratic decision boundaries. [QDA](https://scikit-learn.org/stable/modules/lda_qda.html) models class-conditional Gaussian distributions with separate covariance matrices, which can yield such boundaries. |
-| Least-squares SVM | A related SVM formulation with squared errors and equality constraints, commonly expressed through linear equations; see the [KU Leuven introduction](https://www.esat.kuleuven.be/sista/statlssvm/). |
-| Kernel estimation | A broader family of methods that use local similarity to estimate quantities such as density. KNN is also neighborhood-based, but is not interchangeable with every kernel method. |
-| Learning vector quantization | A supervised nearest-prototype approach. Labeled representatives are adjusted so their positions support classification; basic forms use a winner-take-all nearest-prototype step. |
-
-Do not infer that all Naive Bayes variants always have linear boundaries, or that every kernel-based method is an SVM. Groupings in an introductory algorithm list are helpful signposts, not strict equivalences.
-
-## 7. Clustering: groups depend on the representation
+## 7. Unsupervised learning and clustering
 
 Classification has supplied class labels. Clustering has a similarity measure and a grouping procedure. An algorithm can partition data even when there are no distinct natural categories. Ask, “Would changing the features or their units change these groups?” Often it would.
 
@@ -269,26 +266,14 @@ The PDF describes these using similarity; the HTML uses **distance**, so “most
 
 The five one-dimensional points are A = 0, B = 1, C = 4, D = 6, E = 9.5. Their dendrogram is computed from the selected linkage. With single linkage the final merge distance is 3.5; with complete linkage it is 9.5; with average linkage it is 6.75. Equal-distance ties use a fixed left-to-right ordering; another valid tie choice can produce a different hierarchy. Leaf positions are arranged for readability; the vertical heights carry the merge-distance meaning. Unlike K-means, building the full agglomerative hierarchy does not require choosing a final K first. The [scikit-learn clustering guide](https://scikit-learn.org/stable/modules/clustering.html#hierarchical-clustering) provides a reference for the linkage definitions.
 
-## 8. Answers and closing discussion
-
-The three HTML checks should produce these explanations:
-
-1. **Regression:** the target is minutes, and the examples include observed times. Changing the target to “late / on time” changes this to classification.
-2. **Validation:** choose K using validation or cross-validation. Leave the test set for the final chosen procedure.
-3. **Overfitting is a reasonable first suspicion:** the model handles its training examples better than held-out examples. Inspect complexity, leakage, the split, and whether the data distribution has changed.
-
-A final verbal prompt: “We have delivery records but no late labels. Can K-means discover the late class?” It can form groups from available features, but it has no evidence that a particular group means “late.” A cluster needs interpretation and external validation before receiving that meaning.
-
-Students should be able to leave with four questions: **What are we predicting? What information is available? How does the model learn? How do we know it generalizes?**
-
-## Source coverage and presentation choices
+## Source materials and scope of the lesson
 
 The lesson synthesizes these supplied local materials:
 
 - [Lab 06 HTML](../../AI_FMI_course/docs/labs/lab06-intro-ml.html): core terminology, bias and variance, training vocabulary, regression, model families, and K-means.
 - [Lab 06 notebook](../../AI_FMI_course/notebooks/06_Introduction_to_ML.ipynb): the same main learning objectives and algorithm overview.
-- [Intro ML slides, Boris Velichkov](Intro%20ML.pdf): induction versus deduction; semi-supervised and reinforcement learning; the AI / ML / NN / DL relationship; preprocessing, transformation and reduction; additional classifier names; train / validation / test and cross-validation; hierarchical clustering and linkage.
+- [Intro ML slides, Boris Velichkov](Intro%20ML.pdf): induction versus deduction; semi-supervised and reinforcement learning; the AI / ML / NN / DL relationship; preprocessing, transformation and reduction; train / validation / test and cross-validation; hierarchical clustering and linkage.
 
-The wording and diagrams are new. The lesson preserves the concepts rather than repeating unsupported popularity claims, overly broad statements, or source-specific examples. The many preprocessing options and additional classifier variants receive a short mention in the HTML and fuller context here, keeping the visible lesson teachable in 90 minutes.
+The wording and diagrams are new. The lesson preserves the concepts rather than repeating unsupported popularity claims, overly broad statements, or source-specific examples. Preprocessing options receive a short introduction in the HTML and fuller context here.
 
 All interactive data is synthetic. The visualizations use inline SVG and plain JavaScript, with fixed seeds where randomness is involved; no external assets or services are needed. The page can be opened directly from disk. Use **Hide route** in the header to hide the learning route and give the lesson the full available width; **Show route** restores it. The browser remembers this preference when local storage is available.
