@@ -16,16 +16,13 @@
 <main>
 <header><strong>07 · KNN</strong><a href="../06_Introduction_ML/machine_learning.html">Introduction to ML</a></header>
 <h1>KNN examples</h1>
-<div class="legend common-legend"><span class="c0">Class 0</span><span class="c1">Class 1</span><span>● Train</span><span>◇ Validation</span><span class="wrong">× Wrong</span><span>✚ Query</span><span><i class="reference"></i>True boundary</span></div>
 
-<section class="lesson" aria-labelledby="k-heading">
-<div class="section-heading"><span class="number">01</span><h2 id="k-heading">k and accuracy</h2></div>
-<p class="lead">Change k. Watch the boundary and accuracy.</p>
+<section class="lesson" aria-label="Neighbor count and accuracy">
 <div class="stage">
 <div class="control"><label for="k">Neighbors</label><input id="k" type="range" min="1" max="51" value="1"><output id="k-value" for="k">k = 1</output><span class="fixed">15% label noise</span></div>
 <div class="readouts" aria-live="polite"><span>Train<strong id="k-train">—</strong></span><span class="validation">Validation<strong id="k-validation">—</strong><small id="k-correct"></small></span><span>Error<strong id="k-error">—</strong></span></div>
 <div class="paired-plots">
-<div><h3 id="k-map-heading">Decision regions · k = 1</h3><canvas id="k-map" class="map" width="1000" height="300" role="img" aria-labelledby="k-map-heading" aria-describedby="k-map-description">Canvas support is required.</canvas><p class="sr-only" id="k-map-description"></p></div>
+<div><h3 id="k-map-heading">Decision regions · k = 1</h3><canvas id="k-map" class="map" width="1000" height="300" role="img" aria-labelledby="k-map-heading" aria-describedby="k-map-description">Canvas support is required.</canvas><p class="sr-only" id="k-map-description"></p><div class="legend common-legend"><span class="c0">Class 0</span><span class="c1">Class 1</span><span>● Train</span><span>◇ Validation</span><span class="wrong">× Wrong</span><span>✚ Query</span><span><i class="reference"></i>True boundary</span></div></div>
 <div><h3>Accuracy versus k</h3><svg id="k-chart" viewBox="0 0 650 300" preserveAspectRatio="none" role="img" aria-labelledby="k-chart-title k-chart-description"><title id="k-chart-title">Accuracy versus number of neighbors</title><desc id="k-chart-description">Linked to the neighbor slider and decision map.</desc></svg><div class="legend"><span><i></i>Validation</span><span><i class="train"></i>Training</span></div></div>
 </div>
 </div><p class="notice" id="k-notice" role="status"></p>
@@ -33,7 +30,6 @@
 
 <section class="lesson" aria-labelledby="metric-heading">
 <div class="section-heading"><span class="number">02</span><h2 id="metric-heading">Distance metrics</h2></div>
-<p class="lead">Same points, different distance.</p>
 <div class="stage">
 <div class="control"><span class="control-label" id="metric-label">Distance</span><div class="choices" role="group" aria-labelledby="metric-label"><button type="button" data-metric="euclidean" aria-pressed="true">Euclidean</button><button type="button" data-metric="manhattan" aria-pressed="false">Manhattan</button><button type="button" data-metric="chebyshev" aria-pressed="false">Chebyshev</button></div><span id="metric-formula" class="formula"></span><span class="fixed">k = 9</span></div>
 <div class="readouts" aria-live="polite"><span class="validation">Validation<strong id="metric-accuracy">—</strong><small id="metric-correct"></small></span><span>Prediction<strong id="metric-prediction">—</strong></span><span>Votes 0 / 1<strong id="metric-votes">—</strong></span></div>
@@ -44,7 +40,6 @@
 
 <section class="lesson" aria-labelledby="noise-heading">
 <div class="section-heading"><span class="number">03</span><h2 id="noise-heading">Label noise</h2></div>
-<p class="lead">Vary noise and k. Validation labels stay clean.</p>
 <div class="stage">
 <div class="control"><label for="noise">Noisy labels</label><input id="noise" type="range" min="0" max="30" step="5" value="0"><output id="noise-value" for="noise">0%</output><label for="noise-k">Neighbors</label><input id="noise-k" type="range" min="1" max="51" value="1"><output id="noise-k-value" for="noise-k">k = 1</output></div>
 <div class="readouts" aria-live="polite"><span>Train<strong id="noise-train">—</strong></span><span class="validation">Validation<strong id="noise-validation">—</strong><small id="noise-correct"></small></span><span>Error<strong id="noise-error">—</strong></span></div>
@@ -54,7 +49,6 @@
 
 <section class="lesson" aria-labelledby="scale-heading">
 <div class="section-heading"><span class="number">04</span><h2 id="scale-heading">Feature scaling</h2></div>
-<p class="lead">Only y matters; x has larger units.</p>
 <div class="stage">
 <div class="control"><span class="control-label" id="scale-label">Coordinates</span><div class="choices" role="group" aria-labelledby="scale-label"><button type="button" data-scale="raw" aria-pressed="true">Raw units</button><button type="button" data-scale="standard" aria-pressed="false">Standardize</button></div><label for="scale-k">Neighbors</label><input id="scale-k" type="range" min="1" max="51" value="9"><output id="scale-k-value" for="scale-k">k = 9</output></div>
 <div class="readouts" aria-live="polite"><span class="validation">Validation<strong id="scale-accuracy">—</strong><small id="scale-correct"></small></span><span>Error<strong id="scale-error">—</strong></span><span class="sr-only">Distances use<strong id="scale-coordinates">Raw units</strong></span></div>
@@ -64,16 +58,14 @@
 
 <section class="lesson" aria-labelledby="regression-heading">
 <div class="section-heading"><span class="number">05</span><h2 id="regression-heading">KNN regression</h2></div>
-<p class="lead">Average nearby targets. Lower RMSE is better.</p>
 <div class="stage">
 <div class="control"><label for="regression-k">Neighbors</label><input id="regression-k" type="range" min="1" max="30" value="5"><output id="regression-k-value" for="regression-k">k = 5</output><span class="fixed">30 train · 60 validation</span></div>
 <div class="readouts" aria-live="polite"><span>Train RMSE<strong id="regression-train">—</strong></span><span class="validation">Validation RMSE<strong id="regression-validation">—</strong></span></div>
 <div class="plot-wrap"><canvas id="regression-plot" class="regression-plot" width="1400" height="300" role="img" aria-label="KNN regression predictions, training values, and validation values">Canvas support is required.</canvas></div>
 <div class="legend"><span><i></i>Prediction</span><span>● Training</span><span>○ Validation</span></div>
-</div><p class="notice" id="regression-notice" role="status"></p>
+</div>
 </section>
 
-<footer><a href="KNN.md">Teaching notes</a></footer>
 <p class="sr-only" id="query-announcement" role="status" aria-live="polite"></p>
 </main>
 <script>
@@ -157,7 +149,7 @@ function renderRegression(){
   for(const p of regressionData.validation){ctx.beginPath();ctx.arc(px(p.x),py(p.y),3.5,0,Math.PI*2);ctx.fillStyle='#fffefa';ctx.fill();ctx.strokeStyle='#77847a';ctx.lineWidth=1.3;ctx.stroke();}
   const steps=regressionSteps(regressionData.train,k);ctx.beginPath();steps.forEach((s,i)=>{if(i===0)ctx.moveTo(px(s.left),py(s.y));else ctx.lineTo(px(s.left),py(s.y));ctx.lineTo(px(s.right),py(s.y));});ctx.strokeStyle=colors[0];ctx.lineWidth=2.3;ctx.stroke();
   for(const p of regressionData.train){ctx.beginPath();ctx.arc(px(p.x),py(p.y),3.7,0,Math.PI*2);ctx.fillStyle='#223d35';ctx.fill();ctx.strokeStyle='#fffefa';ctx.lineWidth=1;ctx.stroke();}ctx.restore();ctx.strokeStyle='#b9c8bc';ctx.lineWidth=1;ctx.strokeRect(box.x,box.y,box.w,box.h);ctx.fillStyle='#586d63';ctx.font='16px system-ui';for(let x=0;x<=10;x+=2){ctx.textAlign='center';ctx.fillText(x,px(x),box.y+box.h+23);}for(let y=Math.ceil(low);y<=high;y++){ctx.textAlign='right';ctx.fillText(y,box.x-7,py(y)+4);}ctx.textAlign='center';ctx.fillText('x',box.x+box.w/2,box.height-2);ctx.save();ctx.translate(11,box.y+box.h/2);ctx.rotate(-Math.PI/2);ctx.fillText('y',0,0);ctx.restore();
-  $('regression-plot').dataset.validationPoints=String(regressionData.validation.length);$('regression-plot').setAttribute('aria-label',`KNN regression, k ${k}. Training RMSE ${train.toFixed(3)}, validation RMSE ${validation.toFixed(3)}. All 30 training and 60 validation observations shown.`);$('regression-notice').textContent=k===1?'Fits the training noise.':k===30?'One constant prediction.':'Each step averages k targets.';
+  $('regression-plot').dataset.validationPoints=String(regressionData.validation.length);$('regression-plot').setAttribute('aria-label',`KNN regression, k ${k}. Training RMSE ${train.toFixed(3)}, validation RMSE ${validation.toFixed(3)}. All 30 training and 60 validation observations shown.`);
 }
 $('k').addEventListener('input',renderK);$('regression-k').addEventListener('input',renderRegression);
 $('k-chart').addEventListener('click',event=>{const svg=$('k-chart'),rect=svg.getBoundingClientRect(),width=svg.clientWidth||650,x=(event.clientX-rect.left)*width/rect.width;if(x<56||x>width-16)return;$('k').value=Math.max(1,Math.min(51,Math.round(1+(x-56)/(width-72)*50)));renderK();});

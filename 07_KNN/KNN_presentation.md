@@ -116,7 +116,7 @@ Large numeric ranges can dominate distances
 
 ## Metrics
 
-- Evaluate predictions on held-out data; these classification metrics apply to any classifier
+- Evaluate predictions on held-out data; use classification metrics for class labels and regression metrics for numeric targets
 - For a chosen positive class: **TP** = correctly predicted positive, **TN** = correctly predicted negative, **FP** = false alarm, **FN** = missed positive
 
 ### Confusion matrix
@@ -167,12 +167,46 @@ Large numeric ranges can dominate distances
   - $\text{Recall}=\frac{TP}{TP+FN}$
   - Emphasize recall when missed positives are costly, such as fraud left undetected
 
-### Reading the metrics together
+### F1 score
 
-- If 10 emails are spam and the classifier flags 8 emails, of which 6 are spam: TP = 6, FP = 2, FN = 4
-  - Precision = 6/8 = **75%**; recall = 6/10 = **60%**
-- **F1 score:** harmonic mean of precision and recall: $F_1=\frac{2TP}{2TP+FP+FN}$
-- For multiple classes, calculate precision and recall per class; **macro averaging** gives every class equal weight
-- For KNN regression, use numeric error measures such as **MAE** or **RMSE** instead
+- **Harmonic mean of precision and recall**; high only when both are high
+  - $F_1=\frac{2\,\text{Precision}\,\text{Recall}}{\text{Precision}+\text{Recall}}=\frac{2TP}{2TP+FP+FN}$
+  - Ranges from 0 to 1; higher is better. Useful when precision and recall both matter, especially for a rare positive class
+- In the spam example: precision = 6/8 = **75%**, recall = 6/10 = **60%**, F1 = 12/18 ≈ **66.7%**
+- For multiple classes, calculate each metric per class; **macro averaging** gives every class equal weight
 
-Reference: scikit-learn guides to [nearest neighbors](https://scikit-learn.org/stable/modules/neighbors.html) and [classification metrics](https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics).
+### Regression metrics
+
+- Measure how far numeric predictions are from actual values
+  - $n$ = number of evaluated examples, $y_i$ = actual value, $\hat y_i$ = prediction, $\bar y$ = mean actual value on the evaluation set
+
+#### MAE — Mean Absolute Error
+
+- **Average absolute prediction error**
+  - $\text{MAE}=\frac{1}{n}\sum_{i=1}^{n}|y_i-\hat y_i|$
+  - In the target's original units; an MAE of 3 minutes means predictions miss by 3 minutes on average
+  - Useful for a directly interpretable error measure; less sensitive to large errors than squared-error metrics
+
+#### MSE — Mean Squared Error
+
+- **Average squared prediction error**
+  - $\text{MSE}=\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat y_i)^2$
+  - Squaring gives large errors more influence; useful when large misses should be penalized more heavily
+  - Measured in squared target units, such as minutes squared
+
+#### RMSE — Root Mean Squared Error
+
+- **Square root of MSE**
+  - $\text{RMSE}=\sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat y_i)^2}$
+  - Emphasizes large errors while returning to the target's original units
+  - Example: absolute errors of 1, 1, and 4 give MAE = **2**, MSE = **6**, and RMSE ≈ **2.45**
+- For MAE, MSE, and RMSE, **lower is better**; 0 means perfect predictions
+
+#### R² — Coefficient of determination
+
+- **Compares squared prediction error with always predicting the evaluation-set mean**
+  - $R^2=1-\frac{\sum_{i=1}^{n}(y_i-\hat y_i)^2}{\sum_{i=1}^{n}(y_i-\bar y)^2}$
+  - For nonconstant targets: **1** = perfect predictions, **0** = matches the mean baseline, **negative** = worse than that baseline
+  - Unitless; higher is better. Read alongside MAE or RMSE to understand the error in practical units
+
+Reference: scikit-learn guides to [nearest neighbors](https://scikit-learn.org/stable/modules/neighbors.html), [classification metrics](https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics), and [regression metrics](https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics).
