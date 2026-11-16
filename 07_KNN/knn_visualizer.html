@@ -1,367 +1,185 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Seven simple KNN graphs: neighbor count, overfitting, distance metrics, and training versus validation error.">
-  <title>KNN · Seven simple examples</title>
-  <style>
-    :root { color-scheme: light; --bg: #f4f5ef; --paper: #fffefa; --ink: #233d36; --muted: #596d64; --line: #d6dfd5; --teal: #087768; --orange: #b8542d; --mono: ui-monospace, SFMono-Regular, Consolas, monospace; }
-    * { box-sizing: border-box; }
-    body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.55 system-ui, sans-serif; }
-    main { max-width: 1320px; margin: auto; padding: 18px 24px; }
-    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); font-size: 12px; }
-    header strong { font-weight: 750; } header b { margin-right: 8px; padding: 4px 7px; border-radius: 5px; background: var(--teal); color: white; }
-    a { color: var(--teal); text-underline-offset: 3px; }
-    h1 { font: 400 clamp(30px, 4vw, 43px)/1.1 Georgia, serif; letter-spacing: -1px; margin: 20px 0 8px; }
-    h2, h3, p { margin: 0; }
-    .intro { color: var(--muted); }
-    .controls { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; padding: 13px 0; margin-top: 8px; }
-    .noise-control { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 650; }
-    input, button { font: inherit; color: inherit; }
-    input[type="range"] { width: 145px; accent-color: var(--teal); cursor: pointer; }
-    output { min-width: 29px; font-family: var(--mono); }
-    button { padding: 6px 11px; border: 1px solid #b6c8bb; border-radius: 6px; background: var(--paper); font-size: 12px; font-weight: 650; cursor: pointer; }
-    button:hover { background: #e7f3ed; }
-    :focus-visible { outline: 3px solid #7852a0; outline-offset: 3px; }
-    #sample-info { margin-left: auto; font-size: 11px; color: var(--muted); }
-    .section-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 15px; margin: 14px 0 9px; }
-    h2 { font-size: 16px; font-weight: 750; letter-spacing: -.25px; }
-    .section-heading p { color: var(--muted); font-size: 12px; }
-    .graphs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-    .graph { min-width: 0; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); overflow: hidden; }
-    .graph-heading { padding: 11px 14px 0; }
-    h3 { font-size: 15px; font-weight: 750; }
-    .graph-heading p { margin-top: 2px; font-size: 11px; color: var(--muted); }
-    canvas { display: block; width: 100%; height: auto; }
-    canvas.interactive { cursor: crosshair; touch-action: manipulation; }
-    .graph-result { padding: 0 14px 10px; font-size: 11px; color: var(--muted); min-height: 27px; }
-    .graph-result strong { font-family: var(--mono); font-weight: 650; color: var(--ink); }
-    .legend { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 16px; color: var(--muted); font-size: 11px; margin: 10px 0 4px; }
-    .class-zero { color: var(--teal); } .class-one { color: var(--orange); }
-    .legend b { font-size: 14px; }
-    .error-graph { margin-top: 17px; padding: 12px 15px 11px; }
-    .error-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 5px 16px; }
-    .error-header p { color: var(--muted); font-size: 11px; }
-    #error-curve { display: block; width: 100%; height: 170px; }
-    .curve-footer { display: flex; flex-wrap: wrap; gap: 4px 18px; color: var(--muted); font-size: 11px; }
-    .curve-footer i { display: inline-block; width: 19px; margin-right: 5px; vertical-align: middle; border-top: 2px dashed var(--teal); }
-    .curve-footer i.validation { border-top: 2px solid var(--orange); }
-    #curve-summary { margin-left: auto; }
-    details { margin-top: 15px; padding-top: 11px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
-    summary { color: var(--ink); cursor: pointer; }
-    details p { max-width: 1050px; margin-top: 9px; }
-    footer { margin-top: 12px; color: var(--muted); font-size: 10px; }
-    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
-    @media (max-width: 850px) {
-      main { padding: 15px; } .graphs { gap: 9px; }
-      .graph-heading { padding: 9px 10px 0; } .graph-result { padding-left: 10px; padding-right: 10px; }
-      .graph-result strong { display: inline; }
-      #sample-info { margin-left: 0; } #curve-summary { margin-left: 0; }
-    }
-    @media (max-width: 620px) {
-      .graphs { grid-template-columns: 1fr; }
-      .noise-control { flex-wrap: wrap; } header { font-size: 10px; }
-      #error-curve { min-height: 150px; } .controls { gap: 10px; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Compact interactive KNN examples with visible validation predictions, classification accuracy, and regression error.">
+<title>KNN examples · Lecture 07</title>
+<style>
+:root{color-scheme:light;--bg:#f5f5ef;--paper:#fffefa;--ink:#223d35;--muted:#586d63;--line:#d8e0d5;--teal:#087768;--orange:#b8542d;--error:#a52b45;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,sans-serif}main{width:96%;max-width:1760px;margin:auto;padding:18px 12px 30px}header{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding-bottom:12px;font-size:12px}a{color:var(--teal);text-underline-offset:3px}h1{font-size:29px;letter-spacing:-.7px;line-height:1.2;margin:22px 0 6px}h2{font-size:21px;letter-spacing:-.3px;margin:0;line-height:1.3}h3{font-size:13px;font-weight:650;margin:0 0 7px}p{margin:0}.intro,.lead{color:var(--muted);font-size:14px}.lesson{margin-top:30px}.section-heading{display:flex;align-items:baseline;gap:10px;margin-bottom:5px}.number{font:12px var(--mono);color:var(--teal)}.lead{margin-bottom:12px}.stage{background:var(--paper);border:1px solid var(--line);border-radius:8px;overflow:hidden}.control{display:flex;align-items:center;flex-wrap:wrap;gap:9px 16px;padding:11px 16px;border-bottom:1px solid var(--line);font-size:13px}.control label,.control-label{font-weight:650}.control input[type=range]{width:260px;max-width:50vw;accent-color:var(--teal);cursor:pointer}.control output{font:650 17px var(--mono);color:var(--teal);min-width:60px}.fixed{margin-left:auto;font-size:12px;color:var(--muted)}input,button{font:inherit;color:inherit}button{background:var(--paper);border:1px solid #b8c8bc;border-radius:5px;padding:6px 11px;font-size:12px;font-weight:650;cursor:pointer}button:hover{background:#e9f2eb}button[aria-pressed=true]{color:white;background:var(--teal);border-color:var(--teal)}:focus-visible{outline:3px solid #7852a0;outline-offset:3px}.choices{display:flex;flex-wrap:wrap;gap:6px}.readouts{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 30px;padding:11px 16px 5px;font-size:12px;color:var(--muted)}.readouts strong{color:var(--ink);font:650 20px var(--mono);margin-left:5px}.readouts .validation strong{color:var(--teal)}.readouts small{font-size:11px;margin-left:6px}.paired-plots{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px;padding:10px 16px 0}.paired-plots>div{min-width:0}.map,.regression-plot{display:block;width:100%;height:300px}.paired-plots .map,#k-chart{height:300px}.map.interactive{cursor:crosshair;touch-action:manipulation}#k-chart{display:block;width:100%;cursor:crosshair}.plot-wrap{padding:5px 12px 0}.legend{display:flex;flex-wrap:wrap;gap:5px 18px;align-items:center;padding:8px 16px 10px;font-size:11px;color:var(--muted)}.legend .c0{color:var(--teal)}.legend .c1{color:var(--orange)}.legend .wrong{color:var(--error);font-weight:750}.legend i{display:inline-block;width:20px;margin-right:5px;vertical-align:middle;border-top:2px solid var(--teal)}.legend i.train{border-top:2px dashed #7b8d85}.legend i.reference{border-top:1px dashed #647366}.stage-note{border-top:1px solid var(--line);padding:9px 16px;color:var(--muted);font-size:12px}.notice{font-size:12px;color:var(--muted);margin:8px 0 0}.formula{font:12px var(--mono);color:var(--muted)}details{margin-top:28px;border-top:1px solid var(--line);padding-top:12px;color:var(--muted);font-size:12px}summary{cursor:pointer;color:var(--ink);font-weight:650}details p{margin-top:9px;max-width:1250px}footer{margin-top:16px;font-size:11px;color:var(--muted)}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media(max-width:850px){.paired-plots{grid-template-columns:1fr;gap:12px}.paired-plots .map{height:280px}#k-chart{height:220px}.fixed{margin-left:0}.control{gap:9px 12px}.readouts{gap:8px 18px}.readouts strong{font-size:18px}}
+@media(max-width:520px){main{width:100%;padding:14px 10px}.control input[type=range]{width:180px;max-width:55vw}.map,.regression-plot{height:255px}.fixed{flex-basis:100%}.paired-plots{padding:9px}.plot-wrap{padding:3px 5px}.readouts{padding:10px 12px 3px}.readouts strong{font-size:17px}.legend{padding:7px 12px}header{font-size:10px}h1{font-size:25px}h2{font-size:19px}}
+</style>
 </head>
 <body>
 <main>
-  <header><strong><b>07</b> Artificial Intelligence / KNN</strong><a href="../06_Introduction_ML/machine_learning.html">← Introduction to ML</a></header>
-  <h1>KNN, one idea at a time.</h1>
-  <p class="intro">Find the nearest training points and let them vote. These seven graphs use the same data so you can see what changes.</p>
+<header><strong>07 · Artificial Intelligence / KNN</strong><a href="../06_Introduction_ML/machine_learning.html">Introduction to ML</a></header>
+<h1>KNN examples</h1><p class="intro">Classification predicts a class by voting. Regression predicts a number by averaging.</p>
 
-  <div class="controls" role="group" aria-label="Shared sample controls">
-    <div class="noise-control"><label for="noise">Training label noise</label><input id="noise" type="range" min="0" max="30" step="5" value="15"><output id="noise-value" for="noise">15%</output></div>
-    <button id="new-sample" type="button">New sample ↻</button>
-    <span id="sample-info">100 training points · 240 validation points · sample 42</span>
-  </div>
+<section class="lesson" aria-labelledby="k-heading">
+<div class="section-heading"><span class="number">01</span><h2 id="k-heading">k and accuracy</h2></div>
+<p class="lead">Change k. Compare the decision regions with the validation mistakes and accuracy.</p>
+<div class="stage">
+<div class="control"><label for="k">Neighbors</label><input id="k" type="range" min="1" max="51" value="1"><output id="k-value" for="k">k = 1</output><span class="fixed">Wavy boundary · 80 training / 120 validation · 15% training label noise</span></div>
+<div class="readouts" aria-live="polite"><span>Train accuracy<strong id="k-train">—</strong></span><span class="validation">Validation accuracy<strong id="k-validation">—</strong><small id="k-correct"></small></span><span>Validation error<strong id="k-error">—</strong></span></div>
+<div class="paired-plots">
+<div><h3 id="k-map-heading">Decision regions · k = 1</h3><canvas id="k-map" class="map" width="1000" height="300" role="img" aria-labelledby="k-map-heading" aria-describedby="k-map-description">Canvas support is required.</canvas><p class="sr-only" id="k-map-description"></p></div>
+<div><h3>Accuracy versus k</h3><svg id="k-chart" viewBox="0 0 650 300" preserveAspectRatio="none" role="img" aria-labelledby="k-chart-title k-chart-description"><title id="k-chart-title">Accuracy versus number of neighbors</title><desc id="k-chart-description">Linked to the neighbor slider and decision map.</desc></svg><div class="legend"><span><i></i>Validation</span><span><i class="train"></i>Training</span></div></div>
+</div>
+<div class="legend"><span class="c0">Class 0</span><span class="c1">Class 1</span><span>● Training</span><span>◇ Validation (true label)</span><span class="wrong">× Incorrect validation prediction</span><span><i class="reference"></i>True boundary</span></div>
+<p class="stage-note">Shading is the predicted class. Every validation point used in the accuracy score is plotted; red crosses are its mistakes.</p>
+</div><p class="notice" id="k-notice" role="status"></p>
+</section>
 
-  <section aria-labelledby="neighbors-heading">
-    <div class="section-heading"><h2 id="neighbors-heading">1. How many neighbors?</h2><p>Euclidean distance throughout. Only k changes.</p></div>
-    <div class="graphs">
-      <article class="graph">
-        <div class="graph-heading"><h3>k = 1 · Very local</h3><p>Can memorize noisy labels and form small islands.</p></div>
-        <canvas id="k-1" width="420" height="255" role="img" aria-label="Decision regions with one neighbor">Canvas support is required.</canvas>
-        <p class="graph-result" id="result-1"></p>
-      </article>
-      <article class="graph">
-        <div class="graph-heading"><h3>k = 15 · Smoother</h3><p>More voters often reduce sensitivity to noise.</p></div>
-        <canvas id="k-15" width="420" height="255" role="img" aria-label="Decision regions with fifteen neighbors">Canvas support is required.</canvas>
-        <p class="graph-result" id="result-15"></p>
-      </article>
-      <article class="graph">
-        <div class="graph-heading"><h3>k = 51 · Broad neighborhoods</h3><p>Too much averaging can lose useful local structure.</p></div>
-        <canvas id="k-51" width="420" height="255" role="img" aria-label="Decision regions with fifty-one neighbors">Canvas support is required.</canvas>
-        <p class="graph-result" id="result-51"></p>
-      </article>
-    </div>
-  </section>
+<section class="lesson" aria-labelledby="metric-heading">
+<div class="section-heading"><span class="number">02</span><h2 id="metric-heading">Distance metrics</h2></div>
+<p class="lead">Switch the metric. The data and k stay fixed; the selected neighbors and predictions can change.</p>
+<div class="stage">
+<div class="control"><span class="control-label" id="metric-label">Distance</span><div class="choices" role="group" aria-labelledby="metric-label"><button type="button" data-metric="euclidean" aria-pressed="true">Euclidean</button><button type="button" data-metric="manhattan" aria-pressed="false">Manhattan</button><button type="button" data-metric="chebyshev" aria-pressed="false">Chebyshev</button></div><span id="metric-formula" class="formula"></span><span class="fixed">k = 9 · clean labels</span></div>
+<div class="readouts" aria-live="polite"><span class="validation">Validation accuracy<strong id="metric-accuracy">—</strong><small id="metric-correct"></small></span><span>Query prediction<strong id="metric-prediction">—</strong></span><span>Votes: class 0 / 1<strong id="metric-votes">—</strong></span></div>
+<div class="plot-wrap"><canvas id="metric-map" class="map interactive" width="1400" height="300" tabindex="0" role="img" aria-label="Distance metric decision regions, training points, and validation predictions" aria-describedby="metric-help">Canvas support is required.</canvas></div>
+<div class="legend"><span class="c0">Class 0</span><span class="c1">Class 1</span><span>● Training</span><span>◇ Validation</span><span class="wrong">× Validation error</span><span>✚ Query · larger filled points: 9 voters</span></div>
+<p class="stage-note" id="metric-help">Click to move the query; arrow keys work when the graph is focused. The dashed neighborhood uses the selected distance. Axes are fitted to the wide layout.</p>
+</div>
+</section>
 
-  <section aria-labelledby="metrics-heading">
-    <div class="section-heading"><h2 id="metrics-heading">2. What counts as near?</h2><p id="query-help">k = 9 throughout. Click a graph to move the shared query; arrow keys also work when focused.</p></div>
-    <div class="graphs">
-      <article class="graph">
-        <div class="graph-heading"><h3>Euclidean · L2</h3><p>√(Δx² + Δy²)</p></div>
-        <canvas class="interactive" id="metric-euclidean" width="420" height="255" tabindex="0" role="img" aria-label="Euclidean nearest neighbors" aria-describedby="query-help">Canvas support is required.</canvas>
-        <p class="graph-result" id="result-euclidean"></p>
-      </article>
-      <article class="graph">
-        <div class="graph-heading"><h3>Manhattan · L1</h3><p>|Δx| + |Δy|</p></div>
-        <canvas class="interactive" id="metric-manhattan" width="420" height="255" tabindex="0" role="img" aria-label="Manhattan nearest neighbors" aria-describedby="query-help">Canvas support is required.</canvas>
-        <p class="graph-result" id="result-manhattan"></p>
-      </article>
-      <article class="graph">
-        <div class="graph-heading"><h3>Chebyshev · L∞</h3><p>max(|Δx|, |Δy|)</p></div>
-        <canvas class="interactive" id="metric-chebyshev" width="420" height="255" tabindex="0" role="img" aria-label="Chebyshev nearest neighbors" aria-describedby="query-help">Canvas support is required.</canvas>
-        <p class="graph-result" id="result-chebyshev"></p>
-      </article>
-    </div>
-  </section>
-  <div class="legend"><span><b class="class-zero">●</b> Class 0</span><span><b class="class-one">▲</b> Class 1</span><span>✚ Query</span><span>Highlighted points: 9 voters · dashed outline: neighborhood</span></div>
+<section class="lesson" aria-labelledby="noise-heading">
+<div class="section-heading"><span class="number">03</span><h2 id="noise-heading">Label noise</h2></div>
+<p class="lead">Keep k = 1 and flip training labels. Small prediction islands can increase validation errors.</p>
+<div class="stage">
+<div class="control"><label for="noise">Incorrect training labels</label><input id="noise" type="range" min="0" max="30" step="5" value="0"><output id="noise-value" for="noise">0%</output><span class="fixed">k = 1 · validation labels stay clean</span></div>
+<div class="readouts" aria-live="polite"><span>Train accuracy<strong id="noise-train">—</strong></span><span class="validation">Validation accuracy<strong id="noise-validation">—</strong><small id="noise-correct"></small></span><span>Validation error<strong id="noise-error">—</strong></span></div>
+<div class="plot-wrap"><canvas id="noise-map" class="map" width="1400" height="300" role="img" aria-label="One-neighbor decision regions and validation errors as labels are corrupted">Canvas support is required.</canvas></div>
+<div class="legend"><span class="c0">Class 0</span><span class="c1">Class 1</span><span>● Training</span><span>◇ Validation</span><span class="wrong">× Validation error</span><span><i class="reference"></i>True boundary</span></div>
+<p class="stage-note">Only training labels change. The point positions and validation set are fixed.</p>
+</div><p class="notice" id="noise-notice" role="status"></p>
+</section>
 
-  <section class="graph error-graph" aria-labelledby="error-heading">
-    <div class="error-header"><h2 id="error-heading">3. Training fit is not the whole story.</h2><p>Euclidean distance · same fixed validation set for every k</p></div>
-    <svg id="error-curve" viewBox="0 0 1100 170" preserveAspectRatio="none" role="img" aria-labelledby="curve-title curve-description"><title id="curve-title">Training and validation error by k</title><desc id="curve-description">Computed from the same data as the decision regions above.</desc></svg>
-    <div class="curve-footer"><span><i></i>Training error (includes self)</span><span><i class="validation"></i>Validation error</span><span id="curve-summary" role="status"></span></div>
-  </section>
+<section class="lesson" aria-labelledby="scale-heading">
+<div class="section-heading"><span class="number">04</span><h2 id="scale-heading">Feature scaling</h2></div>
+<p class="lead">x is irrelevant but spans 0–100; y separates the classes and spans 0–1. Compare raw and standardized distances.</p>
+<div class="stage">
+<div class="control"><span class="control-label" id="scale-label">Coordinates</span><div class="choices" role="group" aria-labelledby="scale-label"><button type="button" data-scale="raw" aria-pressed="true">Raw units</button><button type="button" data-scale="standard" aria-pressed="false">Standardize</button></div><span class="fixed">Same points · Euclidean · k = 9</span></div>
+<div class="readouts" aria-live="polite"><span class="validation">Validation accuracy<strong id="scale-accuracy">—</strong><small id="scale-correct"></small></span><span>Validation error<strong id="scale-error">—</strong></span><span>Distances use<strong id="scale-coordinates">Raw units</strong></span></div>
+<div class="plot-wrap"><canvas id="scale-map" class="map" width="1400" height="300" role="img" aria-label="Raw or standardized KNN distances with visible validation errors">Canvas support is required.</canvas></div>
+<div class="legend"><span class="c0">Class 0</span><span class="c1">Class 1</span><span>● Training</span><span>◇ Validation</span><span class="wrong">× Validation error</span></div>
+<p class="stage-note">Points remain in raw coordinates. Standardization uses training statistics only: z = (x − μ) / σ.</p>
+</div>
+</section>
 
-  <details>
-    <summary>How to read these examples</summary>
-    <p>The points are synthetic two-moons data. Every graph shares the same 100 training examples. The noise slider flips that percentage of training labels; the 240 independent validation points retain their original labels. Changing noise keeps the feature positions and validation set fixed. New sample regenerates both sets.</p>
-    <p>Training accuracy includes each point itself, so k = 1 gets 100% training accuracy on these distinct points even when labels are corrupted. The validation curve shows how well those choices generalize. Which k works best depends on the sample; validation is for tuning, and a real project should reserve a separate test set.</p>
-    <p>The metric graphs emphasize the nine voters without connection lines or decision backgrounds. Their contours are computed in feature coordinates, then fitted to the plot axes; the displayed aspect ratio can stretch their shapes. A different metric can change the selected points without necessarily changing the predicted class.</p>
-    <p>All votes have equal weight. Class-vote ties use the nearest point's label; equal distances are ordered by point ID. Small k does not always overfit, and large k does not always underfit. These examples show common effects, rather than a universal best setting.</p>
-  </details>
-  <footer>Lecture 07 · Seven graphs, two shared controls · Works offline</footer>
-  <p class="sr-only" id="query-announcement" role="status" aria-live="polite"></p>
+<section class="lesson" aria-labelledby="regression-heading">
+<div class="section-heading"><span class="number">05</span><h2 id="regression-heading">KNN regression</h2></div>
+<p class="lead">Predict a number by averaging the targets of the k nearest training points. Change k to vary the amount of smoothing.</p>
+<div class="stage">
+<div class="control"><label for="regression-k">Neighbors</label><input id="regression-k" type="range" min="1" max="30" value="5"><output id="regression-k-value" for="regression-k">k = 5</output><span class="fixed">30 training / 60 validation · distance measured on x only</span></div>
+<div class="readouts" aria-live="polite"><span>Train RMSE<strong id="regression-train">—</strong></span><span class="validation">Validation RMSE<strong id="regression-validation">—</strong></span><span class="formula">ŷ(x) = mean of the k neighboring targets</span></div>
+<div class="plot-wrap"><canvas id="regression-plot" class="regression-plot" width="1400" height="300" role="img" aria-label="KNN regression predictions, training values, and validation values">Canvas support is required.</canvas></div>
+<div class="legend"><span><i></i>Prediction</span><span>● Training</span><span>○ Validation (observed target)</span></div>
+<p class="stage-note">RMSE measures numeric prediction error; lower is better. Uniform KNN regression is piecewise constant. All validation targets are plotted and never used to fit the prediction.</p>
+</div><p class="notice" id="regression-notice" role="status"></p>
+</section>
+
+<details><summary>Data and evaluation notes</summary>
+<p>Classification uses 80 training and 120 validation points. The first three examples share a wavy boundary, y = 0.5 + 0.22 sin(2πx), with independently jittered grids for training and validation. This spreads the points over the plot and gives a visible reference rule. The k example flips 15% of training labels; the metric example is clean; the noise example varies corruption. Feature scaling uses horizontal bands with uncorrupted labels.</p>
+<p>Filled markers are training examples. Hollow diamonds are all validation examples, colored by their true class. Red crosses mark every incorrect validation prediction. Scores are calculated from exactly these points. Training accuracy includes self-matches and is optimistic. Validation points never vote or contribute to standardization. All voting is uniform; class ties use the nearest point and distance ties use point ID.</p>
+<p>Regression uses a noisy numeric target, y = sin(0.8x) + 0.04x + ε, with independent training and validation samples. Prediction averages training targets only. RMSE = √mean((prediction − observed target)²), evaluated against the plotted noisy target values. Pairwise x midpoints define the exact step locations in the regression prediction curve.</p>
+<p>Plots fit their axes to the available width, so metric contours may appear stretched on screen. Decision backgrounds are sampled; scores and neighbors are exact. Validation is for model selection: a real workflow also reserves an untouched test set. All data is synthetic and reproducible.</p>
+</details>
+<footer>Lecture 07 · KNN classification and regression · Standalone HTML, works offline</footer>
+<p class="sr-only" id="query-announcement" role="status" aria-live="polite"></p>
 </main>
 <script>
 'use strict';
+const clamp=value=>Math.max(0,Math.min(1,value));
+function randomGenerator(seed){let state=seed>>>0;return()=>{state+=0x6D2B79F5;let n=Math.imul(state^state>>>15,1|state);n^=n+Math.imul(n^n>>>7,61|n);return((n^n>>>14)>>>0)/4294967296;};}
+function boundary(x){return .5+.22*Math.sin(2*Math.PI*x);}
+function generateData(kind,noise,seed=42){
+  function sample(cols,rows,rng){return Array.from({length:cols*rows},(_,i)=>{
+    let x=(i%cols+.15+.7*rng())/cols,y=(Math.floor(i/cols)+.15+.7*rng())/rows;
+    const label=kind==='bands'?i%2:Number(y>boundary(x));
+    if(kind==='bands'){x=.03+.94*rng();y=(label?.72:.28)+.13*(rng()+rng()+rng()-1.5);}
+    return{x,y,label,original:label,id:i+1};
+  });}
+  const train=sample(10,8,randomGenerator(seed)),validation=sample(12,10,randomGenerator(seed^0x9e3779b9));
+  const rng=randomGenerator(seed^0x85ebca6b),indices=train.map((_,i)=>i);
+  for(let i=indices.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[indices[i],indices[j]]=[indices[j],indices[i]];}
+  for(const i of indices.slice(0,Math.round(train.length*noise/100)))train[i].label^=1;
+  return{kind,train,validation};
+}
+function distance(a,b,metric='euclidean',factors=[1,1]){const dx=Math.abs(a.x-b.x)*factors[0],dy=Math.abs(a.y-b.y)*factors[1];return metric==='manhattan'?dx+dy:metric==='chebyshev'?Math.max(dx,dy):Math.hypot(dx,dy);}
+function rankedNeighbors(query,train,metric='euclidean',factors=[1,1]){return train.map(point=>({point,d:distance(query,point,metric,factors)})).sort((a,b)=>a.d-b.d||a.point.id-b.point.id);}
+function prediction(ranked,k){let ones=0;for(let i=0;i<k;i++)ones+=ranked[i].point.label;return 2*ones===k?ranked[0].point.label:Number(2*ones>k);}
+function accuracyCurve(data){
+  function scores(points){const correct=Array(51).fill(0);for(const point of points){const ranked=rankedNeighbors(point,data.train);let ones=0;for(let k=1;k<=51;k++){ones+=ranked[k-1].point.label;const label=2*ones===k?ranked[0].point.label:Number(2*ones>k);correct[k-1]+=Number(label===point.label);}}return correct.map(n=>n/points.length);}
+  return{train:scores(data.train),validation:scores(data.validation)};
+}
+function evaluate(data,k,metric='euclidean',factors=[1,1]){const predictions=data.validation.map(point=>prediction(rankedNeighbors(point,data.train,metric,factors),k));const correct=predictions.filter((label,i)=>label===data.validation[i].label).length;return{predictions,correct,accuracy:correct/data.validation.length};}
+function standardizedFactors(train){return['x','y'].map(key=>{const mean=train.reduce((sum,p)=>sum+p[key],0)/train.length;return 1/(Math.sqrt(train.reduce((sum,p)=>sum+(p[key]-mean)**2,0)/train.length)||1);});}
+function generateRegression(seed=87){
+  function sample(count,rng){const normal=()=>Math.sqrt(-2*Math.log(Math.max(rng(),1e-12)))*Math.cos(2*Math.PI*rng());return Array.from({length:count},(_,i)=>{const x=10*(i+.1+.8*rng())/count;return{x,y:Math.sin(.8*x)+.04*x+.2*normal(),id:i+1};});}
+  return{train:sample(30,randomGenerator(seed)),validation:sample(60,randomGenerator(seed^0x9e3779b9))};
+}
+function regressionPrediction(x,train,k){return train.slice().sort((a,b)=>Math.abs(a.x-x)-Math.abs(b.x-x)||a.id-b.id).slice(0,k).reduce((sum,p)=>sum+p.y,0)/k;}
+function rmse(points,train,k){return Math.sqrt(points.reduce((sum,p)=>sum+(regressionPrediction(p.x,train,k)-p.y)**2,0)/points.length);}
+function regressionSteps(train,k){const knots=[0,10];for(let i=0;i<train.length;i++)for(let j=i+1;j<train.length;j++)knots.push((train[i].x+train[j].x)/2);const sorted=[...new Set(knots)].sort((a,b)=>a-b);return sorted.slice(0,-1).map((left,i)=>({left,right:sorted[i+1],y:regressionPrediction((left+sorted[i+1])/2,train,k)}));}
 
-// Pure KNN calculations, shared by every graph.
-const clamp = value => Math.max(0, Math.min(1, value));
-function randomGenerator(seed) {
-  let state = seed >>> 0;
-  return () => {
-    state += 0x6D2B79F5;
-    let n = Math.imul(state ^ state >>> 15, 1 | state);
-    n ^= n + Math.imul(n ^ n >>> 7, 61 | n);
-    return ((n ^ n >>> 14) >>> 0) / 4294967296;
-  };
+// Five vertically stacked examples; maps fill the available width.
+const $=id=>document.getElementById(id),percent=value=>(value*100).toFixed(1)+'%';
+const colors=['#087768','#b8542d'],names={euclidean:'Euclidean',manhattan:'Manhattan',chebyshev:'Chebyshev'},formulas={euclidean:'√(Δx² + Δy²)',manhattan:'|Δx| + |Δy|',chebyshev:'max(|Δx|, |Δy|)'};
+const kData=generateData('waves',15),kScores=accuracyCurve(kData),metricData=generateData('waves',0),scaleData=generateData('bands',0),regressionData=generateRegression();
+const scaleFactors=standardizedFactors(scaleData.train),surfaces=new Map(),evaluations=new Map(),mapBoxes=new Map();
+const grid={w:200,h:72};let kRegions=null,metric='euclidean',scale='raw',query={x:.45,y:.55},noiseTimer=0;
+function getEvaluation(key,data,k,m='euclidean',f=[1,1]){if(!evaluations.has(key))evaluations.set(key,evaluate(data,k,m,f));return evaluations.get(key);}
+function countText(id,evaluation,data){$(id).textContent=`${evaluation.correct}/${data.validation.length} correct`;}
+function prepareCanvas(id){const canvas=$(id),width=canvas.clientWidth||1000,height=canvas.clientHeight||300,dpr=window.devicePixelRatio||1;canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);const box={x:39,y:12,w:width-53,h:height-46,width,height};mapBoxes.set(id,box);return{canvas,ctx,box};}
+function kRegionLabels(k){if(!kRegions){kRegions=Array.from({length:51},()=>new Uint8Array(grid.w*grid.h));for(let row=0;row<grid.h;row++)for(let col=0;col<grid.w;col++){const ranked=rankedNeighbors({x:(col+.5)/grid.w,y:1-(row+.5)/grid.h},kData.train);let ones=0;for(let n=1;n<=51;n++){ones+=ranked[n-1].point.label;kRegions[n-1][row*grid.w+col]=2*ones===n?ranked[0].point.label:Number(2*ones>n);}}}return kRegions[k-1];}
+function surface(key,data,k,m,f,labels){if(surfaces.has(key))return surfaces.get(key);const canvas=document.createElement('canvas');canvas.width=grid.w;canvas.height=grid.h;const ctx=canvas.getContext('2d'),pixels=ctx.createImageData(grid.w,grid.h);for(let row=0;row<grid.h;row++)for(let col=0;col<grid.w;col++){const index=row*grid.w+col,q={x:(col+.5)/grid.w,y:1-(row+.5)/grid.h};let label;if(labels)label=labels[index];else if(k===1){let best=Infinity,nearest;for(const p of data.train){const d=distance(q,p,m,f);if(d<best){best=d;nearest=p;}}label=nearest.label;}else label=prediction(rankedNeighbors(q,data.train,m,f),k);pixels.data.set([...(label?[249,234,222]:[224,240,230]),255],4*index);}ctx.putImageData(pixels,0,0);if(surfaces.size>=14)surfaces.delete(surfaces.keys().next().value);surfaces.set(key,canvas);return canvas;}
+function drawMap(id,data,k,m,f,key,options={}){
+  const{ctx,box}=prepareCanvas(id),px=p=>box.x+p.x*box.w,py=p=>box.y+(1-p.y)*box.h;
+  const evaluation=getEvaluation(key,data,k,m,f);
+  ctx.save();ctx.beginPath();ctx.rect(box.x,box.y,box.w,box.h);ctx.clip();ctx.imageSmoothingEnabled=false;ctx.drawImage(surface(key,data,k,m,f,options.labels),box.x,box.y,box.w,box.h);
+  ctx.beginPath();for(let i=0;i<=200;i++){const p={x:i/200,y:data.kind==='bands'?.5:boundary(i/200)};if(i===0)ctx.moveTo(px(p),py(p));else ctx.lineTo(px(p),py(p));}ctx.strokeStyle='#667568';ctx.lineWidth=1;ctx.setLineDash([4,5]);ctx.stroke();ctx.setLineDash([]);
+  let selected;if(options.query){selected=rankedNeighbors(query,data.train,m,f).slice(0,k);const radius=selected[k-1].d;ctx.beginPath();for(let i=0;i<=180;i++){const t=i/180*2*Math.PI,c=Math.cos(t),s=Math.sin(t),norm=m==='manhattan'?Math.abs(c)+Math.abs(s):m==='chebyshev'?Math.max(Math.abs(c),Math.abs(s)):1,p={x:query.x+radius*c/(norm*f[0]),y:query.y+radius*s/(norm*f[1])};if(i===0)ctx.moveTo(px(p),py(p));else ctx.lineTo(px(p),py(p));}ctx.closePath();ctx.strokeStyle='#223d35';ctx.lineWidth=1.5;ctx.setLineDash([6,5]);ctx.stroke();ctx.setLineDash([]);}
+  function trainingMark(p,r){ctx.beginPath();ctx.arc(px(p),py(p),r,0,Math.PI*2);ctx.fillStyle=colors[p.label];ctx.fill();ctx.strokeStyle='#fffefa';ctx.lineWidth=1;ctx.stroke();}
+  for(const p of data.train)trainingMark(p,3.8);
+  for(const p of data.validation){const x=px(p),y=py(p),r=3.5;ctx.beginPath();ctx.moveTo(x,y-r);ctx.lineTo(x+r,y);ctx.lineTo(x,y+r);ctx.lineTo(x-r,y);ctx.closePath();ctx.fillStyle='#fffefa';ctx.fill();ctx.strokeStyle=colors[p.label];ctx.lineWidth=1.2;ctx.stroke();}
+  for(let i=0;i<data.validation.length;i++)if(evaluation.predictions[i]!==data.validation[i].label){const p=data.validation[i],x=px(p),y=py(p),r=4.4;ctx.beginPath();ctx.moveTo(x-r,y-r);ctx.lineTo(x+r,y+r);ctx.moveTo(x-r,y+r);ctx.lineTo(x+r,y-r);ctx.strokeStyle='#a52b45';ctx.lineWidth=1.8;ctx.stroke();}
+  if(selected){for(const n of selected)trainingMark(n.point,6);for(const[color,width]of[['#fffefa',7],['#223d35',2.5]]){ctx.beginPath();ctx.moveTo(px(query)-6,py(query));ctx.lineTo(px(query)+6,py(query));ctx.moveTo(px(query),py(query)-6);ctx.lineTo(px(query),py(query)+6);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();}}
+  ctx.restore();ctx.strokeStyle='#b9c8bc';ctx.lineWidth=1;ctx.strokeRect(box.x,box.y,box.w,box.h);ctx.fillStyle='#586d63';ctx.font='11px system-ui';for(const v of[0,.25,.5,.75,1]){ctx.textAlign='center';ctx.fillText(String(v*(options.xUnits||1)),box.x+v*box.w,box.y+box.h+17);ctx.textAlign='right';ctx.fillText(String(v),box.x-7,box.y+(1-v)*box.h+4);}ctx.textAlign='center';ctx.fillText('x',box.x+box.w/2,box.height-2);
+  $(id).dataset.validationPoints=String(data.validation.length);$(id).dataset.validationErrors=String(data.validation.length-evaluation.correct);
+  return{evaluation,selected};
 }
-function generateData(noise, seed) {
-  function sample(count, rng) {
-    const normal = () => Math.sqrt(-2 * Math.log(Math.max(rng(), 1e-12))) * Math.cos(2 * Math.PI * rng());
-    return Array.from({ length: count }, (_, i) => {
-      const label = i % 2, angle = rng() * Math.PI;
-      const x = ((label ? 1 - Math.cos(angle) : Math.cos(angle)) + .11 * normal() + 1.3) / 3.6;
-      const y = ((label ? .5 - Math.sin(angle) : Math.sin(angle)) + .11 * normal() + .8) / 2.2;
-      return { x: Math.max(.015, Math.min(.985, x)), y: Math.max(.015, Math.min(.985, y)), label, original: label, id: i + 1 };
-    });
-  }
-  const train = sample(100, randomGenerator(seed));
-  const validation = sample(240, randomGenerator(seed ^ 0x9e3779b9));
-  const rng = randomGenerator(seed ^ 0x85ebca6b), indices = train.map((_, i) => i);
-  for (let i = indices.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [indices[i], indices[j]] = [indices[j], indices[i]];
-  }
-  for (const i of indices.slice(0, Math.round(noise))) train[i].label ^= 1;
-  return { train, validation };
+function svgNode(tag,attrs,text){const node=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const[key,value]of Object.entries(attrs))node.setAttribute(key,value);if(text!==undefined)node.textContent=text;return node;}
+function renderK(){
+  const k=Number($('k').value),train=kScores.train[k-1],validation=kScores.validation[k-1],evaluation=getEvaluation('k|'+k,kData,k);
+  $('k-value').textContent='k = '+k;$('k-train').textContent=percent(train);$('k-validation').textContent=percent(validation);$('k-error').textContent=percent(1-validation);countText('k-correct',evaluation,kData);$('k-map-heading').textContent='Decision regions · k = '+k;
+  drawMap('k-map',kData,k,'euclidean',[1,1],'k|'+k,{labels:kRegionLabels(k)});$('k-map-description').textContent=`${k} neighbors, ${evaluation.correct} of 120 validation predictions correct. Every validation point is shown; red crosses mark ${120-evaluation.correct} mistakes.`;
+  const svg=$('k-chart'),width=svg.clientWidth||650,height=svg.clientHeight||300,left=43,right=width-13,top=22,bottom=height-36,x=n=>left+(n-1)/50*(right-left),y=s=>bottom-s*(bottom-top);svg.setAttribute('viewBox',`0 0 ${width} ${height}`);svg.replaceChildren(svgNode('title',{id:'k-chart-title'},'Accuracy versus number of neighbors'),svgNode('desc',{id:'k-chart-description'},`k ${k}: training ${percent(train)}, validation ${percent(validation)}, error ${percent(1-validation)}.`));
+  for(const v of[0,.25,.5,.75,1]){svg.append(svgNode('line',{x1:left,x2:right,y1:y(v),y2:y(v),stroke:'#e1e7dd'}));svg.append(svgNode('text',{x:left-7,y:y(v)+4,'text-anchor':'end',fill:'#586d63','font-size':11},Math.round(v*100)+'%'));}for(const n of[1,15,30,51])svg.append(svgNode('text',{x:x(n),y:bottom+19,'text-anchor':'middle',fill:'#586d63','font-size':11},n));svg.append(svgNode('text',{x:(left+right)/2,y:height-2,'text-anchor':'middle',fill:'#586d63','font-size':11},'Neighbors · k'));
+  for(const[key,color]of[['train','#7b8d85'],['validation',colors[0]]]){const attrs={d:kScores[key].map((s,i)=>`${i?'L':'M'}${x(i+1)},${y(s)}`).join(' '),fill:'none',stroke:color,'stroke-width':2.3};if(key==='train')attrs['stroke-dasharray']='5 4';svg.append(svgNode('path',attrs));}svg.append(svgNode('line',{x1:x(k),x2:x(k),y1:top,y2:bottom,stroke:'#223d35','stroke-dasharray':'3 5'}));for(const[s,color]of[[train,'#7b8d85'],[validation,colors[0]]])svg.append(svgNode('circle',{cx:x(k),cy:y(s),r:4.5,fill:color,stroke:'#fffefa','stroke-width':1.5}));
+  $('k-notice').textContent=k===1?'k = 1 includes self-matches: training accuracy is 100%, even with incorrect labels. Count the red validation errors.':'The points stay fixed. More neighbors can remove small islands, but very broad neighborhoods may erase the curved boundary.';
 }
-function distance(a, b, metric) {
-  const dx = Math.abs(a.x - b.x), dy = Math.abs(a.y - b.y);
-  if (metric === 'manhattan') return dx + dy;
-  if (metric === 'chebyshev') return Math.max(dx, dy);
-  return Math.hypot(dx, dy);
+function renderMetric(){const{evaluation,selected}=drawMap('metric-map',metricData,9,metric,[1,1],'metric|'+metric,{query:true}),label=prediction(selected,9),ones=selected.filter(n=>n.point.label===1).length;$('metric-accuracy').textContent=percent(evaluation.accuracy);countText('metric-correct',evaluation,metricData);$('metric-prediction').textContent='Class '+label;$('metric-votes').textContent=`${9-ones} / ${ones}`;$('metric-formula').textContent=formulas[metric];document.querySelectorAll('[data-metric]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.metric===metric)));const description=`${names[metric]}, k 9. ${evaluation.correct} of 120 validation predictions correct. Query predicts class ${label}, votes ${9-ones} to ${ones}.`;$('metric-map').setAttribute('aria-label',description);$('query-announcement').textContent=description;}
+function renderNoise(){clearTimeout(noiseTimer);const noise=Number($('noise').value),data=generateData('waves',noise),{evaluation}=drawMap('noise-map',data,1,'euclidean',[1,1],'noise|'+noise);$('noise-value').textContent=noise+'%';$('noise-train').textContent='100.0%';$('noise-validation').textContent=percent(evaluation.accuracy);$('noise-error').textContent=percent(1-evaluation.accuracy);countText('noise-correct',evaluation,data);const flipped=data.train.filter(p=>p.label!==p.original).length;$('noise-notice').textContent=`${flipped}/80 training labels flipped; ${120-evaluation.correct}/120 validation predictions wrong. Training accuracy includes each point itself.`;$('noise-map').setAttribute('aria-label',`k 1, ${flipped} flipped training labels, ${120-evaluation.correct} validation errors marked with red crosses.`);}
+function renderScale(){const factors=scale==='standard'?scaleFactors:[100,1],{evaluation}=drawMap('scale-map',scaleData,9,'euclidean',factors,'scale|'+scale,{xUnits:100});$('scale-accuracy').textContent=percent(evaluation.accuracy);$('scale-error').textContent=percent(1-evaluation.accuracy);countText('scale-correct',evaluation,scaleData);$('scale-coordinates').textContent=scale==='standard'?'z-scores':'Raw units';document.querySelectorAll('[data-scale]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.scale===scale)));$('scale-map').setAttribute('aria-label',`${scale} feature distances: ${evaluation.correct} of 120 validation predictions correct; mistakes marked with red crosses.`);}
+function renderRegression(){
+  const k=Number($('regression-k').value),train=rmse(regressionData.train,regressionData.train,k),validation=rmse(regressionData.validation,regressionData.train,k);$('regression-k-value').textContent='k = '+k;$('regression-train').textContent=train.toFixed(3);$('regression-validation').textContent=validation.toFixed(3);
+  const{ctx,box}=prepareCanvas('regression-plot'),all=[...regressionData.train,...regressionData.validation],low=Math.floor(Math.min(...all.map(p=>p.y))*2)/2-.1,high=Math.ceil(Math.max(...all.map(p=>p.y))*2)/2+.1,px=x=>box.x+x/10*box.w,py=y=>box.y+(high-y)/(high-low)*box.h;
+  ctx.save();ctx.beginPath();ctx.rect(box.x,box.y,box.w,box.h);ctx.clip();ctx.strokeStyle='#e7ebe3';ctx.lineWidth=1;for(let y=Math.ceil(low);y<=high;y++){ctx.beginPath();ctx.moveTo(box.x,py(y));ctx.lineTo(box.x+box.w,py(y));ctx.stroke();}
+  for(const p of regressionData.validation){ctx.beginPath();ctx.arc(px(p.x),py(p.y),3.5,0,Math.PI*2);ctx.fillStyle='#fffefa';ctx.fill();ctx.strokeStyle='#77847a';ctx.lineWidth=1.3;ctx.stroke();}
+  const steps=regressionSteps(regressionData.train,k);ctx.beginPath();steps.forEach((s,i)=>{if(i===0)ctx.moveTo(px(s.left),py(s.y));else ctx.lineTo(px(s.left),py(s.y));ctx.lineTo(px(s.right),py(s.y));});ctx.strokeStyle=colors[0];ctx.lineWidth=2.3;ctx.stroke();
+  for(const p of regressionData.train){ctx.beginPath();ctx.arc(px(p.x),py(p.y),3.7,0,Math.PI*2);ctx.fillStyle='#223d35';ctx.fill();ctx.strokeStyle='#fffefa';ctx.lineWidth=1;ctx.stroke();}ctx.restore();ctx.strokeStyle='#b9c8bc';ctx.lineWidth=1;ctx.strokeRect(box.x,box.y,box.w,box.h);ctx.fillStyle='#586d63';ctx.font='11px system-ui';for(let x=0;x<=10;x+=2){ctx.textAlign='center';ctx.fillText(x,px(x),box.y+box.h+17);}for(let y=Math.ceil(low);y<=high;y++){ctx.textAlign='right';ctx.fillText(y,box.x-7,py(y)+4);}ctx.textAlign='center';ctx.fillText('x',box.x+box.w/2,box.height-2);
+  $('regression-plot').dataset.validationPoints=String(regressionData.validation.length);$('regression-plot').setAttribute('aria-label',`KNN regression, k ${k}. Training RMSE ${train.toFixed(3)}, validation RMSE ${validation.toFixed(3)}. All 30 training and 60 validation observations shown.`);$('regression-notice').textContent=k===1?'k = 1 reproduces the training targets, including their noise. Validation error measures performance on the separate hollow points.':k===30?'All 30 targets are averaged at every x, so the prediction is a horizontal line.':'Each horizontal segment averages the same k neighbors. Larger k smooths local fluctuations and can also miss the overall pattern.';
 }
-function rankedNeighbors(query, train, metric = 'euclidean') {
-  return train.map(point => ({ point, d: distance(query, point, metric) }))
-    .sort((a, b) => a.d - b.d || a.point.id - b.point.id);
-}
-function prediction(ranked, k) {
-  let ones = 0;
-  for (let i = 0; i < k; i++) ones += ranked[i].point.label;
-  return 2 * ones === k ? ranked[0].point.label : Number(2 * ones > k);
-}
-function errorCurve(train, validation) {
-  function errors(points) {
-    const wrong = Array(51).fill(0);
-    for (const point of points) {
-      const ranked = rankedNeighbors(point, train);
-      let ones = 0;
-      for (let k = 1; k <= 51; k++) {
-        ones += ranked[k - 1].point.label;
-        const label = 2 * ones === k ? ranked[0].point.label : Number(2 * ones > k);
-        wrong[k - 1] += Number(label !== point.label);
-      }
-    }
-    return wrong.map(count => count / points.length);
-  }
-  return { train: errors(train), validation: errors(validation) };
-}
-
-// Presentation: three fixed k examples, three fixed metrics, one error curve.
-const $ = id => document.getElementById(id);
-const ks = [1, 15, 51];
-const metrics = ['euclidean', 'manhattan', 'chebyshev'];
-const colors = ['#087768', '#b8542d'];
-const box = { x: 33, y: 9, w: 375, h: 218 };
-const px = point => box.x + point.x * box.w;
-const py = point => box.y + (1 - point.y) * box.h;
-const percent = value => (value * 100).toFixed(1) + '%';
-let seed = 42, data, curve, timer = 0, query = { x: .52, y: .52 };
-function drawPoint(ctx, point, radius = 3) {
-  const x = px(point), y = py(point);
-  ctx.beginPath();
-  if (point.label === 0) ctx.arc(x, y, radius, 0, 2 * Math.PI);
-  else { ctx.moveTo(x, y - radius - .6); ctx.lineTo(x + radius + .6, y + radius); ctx.lineTo(x - radius - .6, y + radius); ctx.closePath(); }
-  ctx.fillStyle = colors[point.label]; ctx.fill();
-  ctx.strokeStyle = '#fffefa'; ctx.lineWidth = .8; ctx.stroke();
-}
-function beginPlot(canvas) {
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.save(); ctx.beginPath(); ctx.rect(box.x, box.y, box.w, box.h); ctx.clip();
-  return ctx;
-}
-function finishPlot(ctx) {
-  ctx.restore(); ctx.strokeStyle = '#c5d0c5'; ctx.lineWidth = 1;
-  ctx.strokeRect(box.x, box.y, box.w, box.h);
-  ctx.fillStyle = '#738176'; ctx.font = '10px system-ui';
-  for (const value of [0, .5, 1]) {
-    ctx.textAlign = 'center'; ctx.fillText(value, px({ x: value }), box.y + box.h + 15);
-    ctx.textAlign = 'right'; ctx.fillText(value, box.x - 7, py({ y: value }) + 3);
-  }
-}
-function decisionSurfaces() {
-  // One neighbor ordering per grid point supplies all three k examples.
-  const width = 102, height = 60;
-  const surfaces = ks.map(() => {
-    const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
-    const ctx = canvas.getContext('2d');
-    return { canvas, ctx, pixels: ctx.createImageData(width, height) };
-  });
-  for (let row = 0; row < height; row++) for (let col = 0; col < width; col++) {
-    const ranked = rankedNeighbors({ x: (col + .5) / width, y: 1 - (row + .5) / height }, data.train);
-    ks.forEach((k, i) => {
-      const rgb = prediction(ranked, k) ? [250, 237, 226] : [229, 242, 234];
-      surfaces[i].pixels.data.set([...rgb, 255], 4 * (row * width + col));
-    });
-  }
-  for (const surface of surfaces) surface.ctx.putImageData(surface.pixels, 0, 0);
-  return surfaces.map(surface => surface.canvas);
-}
-function renderDecisions() {
-  const surfaces = decisionSurfaces();
-  ks.forEach((k, i) => {
-    const canvas = $('k-' + k), ctx = beginPlot(canvas);
-    ctx.imageSmoothingEnabled = false; ctx.drawImage(surfaces[i], box.x, box.y, box.w, box.h);
-    for (const point of data.train) drawPoint(ctx, point, 2.8);
-    finishPlot(ctx);
-    const train = percent(1 - curve.train[k - 1]), validation = percent(1 - curve.validation[k - 1]);
-    const result = $('result-' + k);
-    result.replaceChildren(document.createTextNode('Train '), strong(train), document.createTextNode(' · Validation '), strong(validation));
-    canvas.setAttribute('aria-label', `k = ${k}, Euclidean decision regions. Training accuracy ${train}; validation accuracy ${validation}.`);
-  });
-}
-function strong(text) { const node = document.createElement('strong'); node.textContent = text; return node; }
-function renderMetrics() {
-  const predictions = [];
-  for (const metric of metrics) {
-    const canvas = $('metric-' + metric), ctx = beginPlot(canvas);
-    const ranked = rankedNeighbors(query, data.train, metric), selected = ranked.slice(0, 9);
-    const radius = selected[8].d, selectedIds = new Set(selected.map(n => n.point.id));
-    // Map the actual metric ball into the plotted feature coordinates.
-    ctx.beginPath();
-    for (let i = 0; i <= 160; i++) {
-      const t = i / 160 * 2 * Math.PI, c = Math.cos(t), s = Math.sin(t);
-      const norm = metric === 'manhattan' ? Math.abs(c) + Math.abs(s) : metric === 'chebyshev' ? Math.max(Math.abs(c), Math.abs(s)) : 1;
-      const point = { x: query.x + radius * c / norm, y: query.y + radius * s / norm };
-      if (i === 0) ctx.moveTo(px(point), py(point)); else ctx.lineTo(px(point), py(point));
-    }
-    ctx.closePath(); ctx.strokeStyle = '#7f9185'; ctx.lineWidth = 1.2; ctx.setLineDash([4, 5]); ctx.stroke(); ctx.setLineDash([]);
-    ctx.globalAlpha = .24;
-    for (const point of data.train) if (!selectedIds.has(point.id)) drawPoint(ctx, point, 2.5);
-    ctx.globalAlpha = 1;
-    for (const n of selected) drawPoint(ctx, n.point, 4);
-    for (const [color, width] of [['#fffefa', 6], ['#233d36', 2.5]]) {
-      ctx.strokeStyle = color; ctx.lineWidth = width; ctx.beginPath();
-      ctx.moveTo(px(query) - 5, py(query)); ctx.lineTo(px(query) + 5, py(query));
-      ctx.moveTo(px(query), py(query) - 5); ctx.lineTo(px(query), py(query) + 5); ctx.stroke();
-    }
-    finishPlot(ctx);
-    const label = prediction(ranked, 9), votes = selected.filter(n => n.point.label === label).length;
-    $('result-' + metric).replaceChildren(document.createTextNode('Query → '), strong('Class ' + label), document.createTextNode(` · ${votes} of 9 votes`));
-    canvas.setAttribute('aria-label', `${metric}, k = 9. Query x ${query.x.toFixed(2)}, y ${query.y.toFixed(2)} predicts class ${label} with ${votes} of 9 votes. Click or use arrow keys to move the query.`);
-    predictions.push(`${metric}: class ${label}`);
-  }
-  $('query-announcement').textContent = `Query x ${query.x.toFixed(2)}, y ${query.y.toFixed(2)}. ${predictions.join('; ')}.`;
-}
-function svgNode(tag, attrs, text) {
-  const node = document.createElementNS('http://www.w3.org/2000/svg', tag);
-  for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
-  if (text !== undefined) node.textContent = text;
-  return node;
-}
-function renderCurve() {
-  const svg = $('error-curve'), width = svg.clientWidth || 1100;
-  svg.setAttribute('viewBox', `0 0 ${width} 170`);
-  const left = 42, right = width - 16, top = 10, bottom = 137;
-  const x = k => left + (k - 1) / 50 * (right - left), y = error => bottom - error * (bottom - top);
-  const best = Math.min(...curve.validation), bestK = curve.validation.indexOf(best) + 1;
-  svg.replaceChildren(svgNode('title', { id: 'curve-title' }, 'Training and validation error by k'),
-    svgNode('desc', { id: 'curve-description' }, `Euclidean KNN, k from 1 to 51. Lowest observed validation error ${percent(best)} at k ${bestK}. Training error includes self-matches.`));
-  for (const error of [0, .5, 1]) {
-    svg.append(svgNode('line', { x1: left, x2: right, y1: y(error), y2: y(error), stroke: '#e0e6dc', 'vector-effect': 'non-scaling-stroke' }));
-    svg.append(svgNode('text', { x: left - 6, y: y(error) + 4, 'text-anchor': 'end', fill: '#596d64', 'font-size': 11 }, percent(error).replace('.0', '')));
-  }
-  for (const k of [1, 15, 30, 51]) svg.append(svgNode('text', { x: x(k), y: bottom + 19, 'text-anchor': 'middle', fill: '#596d64', 'font-size': 11 }, k));
-  svg.append(svgNode('text', { x: (left + right) / 2, y: 168, 'text-anchor': 'middle', fill: '#596d64', 'font-size': 11 }, 'Number of neighbors · k'));
-  for (const [key, color] of [['train', colors[0]], ['validation', colors[1]]]) {
-    const d = curve[key].map((error, i) => `${i ? 'L' : 'M'}${x(i + 1)},${y(error)}`).join(' ');
-    const attrs = { d, fill: 'none', stroke: color, 'stroke-width': 2, 'vector-effect': 'non-scaling-stroke' };
-    if (key === 'train') attrs['stroke-dasharray'] = '5 4';
-    svg.append(svgNode('path', attrs));
-  }
-  $('curve-summary').textContent = `Lowest validation error in this sample: ${percent(best)} at k = ${bestK}.`;
-}
-function regenerate() {
-  clearTimeout(timer);
-  data = generateData(Number($('noise').value), seed);
-  curve = errorCurve(data.train, data.validation);
-  $('noise-value').textContent = $('noise').value + '%';
-  $('sample-info').textContent = `100 training points · 240 validation points · sample ${seed}`;
-  renderDecisions(); renderMetrics(); renderCurve();
-}
-$('noise').addEventListener('input', () => {
-  $('noise-value').textContent = $('noise').value + '%';
-  clearTimeout(timer); timer = setTimeout(regenerate, 80);
-});
-$('new-sample').addEventListener('click', () => { seed++; regenerate(); });
-window.addEventListener('resize', renderCurve);
-for (const metric of metrics) {
-  const canvas = $('metric-' + metric);
-  canvas.addEventListener('click', event => {
-    const rect = canvas.getBoundingClientRect();
-    const x = (event.clientX - rect.left) * canvas.width / rect.width;
-    const y = (event.clientY - rect.top) * canvas.height / rect.height;
-    if (x < box.x || x > box.x + box.w || y < box.y || y > box.y + box.h) return;
-    query = { x: clamp((x - box.x) / box.w), y: clamp(1 - (y - box.y) / box.h) };
-    renderMetrics();
-  });
-  canvas.addEventListener('keydown', event => {
-    const direction = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[event.key];
-    if (!direction) return;
-    event.preventDefault();
-    const step = event.shiftKey ? .1 : .02;
-    query = { x: clamp(query.x + step * direction[0]), y: clamp(query.y + step * direction[1]) };
-    renderMetrics();
-  });
-}
-regenerate();
+$('k').addEventListener('input',renderK);$('regression-k').addEventListener('input',renderRegression);
+$('k-chart').addEventListener('click',event=>{const svg=$('k-chart'),rect=svg.getBoundingClientRect(),width=svg.clientWidth||650,x=(event.clientX-rect.left)*width/rect.width;if(x<43||x>width-13)return;$('k').value=Math.max(1,Math.min(51,Math.round(1+(x-43)/(width-56)*50)));renderK();});
+for(const b of document.querySelectorAll('[data-metric]'))b.addEventListener('click',()=>{metric=b.dataset.metric;renderMetric();});for(const b of document.querySelectorAll('[data-scale]'))b.addEventListener('click',()=>{scale=b.dataset.scale;renderScale();});
+$('noise').addEventListener('input',()=>{$('noise-value').textContent=$('noise').value+'%';clearTimeout(noiseTimer);noiseTimer=setTimeout(renderNoise,65);});
+$('metric-map').addEventListener('click',event=>{const rect=$('metric-map').getBoundingClientRect(),b=mapBoxes.get('metric-map'),x=(event.clientX-rect.left)*b.width/rect.width,y=(event.clientY-rect.top)*b.height/rect.height;if(x<b.x||x>b.x+b.w||y<b.y||y>b.y+b.h)return;query={x:clamp((x-b.x)/b.w),y:clamp(1-(y-b.y)/b.h)};renderMetric();});
+$('metric-map').addEventListener('keydown',event=>{const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,1],ArrowDown:[0,-1]}[event.key];if(!d)return;event.preventDefault();const step=event.shiftKey?.1:.02;query={x:clamp(query.x+step*d[0]),y:clamp(query.y+step*d[1])};renderMetric();});
+window.addEventListener('resize',()=>{renderK();renderMetric();renderNoise();renderScale();renderRegression();});
+renderK();renderMetric();renderNoise();renderScale();renderRegression();
 </script>
 </body>
 </html>
