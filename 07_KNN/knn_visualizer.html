@@ -3,256 +3,145 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="An interactive KNN laboratory: compare neighbors, distance metrics, overfitting, voting, and feature scaling on the same data.">
-  <title>KNN · The Neighborhood Lab</title>
+  <meta name="description" content="Seven simple KNN graphs: neighbor count, overfitting, distance metrics, and training versus validation error.">
+  <title>KNN · Seven simple examples</title>
   <style>
-    :root {
-      color-scheme: light;
-      --bg: #f4f5ef; --paper: #fffefa; --ink: #233d36; --muted: #596d64;
-      --line: #d6dfd5; --teal: #087768; --teal-bg: #e7f3ed;
-      --orange: #b8542d; --orange-bg: #fae9dd; --purple: #7852a0;
-      --mono: ui-monospace, SFMono-Regular, Consolas, monospace;
-    }
+    :root { color-scheme: light; --bg: #f4f5ef; --paper: #fffefa; --ink: #233d36; --muted: #596d64; --line: #d6dfd5; --teal: #087768; --orange: #b8542d; --mono: ui-monospace, SFMono-Regular, Consolas, monospace; }
     * { box-sizing: border-box; }
-    body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.6 system-ui, sans-serif; }
-    button, input, select { font: inherit; color: inherit; }
-    button, select { cursor: pointer; }
-    button { border: 1px solid #b6c8bb; border-radius: 7px; background: var(--paper); padding: 8px 13px; font-weight: 650; }
-    button:hover { background: var(--teal-bg); border-color: var(--teal); }
-    button[aria-pressed="true"] { background: var(--teal); border-color: var(--teal); color: white; }
-    :focus-visible { outline: 3px solid var(--purple); outline-offset: 3px; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.55 system-ui, sans-serif; }
+    main { max-width: 1320px; margin: auto; padding: 18px 24px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); font-size: 12px; }
+    header strong { font-weight: 750; } header b { margin-right: 8px; padding: 4px 7px; border-radius: 5px; background: var(--teal); color: white; }
     a { color: var(--teal); text-underline-offset: 3px; }
-    select { width: 100%; border: 1px solid #b6c8bb; border-radius: 6px; padding: 7px; background: var(--paper); }
-    input[type="range"] { width: 100%; accent-color: var(--teal); cursor: pointer; }
-    input[type="checkbox"] { accent-color: var(--teal); width: 16px; height: 16px; }
-    h1, h2, h3, p { margin: 0; }
-    h1 { font: 400 clamp(38px, 5vw, 65px)/1.08 Georgia, serif; letter-spacing: -2px; margin: 12px 0 15px; }
-    h2 { font-size: 20px; letter-spacing: -.5px; }
-    h3 { font-size: 16px; }
-    .app { max-width: 1480px; padding: 22px 30px; margin: auto; }
-    header { display: flex; align-items: center; justify-content: space-between; gap: 15px; border-bottom: 1px solid var(--line); padding-bottom: 16px; font-size: 13px; }
-    .brand { font-weight: 750; }
-    .brand b { background: var(--teal); color: white; border-radius: 6px; padding: 5px 9px; margin-right: 9px; }
-    .intro { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px; margin: 28px 0 24px; }
-    .eyebrow { text-transform: uppercase; letter-spacing: 1.6px; font-size: 11px; font-weight: 750; color: var(--teal); }
-    .intro p { max-width: 790px; color: var(--muted); }
-    .formula { border-left: 3px solid var(--teal); background: var(--teal-bg); padding: 13px 18px; font: 14px/1.7 var(--mono); border-radius: 0 8px 8px 0; }
-    .experiments { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-    .experiments button { font-size: 13px; }
-    .card { border: 1px solid var(--line); background: var(--paper); border-radius: 12px; min-width: 0; overflow: hidden; }
-    .setup { display: grid; grid-template-columns: 1.3fr 1fr 1fr .8fr auto; gap: 20px; align-items: end; padding: 17px 20px; }
-    .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
-    .field > label, .field-label { font-size: 11px; font-weight: 750; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
-    .field output { color: var(--ink); font-family: var(--mono); float: right; }
-    .seed { font: 10px var(--mono); color: var(--muted); text-align: center; margin-top: 4px; }
-    .experiment-note { padding: 13px 19px; margin: 12px 0 18px; border-left: 3px solid var(--teal); background: var(--teal-bg); border-radius: 0 8px 8px 0; font-size: 13px; }
-    .experiment-note strong { margin-right: 4px; }
-    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 15px 18px; border-bottom: 1px solid var(--line); }
-    .panel-head p { color: var(--muted); font-size: 12px; }
-    .model-tag { font: 700 12px var(--mono); color: var(--teal); border: 1px solid #a7c9b7; padding: 4px 9px; border-radius: 5px; background: var(--teal-bg); }
-    .model-controls { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 12px; padding: 14px 18px 10px; }
-    .check { display: flex; gap: 7px; align-items: center; font-size: 12px; color: var(--muted); cursor: pointer; }
-    .model-check { padding: 0 18px 12px; }
-    .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; margin: 0 18px; border: 1px solid var(--line); border-radius: 7px; background: #f6f8f2; }
-    .stat { padding: 9px 11px; border-right: 1px solid var(--line); }
-    .stat:last-child { border: 0; }
-    .stat span { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); }
-    .stat strong { font: 700 23px/1.5 var(--mono); }
-    .stat small { display: block; font-size: 10px; color: var(--muted); }
-    .plot { display: block; width: 100%; height: auto; touch-action: manipulation; cursor: crosshair; }
-    .plot-note { font-size: 11px; color: var(--muted); padding: 0 18px 12px; }
-    .legend { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; font-size: 12px; color: var(--muted); margin: 13px 0 19px; }
-    .symbol { font-size: 17px; font-weight: 700; }
-    .c0 { color: var(--teal); } .c1 { color: var(--orange); }
-    .legend .check:first-of-type { margin-left: auto; }
-    .lower { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
-    .chart-wrap { padding: 10px 12px 0; }
-    #curve { width: 100%; display: block; height: auto; cursor: crosshair; }
-    .chart-legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 0 20px 10px; font-size: 12px; }
-    .swatch { display: inline-block; width: 22px; border-top: 3px solid var(--teal); vertical-align: middle; margin-right: 5px; }
-    .swatch.validation { border-color: var(--orange); }
-    .chart-note { font-size: 12px; padding: 0 20px 18px; color: var(--muted); }
-    .query-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--line); font-size: 12px; }
-    .query-controls label { display: flex; align-items: center; gap: 6px; }
-    .query-controls input { width: 83px; border: 1px solid #b6c8bb; border-radius: 5px; padding: 5px 7px; background: white; }
-    .query-controls button { margin-left: auto; font-size: 12px; }
-    .inspect-models { display: grid; grid-template-columns: 1fr 1fr; }
-    .inspect-model { padding: 14px 16px; min-width: 0; }
-    .inspect-model + .inspect-model { border-left: 1px solid var(--line); }
-    .vote-title { font-weight: 700; font-size: 13px; }
-    .vote-detail { font-size: 11px; color: var(--muted); margin: 3px 0 9px; min-height: 36px; }
-    .vote-bar { display: flex; height: 7px; background: var(--orange); border-radius: 5px; overflow: hidden; margin: 9px 0; }
-    .vote-bar span { background: var(--teal); }
-    .table-scroll { max-height: 203px; overflow: auto; }
-    table { border-collapse: collapse; width: 100%; font: 10px/1.8 var(--mono); text-align: right; }
-    th { font-weight: 500; color: var(--muted); position: sticky; top: 0; background: var(--paper); }
-    td, th { padding: 3px 4px; border-bottom: 1px solid #e6ebe3; }
-    td:first-child, th:first-child { text-align: left; }
-    .inspector-note { padding: 10px 18px 15px; color: var(--muted); font-size: 11px; border-top: 1px solid var(--line); }
-    .lessons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 19px 0; }
-    .lesson { padding: 20px; }
-    .lesson .number { font: 12px var(--mono); color: var(--teal); margin-bottom: 8px; }
-    .lesson p { font-size: 13px; color: var(--muted); margin-top: 9px; }
-    details { border-top: 1px solid var(--line); padding: 14px 0; font-size: 13px; color: var(--muted); }
-    summary { cursor: pointer; font-weight: 700; color: var(--ink); }
-    .method-notes { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; padding: 14px 0; }
-    .method-notes p + p { margin-top: 10px; }
-    footer { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid var(--line); padding: 16px 0 5px; color: var(--muted); font-size: 11px; }
+    h1 { font: 400 clamp(30px, 4vw, 43px)/1.1 Georgia, serif; letter-spacing: -1px; margin: 20px 0 8px; }
+    h2, h3, p { margin: 0; }
+    .intro { color: var(--muted); }
+    .controls { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; padding: 13px 0; margin-top: 8px; }
+    .noise-control { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 650; }
+    input, button { font: inherit; color: inherit; }
+    input[type="range"] { width: 145px; accent-color: var(--teal); cursor: pointer; }
+    output { min-width: 29px; font-family: var(--mono); }
+    button { padding: 6px 11px; border: 1px solid #b6c8bb; border-radius: 6px; background: var(--paper); font-size: 12px; font-weight: 650; cursor: pointer; }
+    button:hover { background: #e7f3ed; }
+    :focus-visible { outline: 3px solid #7852a0; outline-offset: 3px; }
+    #sample-info { margin-left: auto; font-size: 11px; color: var(--muted); }
+    .section-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 15px; margin: 14px 0 9px; }
+    h2 { font-size: 16px; font-weight: 750; letter-spacing: -.25px; }
+    .section-heading p { color: var(--muted); font-size: 12px; }
+    .graphs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .graph { min-width: 0; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); overflow: hidden; }
+    .graph-heading { padding: 11px 14px 0; }
+    h3 { font-size: 15px; font-weight: 750; }
+    .graph-heading p { margin-top: 2px; font-size: 11px; color: var(--muted); }
+    canvas { display: block; width: 100%; height: auto; }
+    canvas.interactive { cursor: crosshair; touch-action: manipulation; }
+    .graph-result { padding: 0 14px 10px; font-size: 11px; color: var(--muted); min-height: 27px; }
+    .graph-result strong { font-family: var(--mono); font-weight: 650; color: var(--ink); }
+    .legend { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 16px; color: var(--muted); font-size: 11px; margin: 10px 0 4px; }
+    .class-zero { color: var(--teal); } .class-one { color: var(--orange); }
+    .legend b { font-size: 14px; }
+    .error-graph { margin-top: 17px; padding: 12px 15px 11px; }
+    .error-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 5px 16px; }
+    .error-header p { color: var(--muted); font-size: 11px; }
+    #error-curve { display: block; width: 100%; height: 170px; }
+    .curve-footer { display: flex; flex-wrap: wrap; gap: 4px 18px; color: var(--muted); font-size: 11px; }
+    .curve-footer i { display: inline-block; width: 19px; margin-right: 5px; vertical-align: middle; border-top: 2px dashed var(--teal); }
+    .curve-footer i.validation { border-top: 2px solid var(--orange); }
+    #curve-summary { margin-left: auto; }
+    details { margin-top: 15px; padding-top: 11px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    summary { color: var(--ink); cursor: pointer; }
+    details p { max-width: 1050px; margin-top: 9px; }
+    footer { margin-top: 12px; color: var(--muted); font-size: 10px; }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
-    @media (max-width: 1050px) {
-      .intro { grid-template-columns: 1fr; } .intro .formula { display: none; }
-      .setup { grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-      .lower { grid-template-columns: 1fr; } .lessons { gap: 12px; }
+    @media (max-width: 850px) {
+      main { padding: 15px; } .graphs { gap: 9px; }
+      .graph-heading { padding: 9px 10px 0; } .graph-result { padding-left: 10px; padding-right: 10px; }
+      .graph-result strong { display: inline; }
+      #sample-info { margin-left: 0; } #curve-summary { margin-left: 0; }
     }
-    @media (max-width: 740px) {
-      .app { padding: 16px 12px; } .compare, .lessons { grid-template-columns: 1fr; }
-      .setup { grid-template-columns: 1fr 1fr; } .setup > :last-child { grid-column: 1 / -1; }
-      .legend .check:first-of-type { margin-left: 0; } header a { font-size: 11px; }
-      .method-notes { grid-template-columns: 1fr; gap: 10px; } footer { flex-direction: column; }
+    @media (max-width: 620px) {
+      .graphs { grid-template-columns: 1fr; }
+      .noise-control { flex-wrap: wrap; } header { font-size: 10px; }
+      #error-curve { min-height: 150px; } .controls { gap: 10px; }
     }
-    @media (prefers-reduced-motion: no-preference) { button { transition: background .15s; } }
   </style>
 </head>
 <body>
-<main class="app">
-  <header>
-    <div class="brand"><b>07</b> Artificial Intelligence / KNN</div>
-    <a href="../06_Introduction_ML/machine_learning.html">← Introduction to ML</a>
-  </header>
-  <section class="intro" aria-labelledby="page-title">
-    <div>
-      <div class="eyebrow">The neighborhood lab</div>
-      <h1 id="page-title">How close is close enough?</h1>
-      <p>K-nearest neighbors predicts a label by asking nearby training points to vote.
-        Compare two models on the <strong>same data</strong> and see how “nearby” changes the answer.</p>
-    </div>
-    <div class="formula">1. Measure distance<br>2. Find the k nearest<br>3. Vote for a class</div>
-  </section>
+<main>
+  <header><strong><b>07</b> Artificial Intelligence / KNN</strong><a href="../06_Introduction_ML/machine_learning.html">← Introduction to ML</a></header>
+  <h1>KNN, one idea at a time.</h1>
+  <p class="intro">Find the nearest training points and let them vote. These seven graphs use the same data so you can see what changes.</p>
 
-  <nav class="experiments" aria-label="Guided experiments">
-    <button type="button" data-preset="overfit" aria-pressed="true">01 · Overfitting</button>
-    <button type="button" data-preset="underfit" aria-pressed="false">02 · Too many neighbors</button>
-    <button type="button" data-preset="metrics" aria-pressed="false">03 · Change the metric</button>
-    <button type="button" data-preset="scaling" aria-pressed="false">04 · Feature scaling</button>
-    <button type="button" id="reset">Reset lab</button>
-  </nav>
-
-  <section class="card setup" aria-label="Shared dataset settings">
-    <div class="field">
-      <label for="dataset">Dataset</label>
-      <select id="dataset"><option value="moons">Two moons</option><option value="rings">Inner / outer ring</option><option value="bands">Horizontal bands</option></select>
-    </div>
-    <div class="field">
-      <label for="size">Training points <output id="size-value" for="size">100</output></label>
-      <input id="size" type="range" min="40" max="180" step="20" value="100">
-    </div>
-    <div class="field">
-      <label for="noise">Training label noise <output id="noise-value" for="noise">15%</output></label>
-      <input id="noise" type="range" min="0" max="30" step="5" value="15">
-    </div>
-    <div class="field">
-      <label for="stretch">X feature units</label>
-      <select id="stretch"><option value="1">0 to 1</option><option value="10">0 to 10 (×10)</option><option value="100">0 to 100 (×100)</option></select>
-    </div>
-    <div><button type="button" id="new-data">New sample ↻</button><div class="seed" id="seed-label">Seed 42</div></div>
-  </section>
-  <p class="experiment-note" id="experiment-note" role="status"></p>
-
-  <section class="compare" aria-label="Side-by-side KNN comparison">
-    <article class="card" aria-labelledby="a-heading">
-      <div class="panel-head"><div><h2 id="a-heading">Model A</h2><p id="a-summary"></p></div><span class="model-tag">A</span></div>
-      <div class="model-controls">
-        <div class="field"><label for="a-k">Neighbors <output id="a-k-value" for="a-k">1</output></label><input type="range" id="a-k" min="1" max="51" value="1"></div>
-        <div class="field"><label for="a-metric">Distance metric</label><select id="a-metric"><option value="euclidean">Euclidean · L2</option><option value="manhattan">Manhattan · L1</option><option value="chebyshev">Chebyshev · L∞</option></select></div>
-        <div class="field"><label for="a-vote">Voting</label><select id="a-vote"><option value="uniform">Uniform</option><option value="distance">Inverse distance</option></select></div>
-      </div>
-      <label class="check model-check"><input type="checkbox" id="a-standard"> Standardize features (training mean &amp; standard deviation)</label>
-      <div class="stats">
-        <div class="stat"><span>Train accuracy</span><strong id="a-train">—</strong><small>Includes each point itself</small></div>
-        <div class="stat"><span>Validation accuracy</span><strong id="a-validation">—</strong><small>240 unseen points</small></div>
-        <div class="stat"><span>Query prediction</span><strong id="a-prediction">—</strong><small id="a-share">Vote share</small></div>
-      </div>
-      <canvas class="plot" id="a-plot" width="640" height="460" tabindex="0" role="img" aria-label="Model A decision regions and neighbors" aria-describedby="plot-help">Your browser needs canvas support to display the decision regions.</canvas>
-      <p class="plot-note" id="a-distance"></p>
-    </article>
-    <article class="card" aria-labelledby="b-heading">
-      <div class="panel-head"><div><h2 id="b-heading">Model B</h2><p id="b-summary"></p></div><span class="model-tag">B</span></div>
-      <div class="model-controls">
-        <div class="field"><label for="b-k">Neighbors <output id="b-k-value" for="b-k">15</output></label><input type="range" id="b-k" min="1" max="51" value="15"></div>
-        <div class="field"><label for="b-metric">Distance metric</label><select id="b-metric"><option value="euclidean">Euclidean · L2</option><option value="manhattan">Manhattan · L1</option><option value="chebyshev">Chebyshev · L∞</option></select></div>
-        <div class="field"><label for="b-vote">Voting</label><select id="b-vote"><option value="uniform">Uniform</option><option value="distance">Inverse distance</option></select></div>
-      </div>
-      <label class="check model-check"><input type="checkbox" id="b-standard"> Standardize features (training mean &amp; standard deviation)</label>
-      <div class="stats">
-        <div class="stat"><span>Train accuracy</span><strong id="b-train">—</strong><small>Includes each point itself</small></div>
-        <div class="stat"><span>Validation accuracy</span><strong id="b-validation">—</strong><small>240 unseen points</small></div>
-        <div class="stat"><span>Query prediction</span><strong id="b-prediction">—</strong><small id="b-share">Vote share</small></div>
-      </div>
-      <canvas class="plot" id="b-plot" width="640" height="460" tabindex="0" role="img" aria-label="Model B decision regions and neighbors" aria-describedby="plot-help">Your browser needs canvas support to display the decision regions.</canvas>
-      <p class="plot-note" id="b-distance"></p>
-    </article>
-  </section>
-  <div class="legend">
-    <span><span class="symbol c0">●</span> Class 0</span><span><span class="symbol c1">▲</span> Class 1</span>
-    <span>✚ Query</span><span>Dashed outline: kth-neighbor distance</span>
-    <label class="check"><input id="show-validation" type="checkbox"> Show validation points (×)</label>
-    <label class="check"><input id="show-noise" type="checkbox" checked> Mark flipped labels (purple ring)</label>
+  <div class="controls" role="group" aria-label="Shared sample controls">
+    <div class="noise-control"><label for="noise">Training label noise</label><input id="noise" type="range" min="0" max="30" step="5" value="15"><output id="noise-value" for="noise">15%</output></div>
+    <button id="new-sample" type="button">New sample ↻</button>
+    <span id="sample-info">100 training points · 240 validation points · sample 42</span>
   </div>
-  <p class="sr-only" id="plot-help">Click either plot to move the shared query. With a plot focused, use arrow keys to move by 0.02 of the displayed range, or Shift plus arrow for 0.1. You can also enter query coordinates in the neighbor inspector.</p>
 
-  <section class="lower" aria-label="Error curve and neighbor inspector">
-    <article class="card">
-      <div class="panel-head"><div><h2>Finding a useful k</h2><p>Model B's metric, voting rule, and scaling; same fixed split.</p></div></div>
-      <div class="chart-wrap"><svg id="curve" viewBox="0 0 640 265" role="img" aria-labelledby="curve-title curve-description"><title id="curve-title">Training and validation error by number of neighbors</title><desc id="curve-description">Adjust Model B's neighbor slider to explore this chart.</desc></svg></div>
-      <div class="chart-legend"><span><i class="swatch"></i>Training error (includes self)</span><span><i class="swatch validation"></i>Validation error</span></div>
-      <p class="chart-note" id="curve-note" role="status"></p>
-    </article>
-    <article class="card">
-      <div class="panel-head"><div><h2>Who votes for this point?</h2><p>Click either plot, use its arrow keys, or enter coordinates below.</p></div></div>
-      <div class="query-controls">
-        <label for="query-x">Query x <input id="query-x" type="number" min="0" max="1" step="0.01" value="0.52"></label>
-        <label for="query-y">y <input id="query-y" type="number" min="0" max="1" step="0.01" value="0.52"></label>
-        <button id="center-query" type="button">Center query</button>
-      </div>
-      <div class="inspect-models">
-        <div class="inspect-model"><div class="vote-title" id="a-vote-title">Model A</div><div class="vote-bar" aria-hidden="true"><span id="a-vote-bar"></span></div><p class="vote-detail" id="a-vote-detail"></p><div class="table-scroll"><table><caption class="sr-only">Model A nearest neighbors</caption><thead><tr><th>Point</th><th>Class</th><th>Distance</th><th>Weight</th></tr></thead><tbody id="a-neighbors"></tbody></table></div></div>
-        <div class="inspect-model"><div class="vote-title" id="b-vote-title">Model B</div><div class="vote-bar" aria-hidden="true"><span id="b-vote-bar"></span></div><p class="vote-detail" id="b-vote-detail"></p><div class="table-scroll"><table><caption class="sr-only">Model B nearest neighbors</caption><thead><tr><th>Point</th><th>Class</th><th>Distance</th><th>Weight</th></tr></thead><tbody id="b-neighbors"></tbody></table></div></div>
-      </div>
-      <p class="inspector-note">Vote share describes these neighbors; it is not a calibrated probability. The table shows all k selected points. A zero-distance match receives all voting weight under inverse-distance voting.</p>
-    </article>
+  <section aria-labelledby="neighbors-heading">
+    <div class="section-heading"><h2 id="neighbors-heading">1. How many neighbors?</h2><p>Euclidean distance throughout. Only k changes.</p></div>
+    <div class="graphs">
+      <article class="graph">
+        <div class="graph-heading"><h3>k = 1 · Very local</h3><p>Can memorize noisy labels and form small islands.</p></div>
+        <canvas id="k-1" width="420" height="255" role="img" aria-label="Decision regions with one neighbor">Canvas support is required.</canvas>
+        <p class="graph-result" id="result-1"></p>
+      </article>
+      <article class="graph">
+        <div class="graph-heading"><h3>k = 15 · Smoother</h3><p>More voters often reduce sensitivity to noise.</p></div>
+        <canvas id="k-15" width="420" height="255" role="img" aria-label="Decision regions with fifteen neighbors">Canvas support is required.</canvas>
+        <p class="graph-result" id="result-15"></p>
+      </article>
+      <article class="graph">
+        <div class="graph-heading"><h3>k = 51 · Broad neighborhoods</h3><p>Too much averaging can lose useful local structure.</p></div>
+        <canvas id="k-51" width="420" height="255" role="img" aria-label="Decision regions with fifty-one neighbors">Canvas support is required.</canvas>
+        <p class="graph-result" id="result-51"></p>
+      </article>
+    </div>
   </section>
 
-  <section class="lessons" aria-label="KNN properties explained">
-    <article class="card lesson"><div class="number">01 / Bias &amp; variance</div><h3>Small k memorizes details.</h3><p>At k = 1, every training point predicts its own label perfectly, including corrupted labels. Small islands in the decision regions reveal sensitivity to individual examples. More neighbors often smooth out this noise; very large neighborhoods can erase useful local structure.</p></article>
-    <article class="card lesson"><div class="number">02 / Distance is a choice</div><h3>Different geometry, different neighbors.</h3><p>Euclidean distance uses √(Δx² + Δy²). Manhattan uses |Δx| + |Δy|. Chebyshev uses max(|Δx|, |Δy|). Their equal-distance contours are circles, diamonds, and squares in equally scaled feature coordinates. Changing the metric can change who votes.</p></article>
-    <article class="card lesson"><div class="number">03 / Preprocessing matters</div><h3>Units can dominate the answer.</h3><p>Changing x from 0–1 to 0–100 leaves the information unchanged but changes raw distances. Standardization uses z = (x − μ) / σ for each feature. Its statistics come only from the training set. Scaling should reflect what differences mean in your problem.</p></article>
+  <section aria-labelledby="metrics-heading">
+    <div class="section-heading"><h2 id="metrics-heading">2. What counts as near?</h2><p id="query-help">k = 9 throughout. Click a graph to move the shared query; arrow keys also work when focused.</p></div>
+    <div class="graphs">
+      <article class="graph">
+        <div class="graph-heading"><h3>Euclidean · L2</h3><p>√(Δx² + Δy²)</p></div>
+        <canvas class="interactive" id="metric-euclidean" width="420" height="255" tabindex="0" role="img" aria-label="Euclidean nearest neighbors" aria-describedby="query-help">Canvas support is required.</canvas>
+        <p class="graph-result" id="result-euclidean"></p>
+      </article>
+      <article class="graph">
+        <div class="graph-heading"><h3>Manhattan · L1</h3><p>|Δx| + |Δy|</p></div>
+        <canvas class="interactive" id="metric-manhattan" width="420" height="255" tabindex="0" role="img" aria-label="Manhattan nearest neighbors" aria-describedby="query-help">Canvas support is required.</canvas>
+        <p class="graph-result" id="result-manhattan"></p>
+      </article>
+      <article class="graph">
+        <div class="graph-heading"><h3>Chebyshev · L∞</h3><p>max(|Δx|, |Δy|)</p></div>
+        <canvas class="interactive" id="metric-chebyshev" width="420" height="255" tabindex="0" role="img" aria-label="Chebyshev nearest neighbors" aria-describedby="query-help">Canvas support is required.</canvas>
+        <p class="graph-result" id="result-chebyshev"></p>
+      </article>
+    </div>
+  </section>
+  <div class="legend"><span><b class="class-zero">●</b> Class 0</span><span><b class="class-one">▲</b> Class 1</span><span>✚ Query</span><span>Highlighted points: 9 voters · dashed outline: neighborhood</span></div>
+
+  <section class="graph error-graph" aria-labelledby="error-heading">
+    <div class="error-header"><h2 id="error-heading">3. Training fit is not the whole story.</h2><p>Euclidean distance · same fixed validation set for every k</p></div>
+    <svg id="error-curve" viewBox="0 0 1100 170" preserveAspectRatio="none" role="img" aria-labelledby="curve-title curve-description"><title id="curve-title">Training and validation error by k</title><desc id="curve-description">Computed from the same data as the decision regions above.</desc></svg>
+    <div class="curve-footer"><span><i></i>Training error (includes self)</span><span><i class="validation"></i>Validation error</span><span id="curve-summary" role="status"></span></div>
   </section>
 
   <details>
-    <summary>Read the experiment conventions</summary>
-    <div class="method-notes">
-      <div>
-        <p><strong>Data and evaluation.</strong> Each sample has a balanced training set and 240 independently generated validation points. Label noise flips exactly the selected percentage of training labels (rounded to a whole point); validation labels remain uncorrupted. A new sample changes both sets; model controls keep them fixed.</p>
-        <p><strong>Training accuracy.</strong> This is resubstitution accuracy: each training point is allowed to find itself. It is intentionally optimistic, especially for k = 1. Validation points never vote or contribute to standardization.</p>
-        <p><strong>Model selection.</strong> The curve evaluates every integer k from 1 to min(51, training size). Repeatedly choosing settings using this validation set can overfit it. A real workflow uses cross-validation for tuning and a separate untouched test set for final reporting.</p>
-      </div>
-      <div>
-        <p><strong>Voting and ties.</strong> Uniform voting gives each selected point weight 1. Inverse-distance voting uses 1/d. If any selected distance is zero, only zero-distance matches vote, with equal weights. A tied class vote uses the nearest voting point; equal distances are ordered by point ID. This convention is one of several valid choices.</p>
-        <p><strong>Plot geometry.</strong> Both axes fill the same plot area even when their units differ, so screen distance need not equal feature distance. The dashed contour is computed using the selected metric and preprocessing. Equal-distance points may lie on the outline without being among the k selected voters.</p>
-        <p><strong>Implementation.</strong> Exact brute-force neighbors in two dimensions, seeded synthetic data, and a sampled decision background. KNN stores training examples rather than fitting a parametric boundary. Predictions become costly as data grows, and distance becomes less informative with many irrelevant dimensions.</p>
-      </div>
-    </div>
+    <summary>How to read these examples</summary>
+    <p>The points are synthetic two-moons data. Every graph shares the same 100 training examples. The noise slider flips that percentage of training labels; the 240 independent validation points retain their original labels. Changing noise keeps the feature positions and validation set fixed. New sample regenerates both sets.</p>
+    <p>Training accuracy includes each point itself, so k = 1 gets 100% training accuracy on these distinct points even when labels are corrupted. The validation curve shows how well those choices generalize. Which k works best depends on the sample; validation is for tuning, and a real project should reserve a separate test set.</p>
+    <p>The metric graphs emphasize the nine voters without connection lines or decision backgrounds. Their contours are computed in feature coordinates, then fitted to the plot axes; the displayed aspect ratio can stretch their shapes. A different metric can change the selected points without necessarily changing the predicted class.</p>
+    <p>All votes have equal weight. Class-vote ties use the nearest point's label; equal distances are ordered by point ID. Small k does not always overfit, and large k does not always underfit. These examples show common effects, rather than a universal best setting.</p>
   </details>
-  <footer><span>Lecture 07 · K-nearest neighbors · Synthetic data</span><span>Standalone HTML · Runs offline · No libraries</span></footer>
-  <p id="announcement" class="sr-only" role="status" aria-live="polite"></p>
+  <footer>Lecture 07 · Seven graphs, two shared controls · Works offline</footer>
+  <p class="sr-only" id="query-announcement" role="status" aria-live="polite"></p>
 </main>
 <script>
 'use strict';
 
-// KNN engine. Points use normalized plot coordinates; factors convert them to
-// raw feature units or training-standardized feature coordinates.
-const clamp = (v, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, v));
+// Pure KNN calculations, shared by every graph.
+const clamp = value => Math.max(0, Math.min(1, value));
 function randomGenerator(seed) {
   let state = seed >>> 0;
   return () => {
@@ -262,260 +151,154 @@ function randomGenerator(seed) {
     return ((n ^ n >>> 14) >>> 0) / 4294967296;
   };
 }
-function generateData(kind, count, noise, seed) {
-  // Separate streams keep validation fixed when training size/noise changes.
-  function sample(n, rng) {
+function generateData(noise, seed) {
+  function sample(count, rng) {
     const normal = () => Math.sqrt(-2 * Math.log(Math.max(rng(), 1e-12))) * Math.cos(2 * Math.PI * rng());
-    return Array.from({ length: n }, (_, i) => {
-      const label = i % 2;
-      let x, y;
-      if (kind === 'moons') {
-        const angle = rng() * Math.PI;
-        x = ((label ? 1 - Math.cos(angle) : Math.cos(angle)) + .11 * normal() + 1.3) / 3.6;
-        y = ((label ? .5 - Math.sin(angle) : Math.sin(angle)) + .11 * normal() + .8) / 2.2;
-      } else if (kind === 'rings') {
-        const angle = rng() * 2 * Math.PI;
-        const radius = label ? .32 + .12 * rng() : .07 + .16 * Math.sqrt(rng());
-        x = .5 + radius * Math.cos(angle) + .012 * normal();
-        y = .5 + radius * Math.sin(angle) + .012 * normal();
-      } else {
-        x = .04 + .92 * rng();
-        y = (label ? .69 : .31) + .075 * normal();
-      }
-      return { x: clamp(x, .015, .985), y: clamp(y, .015, .985), label, original: label, id: i + 1 };
+    return Array.from({ length: count }, (_, i) => {
+      const label = i % 2, angle = rng() * Math.PI;
+      const x = ((label ? 1 - Math.cos(angle) : Math.cos(angle)) + .11 * normal() + 1.3) / 3.6;
+      const y = ((label ? .5 - Math.sin(angle) : Math.sin(angle)) + .11 * normal() + .8) / 2.2;
+      return { x: Math.max(.015, Math.min(.985, x)), y: Math.max(.015, Math.min(.985, y)), label, original: label, id: i + 1 };
     });
   }
-  const train = sample(count, randomGenerator(seed));
+  const train = sample(100, randomGenerator(seed));
   const validation = sample(240, randomGenerator(seed ^ 0x9e3779b9));
-  const rng = randomGenerator(seed ^ 0x85ebca6b);
-  const indices = train.map((_, i) => i);
+  const rng = randomGenerator(seed ^ 0x85ebca6b), indices = train.map((_, i) => i);
   for (let i = indices.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
     [indices[i], indices[j]] = [indices[j], indices[i]];
   }
-  for (const i of indices.slice(0, Math.round(count * noise / 100))) train[i].label ^= 1;
+  for (const i of indices.slice(0, Math.round(noise))) train[i].label ^= 1;
   return { train, validation };
 }
-function trainingScales(train) {
-  const means = ['x', 'y'].map(key => train.reduce((sum, p) => sum + p[key], 0) / train.length);
-  return ['x', 'y'].map((key, i) => Math.sqrt(train.reduce((sum, p) => sum + (p[key] - means[i]) ** 2, 0) / train.length) || 1);
-}
-function factorsFor(model, stretch, scales) {
-  // Centering cancels in pairwise differences. σ(raw x) = stretch * σ(plot x).
-  return model.standard ? [1 / scales[0], 1 / scales[1]] : [stretch, 1];
-}
-function distance(a, b, metric, factors) {
-  const dx = Math.abs(a.x - b.x) * factors[0], dy = Math.abs(a.y - b.y) * factors[1];
+function distance(a, b, metric) {
+  const dx = Math.abs(a.x - b.x), dy = Math.abs(a.y - b.y);
   if (metric === 'manhattan') return dx + dy;
   if (metric === 'chebyshev') return Math.max(dx, dy);
   return Math.hypot(dx, dy);
 }
-function neighborsFor(query, train, model, factors) {
-  return train.map(point => ({ point, d: distance(query, point, model.metric, factors) }))
+function rankedNeighbors(query, train, metric = 'euclidean') {
+  return train.map(point => ({ point, d: distance(query, point, metric) }))
     .sort((a, b) => a.d - b.d || a.point.id - b.point.id);
 }
-function vote(neighbors, k, weighting) {
-  const chosen = neighbors.slice(0, k);
-  const zeroOnly = weighting === 'distance' && chosen[0].d === 0;
-  const weights = chosen.map(n => zeroOnly ? Number(n.d === 0) : weighting === 'distance' ? 1 / n.d : 1);
-  const totals = [0, 0];
-  chosen.forEach((n, i) => { totals[n.point.label] += weights[i]; });
-  const tied = Math.abs(totals[0] - totals[1]) <= 1e-12 * Math.max(1, ...totals);
-  const label = tied ? chosen[0].point.label : Number(totals[1] > totals[0]);
-  const shares = totals.map(v => v / (totals[0] + totals[1]));
-  return { label, totals, shares, chosen, weights, tied, zeroOnly };
+function prediction(ranked, k) {
+  let ones = 0;
+  for (let i = 0; i < k; i++) ones += ranked[i].point.label;
+  return 2 * ones === k ? ranked[0].point.label : Number(2 * ones > k);
 }
-function errorCurve(train, validation, model, factors, maxK) {
-  // Sort once per query, then reuse the ordering for every k in the curve.
+function errorCurve(train, validation) {
   function errors(points) {
-    const wrong = Array(maxK).fill(0);
+    const wrong = Array(51).fill(0);
     for (const point of points) {
-      const ranked = neighborsFor(point, train, model, factors);
-      for (let k = 1; k <= maxK; k++) wrong[k - 1] += Number(vote(ranked, k, model.weighting).label !== point.label);
+      const ranked = rankedNeighbors(point, train);
+      let ones = 0;
+      for (let k = 1; k <= 51; k++) {
+        ones += ranked[k - 1].point.label;
+        const label = 2 * ones === k ? ranked[0].point.label : Number(2 * ones > k);
+        wrong[k - 1] += Number(label !== point.label);
+      }
     }
-    return wrong.map(n => n / points.length);
+    return wrong.map(count => count / points.length);
   }
   return { train: errors(train), validation: errors(validation) };
 }
 
-// UI and rendering. A cached surface/curve is shared when model settings match.
+// Presentation: three fixed k examples, three fixed metrics, one error curve.
 const $ = id => document.getElementById(id);
+const ks = [1, 15, 51];
+const metrics = ['euclidean', 'manhattan', 'chebyshev'];
 const colors = ['#087768', '#b8542d'];
-const metricNames = { euclidean: 'Euclidean', manhattan: 'Manhattan', chebyshev: 'Chebyshev' };
-const formulas = { euclidean: 'd = √(Δx² + Δy²)', manhattan: 'd = |Δx| + |Δy|', chebyshev: 'd = max(|Δx|, |Δy|)' };
-const plotBox = { x: 48, y: 18, w: 570, h: 386 };
-let seed = 42, data, scales, maxK = 51, query = { x: .52, y: .52 };
-let activePreset = 'overfit', pending = 0, pendingRegenerate = false;
-const evaluationCache = new Map(), surfaceCache = new Map();
-const presets = {
-  overfit: { dataset: 'moons', size: 100, noise: 15, stretch: 1, a: { k: 1 }, b: { k: 15 },
-    title: 'Small neighborhoods chase noisy labels.', text: 'Compare k = 1 with k = 15. Look for tiny islands around flipped labels, then compare training and validation accuracy. Increase the label noise to make the effect stronger.' },
-  underfit: { dataset: 'rings', size: 40, noise: 0, stretch: 1, a: { k: 5 }, b: { k: 31 },
-    title: 'A neighborhood can become too large.', text: 'Compare k = 5 with k = 31: the larger neighborhood mixes the inner and outer ring, losing local structure. At k = 40 every training point votes; the balanced classes tie, so this demo\'s nearest-voter tie rule then decides.' },
-  metrics: { dataset: 'moons', size: 100, noise: 5, stretch: 1, a: { k: 9, metric: 'euclidean' }, b: { k: 9, metric: 'manhattan' },
-    title: 'Keep k fixed; change the meaning of distance.', text: 'Move the query near a boundary and compare the outlined neighborhoods and voter IDs. Switch Model B to Chebyshev for square contours. A different metric can change predictions without always improving accuracy.' },
-  scaling: { dataset: 'bands', size: 100, noise: 0, stretch: 100, a: { k: 9 }, b: { k: 9, standard: true },
-    title: 'The units change; the information stays the same.', text: 'Class depends on y, but x spans 0–100. Raw distances make x dominate in Model A. Model B standardizes both features. Set X feature units back to 0–1 to compare. Both plots keep their axes fitted to the available space.' }
-};
-function readModel(id) {
-  return { k: Number($(id + '-k').value), metric: $(id + '-metric').value,
-    weighting: $(id + '-vote').value, standard: $(id + '-standard').checked };
-}
-function modelKey(model) { return [model.metric, model.weighting, model.standard, $('stretch').value].join('|'); }
-function getEvaluation(model) {
-  const key = modelKey(model);
-  if (!evaluationCache.has(key)) evaluationCache.set(key, errorCurve(data.train, data.validation, model, factorsFor(model, Number($('stretch').value), scales), maxK));
-  return evaluationCache.get(key);
-}
-function regenerate() {
-  clearTimeout(pending); pendingRegenerate = false;
-  data = generateData($('dataset').value, Number($('size').value), Number($('noise').value), seed);
-  scales = trainingScales(data.train);
-  maxK = Math.min(51, data.train.length);
-  for (const id of ['a', 'b']) {
-    $(id + '-k').max = maxK;
-    $(id + '-k').value = Math.min(Number($(id + '-k').value), maxK);
-  }
-  evaluationCache.clear(); surfaceCache.clear();
-  $('seed-label').textContent = 'Seed ' + seed;
-  $('size-value').textContent = data.train.length;
-  $('noise-value').textContent = $('noise').value + '%';
-  render();
-}
-function preset(name) {
-  clearTimeout(pending); pendingRegenerate = false;
-  const p = presets[name];
-  activePreset = name; seed = 42; query = { x: .52, y: .52 };
-  for (const key of ['dataset', 'size', 'noise', 'stretch']) $(key).value = p[key];
-  for (const id of ['a', 'b']) {
-    const m = { k: 9, metric: 'euclidean', weighting: 'uniform', standard: false, ...p[id] };
-    // Set max first: the previous preset may have had fewer training points.
-    $(id + '-k').max = Math.min(51, p.size);
-    $(id + '-k').value = m.k; $(id + '-metric').value = m.metric;
-    $(id + '-vote').value = m.weighting; $(id + '-standard').checked = m.standard;
-  }
-  $('show-validation').checked = false; $('show-noise').checked = true;
-  document.querySelectorAll('[data-preset]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.preset === name)));
-  const title = document.createElement('strong'); title.textContent = p.title;
-  $('experiment-note').replaceChildren(title, document.createTextNode(' ' + p.text));
-  regenerate();
-}
-function markCustom() {
-  if (activePreset === null) return;
-  activePreset = null;
-  document.querySelectorAll('[data-preset]').forEach(button => button.setAttribute('aria-pressed', 'false'));
-  $('experiment-note').textContent = 'Custom experiment. Both models share the same training and validation points. Change one setting at a time to isolate its effect; use a guided experiment above to restore a starting point.';
-}
-function queueRender(regenerateData = false) {
-  clearTimeout(pending);
-  // A model change during a queued data change must retain the data rebuild.
-  pendingRegenerate = pendingRegenerate || regenerateData;
-  pending = setTimeout(() => {
-    const rebuild = pendingRegenerate; pendingRegenerate = false;
-    if (rebuild) regenerate(); else render();
-  }, 50);
-}
-function drawPoint(ctx, x, y, label, radius, fill = colors[label]) {
+const box = { x: 33, y: 9, w: 375, h: 218 };
+const px = point => box.x + point.x * box.w;
+const py = point => box.y + (1 - point.y) * box.h;
+const percent = value => (value * 100).toFixed(1) + '%';
+let seed = 42, data, curve, timer = 0, query = { x: .52, y: .52 };
+function drawPoint(ctx, point, radius = 3) {
+  const x = px(point), y = py(point);
   ctx.beginPath();
-  if (label === 0) ctx.arc(x, y, radius, 0, Math.PI * 2);
-  else { ctx.moveTo(x, y - radius - 1); ctx.lineTo(x + radius + 1, y + radius); ctx.lineTo(x - radius - 1, y + radius); ctx.closePath(); }
-  ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = '#fffefa'; ctx.lineWidth = 1.2; ctx.stroke();
+  if (point.label === 0) ctx.arc(x, y, radius, 0, 2 * Math.PI);
+  else { ctx.moveTo(x, y - radius - .6); ctx.lineTo(x + radius + .6, y + radius); ctx.lineTo(x - radius - .6, y + radius); ctx.closePath(); }
+  ctx.fillStyle = colors[point.label]; ctx.fill();
+  ctx.strokeStyle = '#fffefa'; ctx.lineWidth = .8; ctx.stroke();
 }
-function surfaceFor(model, factors) {
-  const key = modelKey(model) + '|' + model.k;
-  if (surfaceCache.has(key)) return surfaceCache.get(key);
-  const canvas = document.createElement('canvas'); canvas.width = 114; canvas.height = 78;
-  const ctx = canvas.getContext('2d'), pixels = ctx.createImageData(canvas.width, canvas.height);
-  for (let row = 0; row < canvas.height; row++) {
-    for (let col = 0; col < canvas.width; col++) {
-      const q = { x: (col + .5) / canvas.width, y: 1 - (row + .5) / canvas.height };
-      const result = vote(neighborsFor(q, data.train, model, factors), model.k, model.weighting);
-      const rgb = result.label ? [247, 225, 209] : [217, 237, 224];
-      const index = 4 * (row * canvas.width + col);
-      pixels.data.set([...rgb, 255], index);
-    }
-  }
-  ctx.putImageData(pixels, 0, 0);
-  // Bound memory while keeping common comparisons and query movement instant.
-  if (surfaceCache.size >= 12) surfaceCache.delete(surfaceCache.keys().next().value);
-  surfaceCache.set(key, canvas);
-  return canvas;
-}
-function renderPlot(id, model, factors, result) {
-  const canvas = $(id + '-plot'), ctx = canvas.getContext('2d'), box = plotBox;
-  const px = p => box.x + p.x * box.w, py = p => box.y + (1 - p.y) * box.h;
+function beginPlot(canvas) {
+  const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.save(); ctx.beginPath(); ctx.rect(box.x, box.y, box.w, box.h); ctx.clip();
-  ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(surfaceFor(model, factors), box.x, box.y, box.w, box.h);
-  ctx.strokeStyle = '#ffffff85'; ctx.lineWidth = 1;
-  for (let i = 1; i < 4; i++) {
-    ctx.beginPath(); ctx.moveTo(box.x + i * box.w / 4, box.y); ctx.lineTo(box.x + i * box.w / 4, box.y + box.h); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(box.x, box.y + i * box.h / 4); ctx.lineTo(box.x + box.w, box.y + i * box.h / 4); ctx.stroke();
-  }
-  if ($('show-validation').checked) {
-    ctx.globalAlpha = .65; ctx.lineWidth = 1.3;
-    for (const p of data.validation) {
-      const x = px(p), y = py(p); ctx.strokeStyle = colors[p.label];
-      ctx.beginPath(); ctx.moveTo(x - 2, y - 2); ctx.lineTo(x + 2, y + 2); ctx.moveTo(x - 2, y + 2); ctx.lineTo(x + 2, y - 2); ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-  }
-  // A metric ball transformed back into plot coordinates. This also handles
-  // different feature units and the anisotropy introduced by standardization.
-  const radius = result.chosen[result.chosen.length - 1].d;
-  ctx.beginPath();
-  for (let i = 0; i <= 180; i++) {
-    const t = i / 180 * 2 * Math.PI, c = Math.cos(t), s = Math.sin(t);
-    const norm = model.metric === 'manhattan' ? Math.abs(c) + Math.abs(s) : model.metric === 'chebyshev' ? Math.max(Math.abs(c), Math.abs(s)) : 1;
-    const p = { x: query.x + radius * c / (norm * factors[0]), y: query.y + radius * s / (norm * factors[1]) };
-    if (i === 0) ctx.moveTo(px(p), py(p)); else ctx.lineTo(px(p), py(p));
-  }
-  ctx.closePath(); ctx.setLineDash([5, 4]); ctx.lineWidth = 1.8; ctx.strokeStyle = '#334b42'; ctx.stroke(); ctx.setLineDash([]);
-  ctx.lineWidth = 1; ctx.strokeStyle = '#334b4255';
-  for (const n of result.chosen) { ctx.beginPath(); ctx.moveTo(px(query), py(query)); ctx.lineTo(px(n.point), py(n.point)); ctx.stroke(); }
-  for (const p of data.train) {
-    if ($('show-noise').checked && p.label !== p.original) {
-      ctx.beginPath(); ctx.arc(px(p), py(p), 7, 0, Math.PI * 2); ctx.strokeStyle = '#7852a0'; ctx.lineWidth = 1.7; ctx.stroke();
-    }
-    drawPoint(ctx, px(p), py(p), p.label, 4);
-  }
-  for (const n of result.chosen) {
-    ctx.beginPath(); ctx.arc(px(n.point), py(n.point), 7.5, 0, Math.PI * 2); ctx.strokeStyle = '#233d36'; ctx.lineWidth = 1.2; ctx.stroke();
-  }
-  // White halo keeps the shared query visible over either decision region.
-  ctx.lineCap = 'round';
-  for (const [color, width] of [['#fffefa', 7], ['#233d36', 3]]) {
-    ctx.strokeStyle = color; ctx.lineWidth = width; ctx.beginPath();
-    ctx.moveTo(px(query) - 7, py(query)); ctx.lineTo(px(query) + 7, py(query));
-    ctx.moveTo(px(query), py(query) - 7); ctx.lineTo(px(query), py(query) + 7); ctx.stroke();
-  }
-  ctx.restore();
-  ctx.strokeStyle = '#afbeb2'; ctx.lineWidth = 1; ctx.strokeRect(box.x, box.y, box.w, box.h);
-  ctx.font = '11px system-ui'; ctx.fillStyle = '#596d64';
-  for (let i = 0; i <= 4; i++) {
-    ctx.textAlign = 'center'; ctx.fillText(formatNumber(i / 4 * Number($('stretch').value)), box.x + i * box.w / 4, box.y + box.h + 19);
-    ctx.textAlign = 'right'; ctx.fillText(formatNumber(i / 4), box.x - 9, box.y + box.h - i * box.h / 4 + 4);
-  }
-  ctx.textAlign = 'center'; ctx.fillText('x · raw feature units', box.x + box.w / 2, 448);
-  ctx.save(); ctx.translate(13, box.y + box.h / 2); ctx.rotate(-Math.PI / 2); ctx.fillText('y · raw feature units', 0, 0); ctx.restore();
-  canvas.setAttribute('aria-label', `Model ${id.toUpperCase()}: k ${model.k}, ${metricNames[model.metric]}, query predicts Class ${result.label}. Training accuracy ${$(id + '-train').textContent}, validation accuracy ${$(id + '-validation').textContent}. Click or use arrow keys to move the query.`);
+  return ctx;
 }
-function formatNumber(n) { return Number(n.toFixed(3)).toString(); }
-function percent(value) { return (value * 100).toFixed(1) + '%'; }
-function renderInspector(id, model, result) {
-  $(id + '-vote-title').textContent = `Model ${id.toUpperCase()} → Class ${result.label}`;
-  $(id + '-vote-bar').style.width = (result.shares[0] * 100) + '%';
-  const counts = [0, 0]; result.chosen.forEach(n => counts[n.point.label]++);
-  $(id + '-vote-detail').textContent = `${counts[0]} class 0 / ${counts[1]} class 1. Weighted share: ${percent(result.shares[0])} / ${percent(result.shares[1])}.` + (result.tied ? ' Tie → nearest voter.' : '') + (result.zeroOnly ? ' Exact match: only zero-distance votes count.' : '');
-  const fragment = document.createDocumentFragment();
-  result.chosen.forEach((n, i) => {
-    const tr = document.createElement('tr');
-    const entries = [`#${n.point.id}`, `${n.point.label === 0 ? '●' : '▲'} ${n.point.label}`, formatNumber(n.d), formatNumber(result.weights[i])];
-    entries.forEach((text, col) => { const td = document.createElement('td'); td.textContent = text; if (col === 1) td.className = 'c' + n.point.label; tr.append(td); });
-    fragment.append(tr);
+function finishPlot(ctx) {
+  ctx.restore(); ctx.strokeStyle = '#c5d0c5'; ctx.lineWidth = 1;
+  ctx.strokeRect(box.x, box.y, box.w, box.h);
+  ctx.fillStyle = '#738176'; ctx.font = '10px system-ui';
+  for (const value of [0, .5, 1]) {
+    ctx.textAlign = 'center'; ctx.fillText(value, px({ x: value }), box.y + box.h + 15);
+    ctx.textAlign = 'right'; ctx.fillText(value, box.x - 7, py({ y: value }) + 3);
+  }
+}
+function decisionSurfaces() {
+  // One neighbor ordering per grid point supplies all three k examples.
+  const width = 102, height = 60;
+  const surfaces = ks.map(() => {
+    const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    return { canvas, ctx, pixels: ctx.createImageData(width, height) };
   });
-  $(id + '-neighbors').replaceChildren(fragment);
+  for (let row = 0; row < height; row++) for (let col = 0; col < width; col++) {
+    const ranked = rankedNeighbors({ x: (col + .5) / width, y: 1 - (row + .5) / height }, data.train);
+    ks.forEach((k, i) => {
+      const rgb = prediction(ranked, k) ? [250, 237, 226] : [229, 242, 234];
+      surfaces[i].pixels.data.set([...rgb, 255], 4 * (row * width + col));
+    });
+  }
+  for (const surface of surfaces) surface.ctx.putImageData(surface.pixels, 0, 0);
+  return surfaces.map(surface => surface.canvas);
+}
+function renderDecisions() {
+  const surfaces = decisionSurfaces();
+  ks.forEach((k, i) => {
+    const canvas = $('k-' + k), ctx = beginPlot(canvas);
+    ctx.imageSmoothingEnabled = false; ctx.drawImage(surfaces[i], box.x, box.y, box.w, box.h);
+    for (const point of data.train) drawPoint(ctx, point, 2.8);
+    finishPlot(ctx);
+    const train = percent(1 - curve.train[k - 1]), validation = percent(1 - curve.validation[k - 1]);
+    const result = $('result-' + k);
+    result.replaceChildren(document.createTextNode('Train '), strong(train), document.createTextNode(' · Validation '), strong(validation));
+    canvas.setAttribute('aria-label', `k = ${k}, Euclidean decision regions. Training accuracy ${train}; validation accuracy ${validation}.`);
+  });
+}
+function strong(text) { const node = document.createElement('strong'); node.textContent = text; return node; }
+function renderMetrics() {
+  const predictions = [];
+  for (const metric of metrics) {
+    const canvas = $('metric-' + metric), ctx = beginPlot(canvas);
+    const ranked = rankedNeighbors(query, data.train, metric), selected = ranked.slice(0, 9);
+    const radius = selected[8].d, selectedIds = new Set(selected.map(n => n.point.id));
+    // Map the actual metric ball into the plotted feature coordinates.
+    ctx.beginPath();
+    for (let i = 0; i <= 160; i++) {
+      const t = i / 160 * 2 * Math.PI, c = Math.cos(t), s = Math.sin(t);
+      const norm = metric === 'manhattan' ? Math.abs(c) + Math.abs(s) : metric === 'chebyshev' ? Math.max(Math.abs(c), Math.abs(s)) : 1;
+      const point = { x: query.x + radius * c / norm, y: query.y + radius * s / norm };
+      if (i === 0) ctx.moveTo(px(point), py(point)); else ctx.lineTo(px(point), py(point));
+    }
+    ctx.closePath(); ctx.strokeStyle = '#7f9185'; ctx.lineWidth = 1.2; ctx.setLineDash([4, 5]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.globalAlpha = .24;
+    for (const point of data.train) if (!selectedIds.has(point.id)) drawPoint(ctx, point, 2.5);
+    ctx.globalAlpha = 1;
+    for (const n of selected) drawPoint(ctx, n.point, 4);
+    for (const [color, width] of [['#fffefa', 6], ['#233d36', 2.5]]) {
+      ctx.strokeStyle = color; ctx.lineWidth = width; ctx.beginPath();
+      ctx.moveTo(px(query) - 5, py(query)); ctx.lineTo(px(query) + 5, py(query));
+      ctx.moveTo(px(query), py(query) - 5); ctx.lineTo(px(query), py(query) + 5); ctx.stroke();
+    }
+    finishPlot(ctx);
+    const label = prediction(ranked, 9), votes = selected.filter(n => n.point.label === label).length;
+    $('result-' + metric).replaceChildren(document.createTextNode('Query → '), strong('Class ' + label), document.createTextNode(` · ${votes} of 9 votes`));
+    canvas.setAttribute('aria-label', `${metric}, k = 9. Query x ${query.x.toFixed(2)}, y ${query.y.toFixed(2)} predicts class ${label} with ${votes} of 9 votes. Click or use arrow keys to move the query.`);
+    predictions.push(`${metric}: class ${label}`);
+  }
+  $('query-announcement').textContent = `Query x ${query.x.toFixed(2)}, y ${query.y.toFixed(2)}. ${predictions.join('; ')}.`;
 }
 function svgNode(tag, attrs, text) {
   const node = document.createElementNS('http://www.w3.org/2000/svg', tag);
@@ -523,96 +306,62 @@ function svgNode(tag, attrs, text) {
   if (text !== undefined) node.textContent = text;
   return node;
 }
-function renderCurve(model, evaluation) {
-  const svg = $('curve'), left = 53, right = 615, top = 17, bottom = 218;
-  const x = k => left + (k - 1) / (maxK - 1) * (right - left), y = error => bottom - error * (bottom - top);
-  const best = Math.min(...evaluation.validation), bestK = evaluation.validation.indexOf(best) + 1;
+function renderCurve() {
+  const svg = $('error-curve'), width = svg.clientWidth || 1100;
+  svg.setAttribute('viewBox', `0 0 ${width} 170`);
+  const left = 42, right = width - 16, top = 10, bottom = 137;
+  const x = k => left + (k - 1) / 50 * (right - left), y = error => bottom - error * (bottom - top);
+  const best = Math.min(...curve.validation), bestK = curve.validation.indexOf(best) + 1;
   svg.replaceChildren(svgNode('title', { id: 'curve-title' }, 'Training and validation error by k'),
-    svgNode('desc', { id: 'curve-description' }, `Model B: selected k ${model.k}, training error ${percent(evaluation.train[model.k - 1])}, validation error ${percent(evaluation.validation[model.k - 1])}. Lowest observed validation error ${percent(best)} at k ${bestK}.`));
-  for (const error of [0, .25, .5, .75, 1]) {
-    svg.append(svgNode('line', { x1: left, x2: right, y1: y(error), y2: y(error), stroke: '#dce3d8' }));
-    svg.append(svgNode('text', { x: left - 8, y: y(error) + 4, 'text-anchor': 'end', fill: '#596d64', 'font-size': 11 }, Math.round(error * 100) + '%'));
+    svgNode('desc', { id: 'curve-description' }, `Euclidean KNN, k from 1 to 51. Lowest observed validation error ${percent(best)} at k ${bestK}. Training error includes self-matches.`));
+  for (const error of [0, .5, 1]) {
+    svg.append(svgNode('line', { x1: left, x2: right, y1: y(error), y2: y(error), stroke: '#e0e6dc', 'vector-effect': 'non-scaling-stroke' }));
+    svg.append(svgNode('text', { x: left - 6, y: y(error) + 4, 'text-anchor': 'end', fill: '#596d64', 'font-size': 11 }, percent(error).replace('.0', '')));
   }
-  const ticks = [...new Set([1, 10, 20, 30, 40, maxK].filter(k => k <= maxK))];
-  for (const k of ticks) svg.append(svgNode('text', { x: x(k), y: bottom + 20, 'text-anchor': 'middle', fill: '#596d64', 'font-size': 11 }, k));
-  svg.append(svgNode('text', { x: (left + right) / 2, y: 258, 'text-anchor': 'middle', fill: '#596d64', 'font-size': 11 }, 'Number of neighbors · k'));
+  for (const k of [1, 15, 30, 51]) svg.append(svgNode('text', { x: x(k), y: bottom + 19, 'text-anchor': 'middle', fill: '#596d64', 'font-size': 11 }, k));
+  svg.append(svgNode('text', { x: (left + right) / 2, y: 168, 'text-anchor': 'middle', fill: '#596d64', 'font-size': 11 }, 'Number of neighbors · k'));
   for (const [key, color] of [['train', colors[0]], ['validation', colors[1]]]) {
-    const d = evaluation[key].map((e, i) => `${i ? 'L' : 'M'}${x(i + 1)},${y(e)}`).join(' ');
-    svg.append(svgNode('path', { d, fill: 'none', stroke: color, 'stroke-width': 2.5, 'stroke-linejoin': 'round' }));
+    const d = curve[key].map((error, i) => `${i ? 'L' : 'M'}${x(i + 1)},${y(error)}`).join(' ');
+    const attrs = { d, fill: 'none', stroke: color, 'stroke-width': 2, 'vector-effect': 'non-scaling-stroke' };
+    if (key === 'train') attrs['stroke-dasharray'] = '5 4';
+    svg.append(svgNode('path', attrs));
   }
-  svg.append(svgNode('line', { x1: x(model.k), x2: x(model.k), y1: top, y2: bottom, stroke: '#7852a0', 'stroke-dasharray': '4 4' }));
-  for (const [key, color] of [['train', colors[0]], ['validation', colors[1]]]) svg.append(svgNode('circle', { cx: x(model.k), cy: y(evaluation[key][model.k - 1]), r: 4, fill: color, stroke: '#fffefa', 'stroke-width': 1.5 }));
-  $('curve-note').textContent = `At k = ${model.k}: train error ${percent(evaluation.train[model.k - 1])}; validation error ${percent(evaluation.validation[model.k - 1])}. Lowest observed validation error: ${percent(best)} (first reached at k = ${bestK}). Click the chart to set Model B's k, or use its slider. The best k varies with the sample.`;
+  $('curve-summary').textContent = `Lowest validation error in this sample: ${percent(best)} at k = ${bestK}.`;
 }
-function render() {
-  const stretch = Number($('stretch').value);
-  $('query-x').max = stretch; $('query-x').step = stretch / 100;
-  $('query-x').value = formatNumber(query.x * stretch); $('query-y').value = formatNumber(query.y);
-  let evaluationB, modelB;
-  for (const id of ['a', 'b']) {
-    const model = readModel(id), factors = factorsFor(model, stretch, scales);
-    const evaluation = getEvaluation(model);
-    const result = vote(neighborsFor(query, data.train, model, factors), model.k, model.weighting);
-    $(id + '-k-value').textContent = model.k;
-    $(id + '-summary').textContent = `k = ${model.k} · ${metricNames[model.metric]} · ${model.standard ? 'standardized' : 'raw features'}`;
-    $(id + '-train').textContent = percent(1 - evaluation.train[model.k - 1]);
-    $(id + '-validation').textContent = percent(1 - evaluation.validation[model.k - 1]);
-    $(id + '-prediction').textContent = 'Class ' + result.label;
-    $(id + '-prediction').style.color = colors[result.label];
-    $(id + '-share').textContent = percent(result.shares[result.label]) + ' of voting weight';
-    $(id + '-distance').textContent = formulas[model.metric] + (model.standard ? ' · differences in standardized coordinates' : ' · differences in raw feature units');
-    renderPlot(id, model, factors, result); renderInspector(id, model, result);
-    if (id === 'b') { modelB = model; evaluationB = evaluation; }
-  }
-  renderCurve(modelB, evaluationB);
-  $('announcement').textContent = `Query x ${formatNumber(query.x * stretch)}, y ${formatNumber(query.y)}. Model A predicts ${$('a-prediction').textContent}; Model B predicts ${$('b-prediction').textContent}.`;
+function regenerate() {
+  clearTimeout(timer);
+  data = generateData(Number($('noise').value), seed);
+  curve = errorCurve(data.train, data.validation);
+  $('noise-value').textContent = $('noise').value + '%';
+  $('sample-info').textContent = `100 training points · 240 validation points · sample ${seed}`;
+  renderDecisions(); renderMetrics(); renderCurve();
 }
-document.querySelectorAll('[data-preset]').forEach(button => button.addEventListener('click', () => { clearTimeout(pending); preset(button.dataset.preset); }));
-$('reset').addEventListener('click', () => { clearTimeout(pending); preset('overfit'); });
-$('new-data').addEventListener('click', () => { clearTimeout(pending); seed++; regenerate(); });
-for (const id of ['dataset', 'size', 'noise']) $(id).addEventListener('input', () => {
-  markCustom();
-  if (id === 'size') $('size-value').textContent = $('size').value;
-  if (id === 'noise') $('noise-value').textContent = $('noise').value + '%';
-  queueRender(true);
+$('noise').addEventListener('input', () => {
+  $('noise-value').textContent = $('noise').value + '%';
+  clearTimeout(timer); timer = setTimeout(regenerate, 80);
 });
-$('stretch').addEventListener('change', () => { markCustom(); evaluationCache.clear(); surfaceCache.clear(); queueRender(); });
-for (const id of ['a', 'b']) {
-  for (const field of ['k', 'metric', 'vote', 'standard']) $(id + '-' + field).addEventListener('input', () => {
-    markCustom(); $(id + '-k-value').textContent = $(id + '-k').value; queueRender();
-  });
-  const canvas = $(id + '-plot');
+$('new-sample').addEventListener('click', () => { seed++; regenerate(); });
+window.addEventListener('resize', renderCurve);
+for (const metric of metrics) {
+  const canvas = $('metric-' + metric);
   canvas.addEventListener('click', event => {
     const rect = canvas.getBoundingClientRect();
     const x = (event.clientX - rect.left) * canvas.width / rect.width;
     const y = (event.clientY - rect.top) * canvas.height / rect.height;
-    if (x < plotBox.x || x > plotBox.x + plotBox.w || y < plotBox.y || y > plotBox.y + plotBox.h) return;
-    query = { x: clamp((x - plotBox.x) / plotBox.w), y: clamp(1 - (y - plotBox.y) / plotBox.h) }; render();
+    if (x < box.x || x > box.x + box.w || y < box.y || y > box.y + box.h) return;
+    query = { x: clamp((x - box.x) / box.w), y: clamp(1 - (y - box.y) / box.h) };
+    renderMetrics();
   });
   canvas.addEventListener('keydown', event => {
-    const directions = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] };
-    if (!directions[event.key]) return;
+    const direction = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[event.key];
+    if (!direction) return;
     event.preventDefault();
-    const [dx, dy] = directions[event.key], step = event.shiftKey ? .1 : .02;
-    query = { x: clamp(query.x + step * dx), y: clamp(query.y + step * dy) }; render();
+    const step = event.shiftKey ? .1 : .02;
+    query = { x: clamp(query.x + step * direction[0]), y: clamp(query.y + step * direction[1]) };
+    renderMetrics();
   });
 }
-for (const id of ['show-validation', 'show-noise']) $(id).addEventListener('change', render);
-for (const axis of ['x', 'y']) $('query-' + axis).addEventListener('change', () => {
-  const input = $('query-' + axis);
-  if (input.value.trim() === '' || !Number.isFinite(Number(input.value))) { render(); return; }
-  query[axis] = clamp(Number(input.value) / (axis === 'x' ? Number($('stretch').value) : 1)); render();
-});
-$('center-query').addEventListener('click', () => { query = { x: .5, y: .5 }; render(); });
-$('curve').addEventListener('click', event => {
-  const svg = $('curve'), rect = svg.getBoundingClientRect();
-  const x = (event.clientX - rect.left) * 640 / rect.width;
-  const y = (event.clientY - rect.top) * 265 / rect.height;
-  if (x < 53 || x > 615 || y < 17 || y > 218) return;
-  $('b-k').value = clamp(Math.round(1 + (x - 53) / (615 - 53) * (maxK - 1)), 1, maxK);
-  markCustom(); render();
-});
-preset('overfit');
+regenerate();
 </script>
 </body>
 </html>

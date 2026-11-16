@@ -12,43 +12,36 @@
 - Lazy learning: most of the computation happens at the 
 # K-nearest neighbors
 
-Open [the interactive KNN lab](knn_visualizer.html) in a browser. It is a standalone HTML file with no dependencies or server requirements.
+Open [the KNN examples](knn_visualizer.html) in a browser. The standalone HTML runs offline, with no dependencies or server requirement.
+
+## Seven graphs on one page
+
+1. **k = 1:** Euclidean decision regions show sensitivity to individual points and noisy labels.
+2. **k = 15:** A larger vote often smooths small prediction islands.
+3. **k = 51:** Broad neighborhoods can lose local class structure.
+4. **Euclidean neighbors:** Nine voters selected using √(Δx² + Δy²).
+5. **Manhattan neighbors:** Nine voters selected using |Δx| + |Δy|.
+6. **Chebyshev neighbors:** Nine voters selected using max(|Δx|, |Δy|).
+7. **Error versus k:** Training and validation error for Euclidean KNN, for every integer k from 1 to 51.
+
+There are only two shared controls: **Training label noise** and **New sample**. The first three graphs keep the distance metric fixed and change k. The next three keep k = 9 fixed and change the metric. Click any metric graph to move the query in all three, or focus a graph and use the arrow keys. Shift plus arrow moves farther. No connections or extra overlays are drawn; the metric graphs emphasize just the nine voters and their neighborhood outline.
 
 ## Suggested demonstrations
 
-1. **Overfitting:** start with the default two-moons experiment. Model A uses k = 1 and Model B uses k = 15. Identify the small prediction islands around corrupted training labels. Compare training accuracy with validation accuracy, then increase training label noise. At k = 1, training accuracy includes each point itself and is therefore 100% for these distinct points.
-2. **Underfitting:** choose “Too many neighbors.” Compare k = 5 with k = 31 on the rings and observe the loss of local structure. At k equal to the entire balanced training set, uniform votes tie everywhere; this demo's nearest-voter tie rule then decides, producing different behavior at that extreme.
-3. **Distance metrics:** choose “Change the metric.” Keep k and voting identical. Move the shared query near a class boundary and compare Euclidean, Manhattan, and Chebyshev neighborhoods, selected point IDs, and predictions. A different metric does not necessarily improve performance.
-4. **Feature scaling:** choose “Feature scaling.” The uninformative x coordinate spans 0–100 while the informative y coordinate spans 0–1. Compare raw and standardized distances, then change x back to 0–1. Standardization statistics use training features only.
-5. **Voting:** compare uniform and inverse-distance voting at the same k. Inspect individual distances and weights. With inverse-distance voting, exact matches give all weight to the selected zero-distance points.
+- Compare the first row at 15% label noise. Small k memorizes individual labels; a larger k may improve validation accuracy even while training accuracy falls. Set noise to 0% and compare again.
+- Follow the validation error curve. The lowest error can occur between the three illustrated k values. Generate another sample to see that a useful k depends on the data.
+- Click near a boundary in the metric row. Compare which points are highlighted and how their votes change. A different set of neighbors need not produce a different class or improve accuracy.
 
-The two models always share the training and validation data. Model settings leave the sample fixed; **New sample** changes it reproducibly. The error curve uses Model B's metric, voting, and preprocessing, and evaluates every integer k from 1 to min(51, training size). Click the curve to select Model B's k, or use its slider.
+## Core ideas and conventions
 
-## Core ideas
+KNN predicts from stored training examples rather than fitting a parametric boundary. Small neighborhoods are often sensitive to noise; very large neighborhoods may mix distinct regions. These are common effects, rather than guarantees about a particular k.
 
-For a query, KNN measures distance to the training examples, selects the k nearest, and combines their labels. This lab demonstrates binary classification; KNN can also perform regression by averaging target values, optionally with distance weights.
+All seven graphs share 100 synthetic two-moons training points. The 240 validation points are generated independently, never vote, and retain their original labels. Label noise flips exactly that percentage of training labels; changing noise keeps the feature positions and validation data fixed. **New sample** changes both sets reproducibly.
 
-| Setting | Effect to explore |
-| --- | --- |
-| Small k | More sensitivity to individual points and noisy labels; typically higher variance. |
-| Large k | Smoother decisions; can introduce bias by mixing distinct local regions. |
-| Euclidean distance | √(Σᵢ (xᵢ − qᵢ)²); circular contours in two equally scaled dimensions. |
-| Manhattan distance | Σᵢ \|xᵢ − qᵢ\|; diamond contours in two equally scaled dimensions. |
-| Chebyshev distance | maxᵢ \|xᵢ − qᵢ\|; square contours in two equally scaled dimensions. |
-| Standardization | (xᵢ − μᵢ) / σᵢ per feature, using statistics fitted on training data. |
-| Inverse-distance voting | A nearby point has more influence: weight = 1 / distance. |
+Training accuracy includes self-matches: each training point can find itself, so k = 1 achieves 100% training accuracy on these distinct examples, including corrupted labels. This is resubstitution accuracy, not leave-one-out evaluation. Validation accuracy measures performance against original labels after learning from possibly corrupted training labels.
 
-Small k does not guarantee overfitting, and large k does not guarantee poor predictions. The appropriate settings depend on the distribution, noise, sample size, representation, and task. The guided examples make common effects visible rather than asserting a universal best k or metric.
+Voting is uniform. Class-vote ties use the nearest training point's label; distance ties use point ID. The six illustrated classifiers use odd k. The error curve also evaluates even k with the stated tie rule. Equal-distance points can lie on a neighborhood contour without all being among the nine selected voters.
 
-## Evaluation and implementation conventions
+The distance calculations use raw feature coordinates. The plotted axes fill the available area, so contours may appear stretched on screen. In a real problem, feature units and scaling affect distances; any preprocessing should be fitted only on training data.
 
-- The training and validation sets are generated independently. Validation always contains 240 points with original labels. The label-noise control flips only training labels, so validation measures robustness to corrupted training labels rather than the error rate against noisy validation labels.
-- Training accuracy is resubstitution accuracy: a point may select itself. It is an optimistic measure, especially for k = 1, and is not leave-one-out evaluation.
-- Validation points never vote and never contribute to the mean or standard deviation. Both classes initially have equal counts in each split; flipping training labels may alter the training class balance.
-- Tied class scores use the nearest voting point's label. Distance ties are ordered by training point ID. Under inverse-distance voting, selected zero-distance matches receive equal weight and all other selected points receive zero weight.
-- Vote shares are descriptive scores, not calibrated probabilities. The nearest-neighbor contour includes all equal-distance locations; the ID tie rule may exclude a boundary point from the k selected voters.
-- The plot fits each axis to its displayed range. Its screen aspect ratio and differing feature units mean that pixel distances need not equal model distances. The dashed neighborhood contour accounts for the selected metric and scaling.
-- Repeated tuning on this validation set can overfit it. Use cross-validation for model selection and an untouched test set for final evaluation in a real project. Fit preprocessing separately inside each training fold.
-- The implementation uses exact brute-force distances and a sampled decision background. It stores examples instead of fitting a parametric boundary. Prediction cost grows with training size, and irrelevant features or high dimensionality can make distance less informative.
-
-The page supports mouse queries, keyboard arrow movement on either focused plot, and numeric query coordinates. **Reset lab** restores the default seed and settings. Everything runs locally and offline.
+Repeated tuning on validation can overfit that set. Use cross-validation for model selection and a separate untouched test set for final evaluation. The implementation uses exact brute-force neighbors and a sampled decision background; all figures and scores are computed locally.
