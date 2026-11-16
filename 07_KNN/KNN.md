@@ -18,8 +18,8 @@ Open [the interactive examples](knn_visualizer.html) in a browser. The page runs
 
 1. **k and accuracy:** one slider updates decision regions, plotted validation mistakes, training accuracy, and validation accuracy/error. The accuracy curve and map use the same sample. Click the curve to select k as well.
 2. **Distance metrics:** switch Euclidean, Manhattan, or Chebyshev with k = 9 fixed. The neighborhood, query prediction, validation predictions, and correct count update. Click the map to move the query; arrow keys also work when it is focused.
-3. **Label noise:** keep k = 1 and corrupt training labels. Feature positions and validation labels stay fixed. Compare the new prediction islands and red validation errors. Training accuracy includes self-matches.
-4. **Feature scaling:** compare raw and standardized distances with k = 9. The irrelevant x feature spans 0–100; informative y spans 0–1. Training and validation data stay fixed, and preprocessing uses training statistics only.
+3. **Label noise:** vary k from 1 to 51 and corrupt training labels. Feature positions and validation labels stay fixed. Compare prediction islands, training accuracy, and red validation errors. Training accuracy includes self-matches and is recomputed for each k.
+4. **Feature scaling:** vary k from 1 to 51 while comparing raw and standardized distances. The irrelevant x feature spans 0–100; informative y spans 0–1. Training and validation data stay fixed, and preprocessing uses training statistics only. Switching scaling preserves the selected k.
 5. **KNN regression:** below classification, change k from 1 to 30. Predictions average the k nearest training targets using x distance only. The piecewise constant prediction curve, train RMSE, and validation RMSE update. All 30 training and 60 validation observations are plotted. Lower RMSE is better.
 
 ## Data and evaluation
