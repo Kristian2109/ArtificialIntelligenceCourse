@@ -1,4 +1,4 @@
-# KNN
+# KNN and Metrics
 
 ## Introduction concepts
 
@@ -114,12 +114,15 @@ Large numeric ranges can dominate distances
   - Exact search preserves the KNN prediction rule; the tree changes how neighbors are found
 - For very large datasets, approximate nearest-neighbor search trades some neighbor accuracy for speed
 
-## Metrics
+# Metrics
 
 - Evaluate predictions on held-out data; use classification metrics for class labels and regression metrics for numeric targets
+
+# Categorical prediction metrics
+
 - For a chosen positive class: **TP** = correctly predicted positive, **TN** = correctly predicted negative, **FP** = false alarm, **FN** = missed positive
 
-### Confusion matrix
+## Confusion matrix
 
 - One row and column per **class**: rows are actual labels; columns are predicted labels
 - The **diagonal** contains correct predictions; other cells show which classes were confused
@@ -149,25 +152,25 @@ Large numeric ranges can dominate distances
   - For A: TP = 8, FP = 2 + 1 = 3, FN = 1 + 1 = 2, TN = 17
   - Precision = 8/11 ≈ **72.7%**; recall = 8/10 = **80%**
 
-### Accuracy
+## Accuracy
 
 - **Correct predictions divided by all predictions**
   - $\text{Accuracy}=\frac{TP+TN}{TP+TN+FP+FN}$
   - Can hide poor rare-class performance: always predicting “not spam” gives 99% accuracy if only 1% of emails are spam
 
-### Precision
+## Precision
 
 - **Of the examples predicted positive, how many really are positive?**
   - $\text{Precision}=\frac{TP}{TP+FP}$
   - Emphasize precision when false alarms are costly, such as legitimate emails marked as spam
 
-### Recall
+## Recall
 
 - **Of the actual positive examples, how many did we find?**
   - $\text{Recall}=\frac{TP}{TP+FN}$
   - Emphasize recall when missed positives are costly, such as fraud left undetected
 
-### F1 score
+## F1 score
 
 - **Harmonic mean of precision and recall**; high only when both are high
   - $F_1=\frac{2\,\text{Precision}\,\text{Recall}}{\text{Precision}+\text{Recall}}=\frac{2TP}{2TP+FP+FN}$
@@ -175,26 +178,26 @@ Large numeric ranges can dominate distances
 - In the spam example: precision = 6/8 = **75%**, recall = 6/10 = **60%**, F1 = 12/18 ≈ **66.7%**
 - For multiple classes, calculate each metric per class; **macro averaging** gives every class equal weight
 
-### Regression metrics
+# Regression metrics
 
 - Measure how far numeric predictions are from actual values
   - $n$ = number of evaluated examples, $y_i$ = actual value, $\hat y_i$ = prediction, $\bar y$ = mean actual value on the evaluation set
 
-#### MAE — Mean Absolute Error
+## MAE — Mean Absolute Error
 
 - **Average absolute prediction error**
   - $\text{MAE}=\frac{1}{n}\sum_{i=1}^{n}|y_i-\hat y_i|$
   - In the target's original units; an MAE of 3 minutes means predictions miss by 3 minutes on average
   - Useful for a directly interpretable error measure; less sensitive to large errors than squared-error metrics
 
-#### MSE — Mean Squared Error
+## MSE — Mean Squared Error
 
 - **Average squared prediction error**
   - $\text{MSE}=\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat y_i)^2$
   - Squaring gives large errors more influence; useful when large misses should be penalized more heavily
   - Measured in squared target units, such as minutes squared
 
-#### RMSE — Root Mean Squared Error
+## RMSE — Root Mean Squared Error
 
 - **Square root of MSE**
   - $\text{RMSE}=\sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat y_i)^2}$
@@ -202,7 +205,7 @@ Large numeric ranges can dominate distances
   - Example: absolute errors of 1, 1, and 4 give MAE = **2**, MSE = **6**, and RMSE ≈ **2.45**
 - For MAE, MSE, and RMSE, **lower is better**; 0 means perfect predictions
 
-#### R² — Coefficient of determination
+## R² — Coefficient of determination
 
 - **Compares squared prediction error with always predicting the evaluation-set mean**
   - $R^2=1-\frac{\sum_{i=1}^{n}(y_i-\hat y_i)^2}{\sum_{i=1}^{n}(y_i-\bar y)^2}$
